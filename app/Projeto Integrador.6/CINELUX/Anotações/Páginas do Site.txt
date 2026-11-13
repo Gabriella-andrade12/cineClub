@@ -1,0 +1,16 @@
+Cadastro / Planos / Benefícios
+Carrinho
+Combo
+Filmes / Página Inicial
+Infantil
+Login
+Minha Lista
+Perfil
+Recomendados
+Página do Filme
+Página do Ingresso
+Sessão
+Reserva
+Venda
+Avaliação
+Pagamento

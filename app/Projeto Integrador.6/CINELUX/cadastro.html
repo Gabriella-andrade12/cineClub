@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CINELUX | Assinatura e Cadastro</title>
+    <link rel="stylesheet" href="./CSS/cadastro.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" href="./img/Logo - LUX.png" type="image/x-icon">
+</head>
+
+<body>
+    <input type="radio" name="etapa-fluxo" id="etapa-1-trigger" checked class="gatilho-etapa">
+    <input type="radio" name="etapa-fluxo" id="etapa-2-trigger" class="gatilho-etapa">
+
+    <header class="cabecalho">
+        <a href="./inicio.html" class="logo">
+            <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
+        </a>
+    </header>
+
+    <main class="faixa-principal">
+        <div class="fita-de-filme" aria-hidden="true"></div>
+
+        <div class="passos-progresso">
+            <label for="etapa-1-trigger" class="passo passo-1">
+                <span class="passo-numero">1</span>
+                <span class="passo-texto">Escolha seu plano</span>
+            </label>
+            <div class="passo-divisor"></div>
+            <label for="etapa-2-trigger" class="passo passo-2">
+                <span class="passo-numero">2</span>
+                <span class="passo-texto">Crie sua conta</span>
+            </label>
+        </div>
+
+        <section class="secao-fluxo secao-planos">
+            <h1 class="apresentacao-titulo centralizado">
+                Escolha o plano da<br>sua história.
+            </h1>
+            <p class="apresentacao-texto centralizado">
+                Assine um plano para criar sua conta na LUX e aproveitar<br>
+                o catálogo de streaming e vantagens nos nossos cinemas.
+            </p>
+
+            <input type="checkbox" class="parte-ver-beneficios" id="aba-ver-beneficios">
+            <div class="ver-beneficios">
+                <label for="aba-ver-beneficios" class="botao-ver-beneficios">
+                    <i class="fa-solid"></i>Ver todos os benefícios e vantagens dos planos
+                </label>
+            </div>
+
+            <div class="aba-beneficios">
+                <div class="ver-beneficios-conteudo">
+                    <h3 class="beneficios-titulo">Benefícios dos Planos LUX</h3>
+                    <p class="beneficios-subtitulo">Veja o que cada plano te oferece e qual deve ser a melhor escolha
+                        para você</p><br>
+                    <div class="grande-beneficios">
+                        <div class="cartao-de-beneficio">
+                            <h4 class="planos-titulo">Plano 1</h4>
+                            <p class="planos-beneficio-descricao">
+                                É a porta de entrada para a plataforma LUX. Pelo menor valor mensal (R$ 19,90), garante
+                                acesso completo aos filmes em casa e ainda gera economia no ingresso presencial.
+                            </p>
+                        </div>
+
+                        <div class="cartao-de-beneficio">
+                            <h4 class="planos-titulo">Plano 2</h4>
+                            <p class="planos-beneficio-descricao">
+                                Dobra a porcentagem de desconto nos ingressos (de 5% para 10%) e estende a economia para
+                                a bomboniere (5%). Para quem vai ao cinema ao menos uma vez por mês, a diferença de
+                                valor se paga rapidamente nos descontos das compras no balcão.
+                            </p>
+                        </div>
+
+                        <div class="cartao-de-beneficio">
+                            <h4 class="planos-titulo">Plano 3</h4>
+                            <p class="planos-beneficio-descricao">
+                                Oferece a maior taxa de desconto da plataforma (15% nos ingressos e 10% nos
+                                alimentos/bebidas). Além disso, o diferencial exclusivo dos Pontos em Dobro acelera o
+                                resgate de brindes, ingressos gratuitos e benefícios no programa de fidelidade.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="caixa-vantagem-anual">
+                        <h4 class="vantagem-anual-titulo">Vantagens do Cliclo Anual</h4>
+                        <p class="vantagem-anual-descricao">
+                            Em todas as opções, a assinatura anual gera 2 meses de desconto direto em relação ao
+                            pagamento mensal recorrente (por exemplo, no Plano 1 o valor anual é R$ 199,00 em vez de R$
+                            238,80).
+                            Ao optar pelo plano anual em qualquer uma das modalidades do Cinema LUX, a principal
+                            vantagem é a economia financeira equivalente a dois meses gratuitos de assinatura. Em vez de
+                            efetuar doze pagamentos mensais ao longo do ano, a cobrança anual é feita uma única vez por
+                            ano com um desconto direto sobre o montante total.
+                        </p>
+
+                        <ul class="lista-economica-anual">
+                            <li>
+                                <strong>No Plano 1, cujo custo mensal é de R$ 19,90 (totalizando R$ 238,80 ao fim de
+                                    doze meses), o valor do plano anual cai para R$ 199,00, gerando uma economia
+                                    imediata de R$ 39,80.</strong>
+                            </li>
+                            <li>
+                                <strong>No Plano 2, o pagamento mensal de R$ 29,90 resulta em R$ 358,80 por ano,
+                                    enquanto a assinatura anual custa R$ 299,00, garantindo uma economia de R$ 59,80 ao
+                                    assinante.</strong>
+                            </li>
+                            <li>
+                                <strong>No Plano 3, o valor de R$ 39,90 por mês somaria R$ 478,80 ao longo do ano, mas
+                                    no formato anual reduz-se para R$ 399,00, proporcionando uma poupança total de R$
+                                    79,80.
+                                </strong>
+                            </li>
+                        </ul>
+
+                        <p class="congelamento-tarifa">
+                            <i class="fa-solid"></i>Além da vantagem financeira direta, a escolha pelo ciclo anual
+                            assegura o congelamento da tarifa contratada durante todo o período de doze meses,
+                            protegendo o utilizador contra eventuais reajustes de preço da mensalidade.
+                        </p>
+                    </div>
+
+                    <div class="ver-beneficios-rodape">
+                        <label for="aba-ver-beneficios" class="botao botao-mustard">Escolher Plano</label>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="alternador-ciclo-container">
+                <input type="radio" name="ciclo-cobranca" id="cobranca-mensal" checked class="gatilho-cobranca">
+                <input type="radio" name="ciclo-cobranca" id="cobranca-anual" class="gatilho-cobranca">
+
+                <div class="alternador-ciclo-rotulos">
+                    <label for="cobranca-mensal" class="rotulo-alternador rotulo-mensal">Mensal</label>
+                    <label for="cobranca-anual" class="rotulo-alternador rotulo-anual">
+                        Anual <span class="selo-desconto">mais barato</span>
+                    </label>
+                </div>
+
+                <div class="grade-planos">
+                    <article class="cartao-plano">
+                        <div class="radio-plano"></div>
+                        <h3 class="plano-nome">Plano 1</h3>
+
+                        <div class="plano-preco preco-mensal">
+                            <span class="preco-valor">R$ 19,90</span>
+                            <span class="preco-periodo">/mês</span>
+                        </div>
+                        <div class="plano-preco preco-anual">
+                            <span class="preco-valor">R$ 199,00</span>
+                            <span class="preco-periodo">/ano</span>
+                        </div>
+
+                        <p class="preco-subtexto sub-mensal">Cobrado todo mês</p>
+                        <p class="preco-subtexto sub-anual">Cobrado uma vez por ano</p>
+
+                        <div class="plano-recursos">
+                            <p>Assista ao catálogo de filmes disponíveis em casa e receba 5% de desconto em ingressos
+                                comprados pela LUX.</p>
+                        </div>
+
+                        <label for="etapa-2-trigger" class="botao botao-mustard texto-btn-mensal">Assinar plano
+                            mensal</label>
+                        <br>
+                        <label for="etapa-2-trigger" class="botao botao-mustard texto-btn-anual">Assinar plano
+                            anual</label>
+                    </article>
+
+                    <article class="cartao-plano destacado">
+                        <div class="radio-plano"></div>
+                        <h3 class="plano-nome">Plano 2</h3>
+
+                        <div class="plano-preco preco-mensal">
+                            <span class="preco-valor">R$ 29,90</span>
+                            <span class="preco-periodo">/mês</span>
+                        </div>
+                        <div class="plano-preco preco-anual">
+                            <span class="preco-valor">R$ 299,00</span>
+                            <span class="preco-periodo">/ano</span>
+                        </div>
+
+                        <p class="preco-subtexto sub-mensal">Cobrado todo mês</p>
+                        <p class="preco-subtexto sub-anual">Cobrado uma vez por ano</p>
+
+                        <div class="plano-recursos">
+                            <p>Aproveite o catálogo de streaming, 10% de desconto em ingressos e 5% de desconto na
+                                bomboniere.</p>
+                        </div>
+
+                        <label for="etapa-2-trigger" class="botao botao-mustard texto-btn-mensal">Assinar plano
+                            mensal</label>
+                        <br>
+                        <label for="etapa-2-trigger" class="botao botao-mustard texto-btn-anual">Assinar plano
+                            anual</label>
+                    </article>
+
+                    <article class="cartao-plano">
+                        <div class="radio-plano"></div>
+                        <h3 class="plano-nome">Plano 3</h3>
+
+                        <div class="plano-preco preco-mensal">
+                            <span class="preco-valor">R$ 39,90</span>
+                            <span class="preco-periodo">/mês</span>
+                        </div>
+                        <div class="plano-preco preco-anual">
+                            <span class="preco-valor">R$ 399,00</span>
+                            <span class="preco-periodo">/ano</span>
+                        </div>
+
+                        <p class="preco-subtexto sub-mensal">Cobrado todo mês</p>
+                        <p class="preco-subtexto sub-anual">Cobrado uma vez por ano</p>
+
+                        <div class="plano-recursos">
+                            <p>Tenha acesso ao catálogo de streaming, 15% de desconto em ingressos, 10% na bomboniere e
+                                pontos em dobro nas compras elegíveis.</p>
+                        </div>
+
+                        <label for="etapa-2-trigger" class="botao botao-mustard texto-btn-mensal">Assinar plano
+                            mensal</label>
+                        <br>
+                        <label for="etapa-2-trigger" class="botao botao-mustard texto-btn-anual">Assinar plano
+                            anual</label>
+                    </article>
+                </div>
+            </div>
+
+            <p class="aviso-anual">
+                Os valores anuais são cobrados uma vez por ano e saem mais baratos do que pagar 12 mensalidades.
+            </p>
+        </section>
+
+        <section class="secao-fluxo secao-cadastro">
+            <div class="conteudo-cadastro">
+                <section class="apresentacao">
+                    <h1 class="apresentacao-titulo">
+                        Sua próxima<br>história começa<br>
+                        <span class="titulo-destaque">aqui.</span>
+                    </h1>
+                    <p class="apresentacao-texto">
+                        Entre para descobrir filmes, sessões<br>
+                        e experiências inesquecíveis
+                    </p>
+                    <span class="apresentacao-linha"></span>
+
+                    <div class="caixa-plano-selecionado">
+                        <span class="rotulo-resumo">Plano Selecionado</span>
+                        <h4 class="titulo-resumo">Plano Escolhido</h4>
+                        <label for="etapa-1-trigger" class="link-alterar-plano">Alterar Plano</label>
+                    </div>
+                </section>
+
+                <section class="cartao cartao-cadastro">
+                    <h2 class="cartao-titulo">Criar nova conta</h2>
+                    <p class="cartao-subtitulo">Preencha seus dados para se cadastrar</p>
+
+                    <form class="formulario" action="#" method="post">
+
+                        <div class="campo">
+                            <label for="nome">Nome completo</label>
+                            <div class="campo-entrada">
+                                <i class="fa-regular fa-user campo-icone"></i>
+                                <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="campo">
+                            <label for="nascimento">Data de nascimento</label>
+                            <div class="campo-entrada">
+                                <i class="fa-regular fa-calendar campo-icone"></i>
+                                <input type="text" id="nascimento" name="nascimento" placeholder="DD/MM/AAAA"
+                                    inputmode="numeric" maxlength="10" required>
+                            </div>
+                        </div>
+
+                        <div class="campo">
+                            <label for="cpf">CPF</label>
+                            <div class="campo-entrada">
+                                <i class="fa-regular fa-id-card campo-icone"></i>
+                                <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" inputmode="numeric"
+                                    maxlength="14" required>
+                            </div>
+                        </div>
+
+                        <div class="campo">
+                            <label for="email">E-mail</label>
+                            <div class="campo-entrada">
+                                <i class="fa-regular fa-envelope campo-icone"></i>
+                                <input type="email" id="email" name="email" placeholder="Digite seu melhor e-mail"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="campo">
+                            <label for="telefone">Telefone (opcional)</label>
+                            <div class="campo-entrada">
+                                <i class="fa-solid fa-phone campo-icone"></i>
+                                <input type="tel" id="telefone" name="telefone"
+                                    placeholder="(00) 00000-0000 (Opcional)">
+                            </div>
+                        </div>
+
+                        <div class="campo">
+                            <label for="senha">Senha</label>
+                            <div class="campo-entrada">
+                                <i class="fa-solid fa-lock campo-icone"></i>
+                                <input type="password" id="senha" name="senha" placeholder="Crie uma senha forte"
+                                    required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="botao botao-mustard">Cadastrar e Finalizar Assinatura</button>
+
+                    </form>
+                </section>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="rodape">
+        <a href="./inicio.html" class="logo">
+            <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
+        </a>
+        </div>
+        <nav class="rodape-links" aria-label="Links legais">
+            <a href="#termos">Termos de Uso</a>
+            <a href="#privacidade">Privacidade</a>
+            <a href="#trocas">Política de Trocas</a>
+        </nav>
+        <p class="rodape-direitos">LUX Media® 2026. Todos os direitos reservados.</p>
+    </footer>
+
+</body>
+
+</html>

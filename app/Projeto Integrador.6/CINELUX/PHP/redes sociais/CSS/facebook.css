@@ -1,0 +1,320 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: #f0f2f5;
+    color: #1c1e21;
+}
+
+.cabecalho {
+    background-color: #ffffff;
+    border-bottom: 1px solid #dddfe2;
+    height: 56px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    z-index: 10;
+}
+
+.faixa-cabecalho {
+    width: 100%;
+    max-width: 980px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+}
+
+.logo {
+    color: #1877f2;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.login {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.login input {
+    padding: 6px 10px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 13px;
+    outline: none;
+}
+
+.botao-login {
+    background-color: #1877f2;
+    color: #ffffff;
+    border: none;
+    padding: 6px 14px;
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.botao-login:hover {
+    background-color: #166fe5;
+}
+
+.senha {
+    color: #1877f2;
+    font-size: 12px;
+    text-decoration: none;
+    margin-left: 4px;
+}
+
+.capa-do-perfil {
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid #dddfe2;
+}
+
+.capa-perfil {
+    width: 100%;
+    max-width: 850px;
+}
+
+.imagem-da-capa {
+    position: relative;
+    width: 100%;
+    height: 310px;
+    background-color: #cccccc;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+}
+
+.capa-LUX {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.foto-de-perfil {
+    position: absolute;
+    bottom: 16px;
+    left: 32px;
+    width: 155px;
+    height: 155px;
+}
+
+.perfil-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 4px solid #ffffff;
+    object-fit: cover;
+    background-color: #ffffff;
+}
+
+.notao-perfil {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    background-color: #e4e6eb;
+    color: #050505;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid #ffffff;
+    font-size: 13px;
+}
+
+.verificado-nome {
+    background-color: #ffffff;
+    padding: 16px 32px 12px 210px;
+}
+
+.nome {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nome h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #050505;
+}
+
+.verificado {
+    color: #1877f2;
+    font-size: 18px;
+}
+
+.seguidores {
+    font-size: 13px;
+    color: #65676b;
+    margin-top: 2px;
+}
+
+.navegacao {
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 32px;
+    border-top: 1px solid #e4e6eb;
+}
+
+.abas {
+    display: flex;
+    gap: 8px;
+}
+
+.aba {
+    padding: 14px 16px;
+    color: #65676b;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    border-bottom: 3px solid transparent;
+}
+
+.aba.ativa {
+    color: #1877f2;
+    border-bottom-color: #1877f2;
+}
+
+.botao {
+    background-color: #e4e6eb;
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.faixa {
+    display: flex;
+    justify-content: center;
+    background-color: #f0f2f5;
+    padding: 16px 0 40px 0;
+}
+
+.grade {
+    width: 100%;
+    max-width: 850px;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 16px;
+}
+
+.bloco-apredentacao {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.grade-postagem {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.bloco-apresentacao {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
+}
+
+.apresentacao h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.bio {
+    font-size: 13px;
+    color: #1c1e21;
+    text-align: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e4e6eb;
+    margin-bottom: 12px;
+}
+
+.detalhes {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.perfil {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #65676b;
+}
+
+.perfil i {
+    font-size: 16px;
+    width: 18px;
+    color: #8a8d91;
+}
+
+.perfil a {
+    color: #1877f2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.posts {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.perfil-pequeno {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.usuario-cabecalho h4 {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.tempo {
+    font-size: 12px;
+    color: #65676b;
+}
+
+.pergunta p {
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 12px;
+}
+
+.grade-posts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin: 0 -16px;
+}
+
+.grade-posts img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+}

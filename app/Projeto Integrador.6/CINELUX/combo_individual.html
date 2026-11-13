@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CINELUX | Combos</title>
+  <link rel="stylesheet" href="./CSS/combo_individual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="shortcut icon" href="./img/Logo - LUX.png" type="image/x-icon">
+</head>
+
+<body>
+
+  <header class="cabecalho">
+    <a href="./inicio.html" class="logo">
+      <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
+    </a>
+
+    <nav class="navegacao-menu">
+      <a href="./inicio.html" class="navegacao-opcoes">Lançamentos</a>
+      <a href="./recomendados.html" class="navegacao-opcoes">Recomendados</a>
+      <a href="./combos.html" class="navegacao-ativa">Combos</a>
+      <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
+    </nav>
+
+    <div class="busca">
+      <input type="text" placeholder="Buscar filmes, gêneros, cinemas...">
+      <i class="fa-solid fa-magnifying-glass busca-icon"></i>
+    </div>
+
+    <div class="acoes-do-usuario">
+      <a href="#" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
+      <a href="#" class="link"><i class="fa-solid fa-bookmark"></i></a>
+      <a href="#" class="link"><i class="fa-solid fa-user"></i></a>
+    </div>
+  </header>
+
+  <section class="localizacao">
+    <div class="selecao">
+      <span>Sua Localização:</span>
+      <select>
+        <option>São Paulo, SP</option>
+        <option>Rio de Janeiro, RJ</option>
+      </select>
+    </div>
+    <div class="selecao">
+      <span>Cinema Preferencial:</span>
+      <select>
+        <option>Selecione o cinema preferencial...</option>
+      </select>
+    </div>
+  </section>
+
+  <main class="faixa-principal">
+    <section class="combo-destaque-bloco">
+      <div class="combo-destaque-informacoes">
+        <h1 class="combo-destaque-titulo">CLÁSSICO PIPOCANDO <span class="combo-destaque-subtitulo">Toque LUX</span>
+        </h1>
+        <p class="combo-destaque-descricao">
+          O clássico do cinema direto para você! Acompanha 1 Balde de Pipoca Grande, 1 Refrigerante de 500ml e 3 Doces à
+          sua escolha para completar o filme perfeito.
+        </p>
+
+        <div class="combo-destaque-precos">
+          <span class="preco-antigo">R$84,90</span>
+          <span class="preco-atual">R$73,85</span>
+        </div>
+
+        <div class="combo-destaque-botoes">
+          <button class="botao-garantir"><i class="fa-solid fa-cart-shopping"></i> Garantir o meu</button>
+          <button class="botao-detalhes-link">Detalhes</button>
+        </div>
+      </div>
+
+      <div class="combo-destaque-imagem-faixa">
+        <div class="combo-destaque-informacoes-superiores">
+          <span class="informacao-item"><i class="fa-solid fa-glasses"></i> Acompanha Óculos 3D Lux</span>
+          <span class="informacao-item avaliacao"><i class="fa-solid fa-star"></i> 4.9 (130+ avaliações)</span>
+        </div>
+        <img src="./img/Combo Destaque/Combo Destaque - 2.png" alt="Clássico" class="combo-destaque-imagem">
+      </div>
+    </section>
+
+    <section class="selecao-categorias">
+      <a href="./combos.html">
+        <button class="categoria-botao categoria-botao">Cardápio Completo</button>
+      </a>
+      <a href="./combo_individual.html">
+        <button class="categoria-botao categoria-ativa">Individual</button>
+      </a>
+      <a href="./combo_casal.html">
+        <button class="categoria-botao">Casal</button>
+      </a>
+      <a href="./combo_familia.html">
+        <button class="categoria-botao">Família</button>
+      </a>
+      <a href="./combo_infantil.html">
+        <button class="categoria-botao">Infantil</button>
+      </a>
+      <a href="./combos_especiais.html">
+        <button class="categoria-botao">Combos especiais</button>
+      </a>
+    </section>
+
+    <div class="subtitulo-secao">
+      <p>Escolha o combo perfeito para assistir o seu filme favorito aproveitando a sua companhia</p>
+    </div>
+
+    <section class="grade-de-combos-catalogo">
+      <div class="cartao-combo-catalogo">
+        <div class="combo-imagem-faixa">
+          <span class="tag-destaque-combo">Popular</span>
+          <img src="./img/Combos/Casal VIP.png" alt="Combo Casal VIP">
+        </div>
+        <div class="cartao-conteudo">
+          <h3>Combo Solo</h3>
+          <p class="combo-subtexto">
+            A medida certa para a sua sessão particular. <br>
+            Inclui 1 Pipoca Média (Salgada ou Doce), 1 Refrigerante de 500ml e 1 Chocolate à sua escolha. O
+            acompanhamento perfeito para o seu filme!
+          </p>
+          <div class="combo-rodape-cartao">
+            <div class="cartao-valores-combo">
+              <span class="preco-antigo-cartao">R$23,90</span>
+              <span class="preco-atual-cartao">R$17,99</span>
+            </div>
+            <a href="#" class="link-ver-detalhes">Ver Detalhes</a>
+          </div>
+          <button class="botao-garantir-cartao"><i class="fa-solid fa-cart-shopping"></i> Garantir o Meu</button>
+        </div>
+      </div>
+
+      <div class="cartao-combo-catalogo">
+        <div class="combo-imagem-faixa">
+          <span class="tag-destaque-combo">Recomendado</span>
+          <img src="./img/Combos/Cena de Crime.png" alt="Combo Ghostface">
+        </div>
+        <div class="cartao-conteudo">
+          <h3>Combo Solo Gourmet</h3>
+          <p class="combo-subtexto">
+            Um toque especial no seu cinema em casa. <br>
+            Inclui 1 Pipoca Gourmet Média (Sabores Especiais), 1 Refrigerante de 500ml e 1 Chocolate Premium. Para quem
+            busca uma experiência diferenciada.
+          </p>
+          <div class="combo-rodape-cartao">
+            <div class="cartao-valores-combo">
+              <span class="preco-antigo-cartao">R$26,90</span>
+              <span class="preco-atual-cartao">R$18,00</span>
+            </div>
+            <a href="#" class="link-ver-detalhes">Ver Detalhes</a>
+          </div>
+          <button class="botao-garantir-cartao"><i class="fa-solid fa-cart-shopping"></i> Garantir o Meu</button>
+        </div>
+      </div>
+
+      <div class="cartao-combo-catalogo">
+        <div class="combo-imagem-faixa">
+          <span class="tag-destaque-combo">Promocional</span>
+          <img src="./img/Combos/Salvação da vizinhança.png" alt="Combo M&M Duo">
+        </div>
+        <div class="cartao-conteudo">
+          <h3>Cheddar e Bacon</h3>
+          <p class="combo-subtexto">
+            Explosão de sabor a cada mordida. <br>
+            Inclui 1 Pipoca Grande coberta com Queijo Cheddar Cremoso e Bacon Crocante, mais 1 Refrigerante de 500ml.
+            Irresistível do começo ao fim!
+          </p>
+          <div class="combo-rodape-cartao">
+            <div class="cartao-valores-combo">
+              <span class="preco-antigo-cartao">R$24,90</span>
+              <span class="preco-atual-cartao">R$17,90</span>
+            </div>
+            <a href="#" class="link-ver-detalhes">Ver Detalhes</a>
+          </div>
+          <button class="botao-garantir-cartao"><i class="fa-solid fa-cart-shopping"></i> Garantir o Meu</button>
+        </div>
+      </div>
+
+      <div class="cartao-combo-catalogo">
+        <div class="combo-imagem-faixa">
+          <span class="tag-destaque-combo">Refinado</span>
+          <img src="./img/Combos/Familia LUX.jpg" alt="Combo Família Lux">
+        </div>
+        <div class="cartao-conteudo">
+          <h3>Trufa e Ervas</h3>
+          <p class="combo-subtexto">
+            Para paladares refinados na hora da maratona. <br>
+            Inclui 1 Pipoca Gourmet Grande temperada com Azeite Trufado e Ervas Finas, acompanhada de 1 Bebida Gelada de
+            500ml.
+          </p>
+          <div class="combo-rodape-cartao">
+            <div class="cartao-valores-combo">
+              <span class="preco-antigo-cartao">R$27,95</span>
+              <span class="preco-atual-cartao">R$19,90</span>
+            </div>
+            <a href="#" class="link-ver-detalhes">Ver Detalhes</a>
+          </div>
+          <button class="botao-garantir-cartao"><i class="fa-solid fa-cart-shopping"></i> Garantir o Meu</button>
+        </div>
+      </div>
+
+      <div class="cartao-combo-catalogo">
+        <div class="combo-imagem-faixa">
+          <span class="tag-destaque-combo">Maratonas Longos</span>
+          <img src="./img/Combos/Infantil LUX.jpg" alt="Combo Infantil Kids">
+        </div>
+        <div class="cartao-conteudo">
+          <h3>Para Grandes Maratonas</h3>
+          <p class="combo-subtexto">
+            Canto garantido para a série toda. <br>
+            Inclui 1 Balde de Pipoca Gigante (Salgada ou Doce), 1 Refrigerante Grande de 700ml e 1 Chocolate para
+            acompanhar cada episódio.
+          </p>
+          <div class="combo-rodape-cartao">
+            <div class="cartao-valores-combo">
+              <span class="preco-antigo-cartao">R$25,90</span>
+              <span class="preco-atual-cartao">R$18,80</span>
+            </div>
+            <a href="#" class="link-ver-detalhes">Ver Detalhes</a>
+          </div>
+          <button class="botao-garantir-cartao"><i class="fa-solid fa-cart-shopping"></i> Garantir o Meu</button>
+        </div>
+      </div>
+
+      <div class="cartao-combo-catalogo">
+        <div class="combo-imagem-faixa">
+          <span class="tag-destaque-combo">Explosão</span>
+          <img src="./img/Combos/Individual LUX.jpg" alt="Combo Individual Pro">
+        </div>
+        <div class="cartao-conteudo">
+          <h3>Combo Individual Pro</h3>
+          <p class="combo-subtexto">
+            Para os apaixonados por açúcar no cinema. <br>
+            Inclui 1 Pipoca Grande Doce Caramelizada, 1 Pacote de Balas de Goma e 1 Bebida de 500ml.
+          </p>
+          <div class="combo-rodape-cartao">
+            <div class="cartao-valores-combo">
+              <span class="preco-antigo-cartao">R$22,90</span>
+              <span class="preco-atual-cartao">R$15,95</span>
+            </div>
+            <a href="#" class="link-ver-detalhes">Ver Detalhes</a>
+          </div>
+          <button class="botao-garantir-cartao"><i class="fa-solid fa-cart-shopping"></i> Garantir o Meu</button>
+        </div>
+      </div>
+    </section>
+
+  <div class="expansao-de-combos">
+    <button class="botao-expansao" title="Ver mais combos">
+      <i class="fa-solid fa-chevron-down"></i>
+    </button>
+  </div>
+  </section>
+
+  <section class="faixa-de-informacoes">
+    <div class="informacoes">
+      <span class="faixa-titulo">CINELUX EXPERIENCE</span>
+      <h2>Sua plataforma completa de cinema</h2>
+      <p>Sua plataforma completa para acompanhar lançamentos de cinema, garantir ingressos sem filas, consultar horários
+        de exibição em tempo real e reservar combos com facilidade.</p>
+    </div>
+    <div class="apps-disponiveis">
+      <button class="botao-app"><i class="fa-brands fa-apple"></i> App Store</button>
+      <button class="botao-app"><i class="fa-brands fa-google-play"></i> Google Play</button>
+    </div>
+  </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="rodape-logo">
+      <img src="./img/Logo - LUX.png" alt="LUX Rodapé Logo">
+    </div>
+
+    <div class="grade-do-rodape">
+      <div class="rodape-informacoes">
+        <a href="#">Filmes em Cartaz</a>
+        <a href="#">Próximas Estreias</a>
+        <a href="#">Bomboniere & Combos</a>
+      </div>
+      <div class="rodape-informacoes">
+        <a href="#">Cinemas Parceiros</a>
+        <a href="#">Central de Ajuda</a>
+        <a href="#">Termos de Uso</a>
+      </div>
+      <div class="rodape-informacoes">
+        <a href="#">Política de Privacidade</a>
+        <a href="#">Meia Entrada</a>
+        <a href="#">Atendimento ao Cliente</a>
+      </div>
+      <div class="rodape-informacoes informacoes-contato">
+        <p>Atendimento ao Cliente</p>
+        <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
+        <div class="redes-informacoes">
+          <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>

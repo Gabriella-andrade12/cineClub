@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . "./init.php";
-
 $host = "localhost";
 $dbname = "lux_dados";
 $username = "root";

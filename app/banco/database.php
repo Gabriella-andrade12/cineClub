@@ -12,11 +12,10 @@ function database(): PDO
 
     $host = getenv('DB_HOST') ?: '127.0.0.1';
     $port = getenv('DB_PORT') ?: '3306';
-<<<<<<< HEAD
-    $database = getenv('DB_DATABASE') ?: 'cineClub';
-=======
+
+
     $database = getenv('DB_DATABASE') ?: 'lux_dados';
->>>>>>> ea5101fa99119c464bbe00d672228a05ed17ca49
+
     $username = getenv('DB_USERNAME') ?: 'root';
     $password = getenv('DB_PASSWORD') ?: 'senai123';
 

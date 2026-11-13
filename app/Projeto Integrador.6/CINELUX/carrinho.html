@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CINELUX - Meu Carrinho</title>
+    <link rel="stylesheet" href="./CSS/carrinho.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" href="./img/Logo - LUX.png" type="image/x-icon">
+</head>
+
+<body>
+
+    <header class="cabecalho">
+        <a href="./inicio.html" class="logo">
+            <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
+        </a>
+
+        <nav class="navegacao-menu">
+            <a href="./inicio.html" class="navegacao-opcoes">Lançamentos</a>
+            <a href="./recomendados.html" class="navegacao-opcoes">Recomendados</a>
+            <a href="./combos.html" class="navegacao-opcoes">Combos</a>
+            <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
+        </nav>
+
+        <div class="busca">
+            <input type="text" placeholder="Buscar filmes, gêneros, cinemas...">
+            <i class="fa-solid fa-magnifying-glass busca-icon"></i>
+        </div>
+
+        <div class="acoes-do-usuario">
+            <a href="./minha_lista.html" class="link"><i class="fa-solid fa-bookmark"></i></a>
+            <a href="./perfil.html" class="link"><i class="fa-solid fa-user"></i></a>
+        </div>
+    </header>
+
+    <main class="faixa-principal">
+        <div class="fita-de-filme" aria-hidden="true"></div>
+
+        <h1 class="apresentacao-titulo">Seu Carrinho</h1>
+        <p class="apresentacao-texto">Selecione os ingressos e combos da bomboniere que deseja incluir no seu pedido.
+        </p>
+
+        <form class="carrinho">
+
+            <input type="checkbox" id="item-ingresso" class="calculadora">
+            <input type="checkbox" id="item-pipoca" class="calculadora">
+            <input type="checkbox" id="item-refri" class="calculadora">
+
+            <div class="coluna-itens">
+
+                <article class="cartao item-carrinho">
+                    <label for="item-ingresso" class="produtos">
+                        <span class="caixa-produtos"></span>
+                        <div class="item-detalhes">
+                            <h3 class="item-titulo"><i class="fa-solid fa-ticket"></i> 2x Ingressos - A Morte te Dá
+                                Parabéns</h3>
+                            <p class="item-subtexto">Sessão: Sáb, 22 Jan • 20:30 (IMAX 3D) | Poltronas: F14, F15</p>
+                        </div>
+                        <div class="item-precos">
+                            <span class="preco-base">R$ 80,00</span>
+                            <span class="preco-desconto">R$ 68,00</span>
+                        </div>
+                    </label>
+                </article>
+
+                <h3 class="subtitulo-secao">Itens da Bomboniere</h3>
+
+                <article class="cartao item-carrinho">
+                    <label for="item-pipoca" class="produtos">
+                        <span class="caixa-produtos"></span>
+                        <img src="./img/Logo - LUX.png" alt="Combo Pipoca" class="item-thumb">
+                        <div class="item-detalhes">
+                            <h3 class="item-titulo">Combo Ghostface Pânico</h3>
+                            <p class="item-subtexto">1 Pipoca Grande balde Lux + 1 Refrigerante 1L</p>
+                        </div>
+                        <div class="item-precos">
+                            <span class="preco-base">R$ 45,00</span>
+                            <span class="preco-desconto">R$ 40,50</span>
+                        </div>
+                    </label>
+                </article>
+
+                <article class="cartao item-carrinho">
+                    <label for="item-refri" class="produtos">
+                        <span class="caixa-produtos"></span>
+                        <img src="./img/Logo - LUX.png" alt="Refrigerante" class="item-thumb">
+                        <div class="item-detalhes">
+                            <h3 class="item-titulo">Refrigerante Médio 500ml</h3>
+                            <p class="item-subtexto">Escolha o sabor no balcão de retirada</p>
+                        </div>
+                        <div class="item-precos">
+                            <span class="preco-base">R$ 15,00</span>
+                            <span class="preco-desconto">R$ 13,50</span>
+                        </div>
+                    </label>
+                </article>
+
+            </div>
+
+            <aside class="coluna-resumo">
+                <div class="cartao cartao-resumo">
+                    <h2 class="cartao-titulo">Resumo do Pedido</h2>
+
+                    <div class="linha-resumo resumo-ingresso">
+                        <span>Ingressos (2x)</span>
+                        <span class="valor-linha">R$ 68,00</span>
+                    </div>
+
+                    <div class="linha-resumo resumo-pipoca">
+                        <span>Combo Ghostface</span>
+                        <span class="valor-linha">R$ 40,50</span>
+                    </div>
+
+                    <div class="linha-resumo resumo-refri">
+                        <span>Refrigerante Médio</span>
+                        <span class="valor-linha">R$ 13,50</span>
+                    </div>
+
+                    <div class="divisor-resumo"></div>
+
+                    <div class="totais-valores">
+                        <div class="linha-total">
+                            <span>Subtotal dos itens:</span>
+                            <span class="total-dinamico-valores"></span>
+                        </div>
+                        <div class="linha-total">
+                            <span>Taxa de serviço:</span>
+                            <span>R$ 5,00</span>
+                        </div>
+                        <div class="linha-total-final">
+                            <span>Valor Total:</span>
+                            <strong class="total-com-taxa"></strong>
+                        </div>
+                    </div>
+
+                    <button type="button" class="botao botao-finalizar">Finalizar Compra</button>
+                </div>
+            </aside>
+
+        </form>
+
+        <section class="faixa-de-informacoes">
+            <div class="informacoes">
+                <span class="faixa-titulo">CINELUX EXPERIENCE</span>
+                <h2>Sua plataforma completa de cinema</h2>
+                <p>Sua plataforma completa para acompanhar lançamentos de cinema, garantir ingressos sem filas,
+                    consultar
+                    horários de exibição em tempo real e reservar combos com facilidade.</p>
+            </div>
+            <div class="apps-disponiveis">
+                <button class="botao-app"><i class="fa-brands fa-apple"></i> App Store</button>
+                <button class="botao-app"><i class="fa-brands fa-google-play"></i> Google Play</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="rodape">
+        <div class="rodape-logo">
+            <img src="./img/Logo - LUX.png" alt="LUX Rodapé Logo">
+        </div>
+
+        <div class="grade-do-rodape">
+            <div class="rodape-informacoes">
+                <a href="#">Filmes em Cartaz</a>
+                <a href="#">Próximas Estreias</a>
+                <a href="./combos.html">Bomboniere & Combos</a>
+            </div>
+            <div class="rodape-informacoes">
+                <a href="#">Cinemas Parceiros</a>
+                <a href="#">Central de Ajuda</a>
+                <a href="#">Termos de Uso</a>
+            </div>
+            <div class="rodape-informacoes">
+                <a href="#">Política de Privacidade</a>
+                <a href="#">Meia Entrada</a>
+                <a href="#">Atendimento ao Cliente</a>
+            </div>
+            <div class="rodape-informacoes informacoes-contato">
+                <p>Atendimento ao Cliente</p>
+                <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
+                <div class="redes-informacoes">
+                    <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

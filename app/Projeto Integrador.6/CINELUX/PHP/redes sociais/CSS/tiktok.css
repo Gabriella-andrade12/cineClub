@@ -1,0 +1,348 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: TikTokFont, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+    background-color: #121212;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    padding: 30px 24px;
+}
+
+.faixa-principal {
+    width: 100%;
+    max-width: 1200px;
+}
+
+.faixa {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.foto-de-perfil {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    flex-shrink: 0;
+}
+
+.foto-de-perfil img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #2f2f2f;
+}
+
+.camera-foto {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background-color: #fe2c55;
+    color: #ffffff;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid #121212;
+    font-size: 14px;
+}
+
+.informacoes-perfil {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+
+.nome-de-usuario {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nome-de-usuario h1 {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.verificado {
+    color: #20d5ec;
+    font-size: 18px;
+}
+
+.nome {
+    font-size: 14px;
+    color: #a6a6a6;
+}
+
+.informacoes-seguidores {
+    display: flex;
+    gap: 24px;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 4px 0;
+}
+
+.informacoes-seguidores strong {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.botoes {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0;
+}
+
+.botao {
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.botao-acionado {
+    background-color: #fe2c55;
+    color: #ffffff;
+    padding: 0 44px;
+}
+
+.botao-acionado:hover {
+    background-color: #e0264a;
+}
+
+.botao-nao-acionado {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    padding: 0 24px;
+}
+
+.botao-nao-acionado:hover {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+.botao.icone {
+    padding: 0;
+    width: 38px;
+}
+
+.biografia {
+    font-size: 15px;
+    line-height: 1.4;
+    max-width: 600px;
+}
+
+.link {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.abas-esquerda {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.abas {
+    display: flex;
+    gap: 32px;
+}
+
+.aba {
+    padding: 12px 0;
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 2px solid transparent;
+}
+
+.aba.ativo {
+    color: #ffffff;
+    border-bottom-color: #ffffff;
+}
+
+.abas-direita {
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.08);
+    padding: 3px;
+    border-radius: 6px;
+    gap: 2px;
+}
+
+.abas-botao {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.abas-botao.ativo {
+    background-color: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+}
+
+.reproducoes {
+    margin-bottom: 24px;
+}
+
+.reproducoes h2,
+.videos h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: none;
+}
+
+.grade-de-reproducoes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.video {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.video:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.video-capa {
+    width: 56px;
+    height: 56px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.video-capa img {
+    width: 100%;
+    height: 100%;
+}
+
+.video-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.video-info p {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.grade-de-videos {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+}
+
+.f-videos {
+    cursor: pointer;
+}
+
+.capa {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: #242424;
+}
+
+.capa img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s;
+}
+
+.f-videos:hover .capa img {
+    transform: scale(1.04);
+}
+
+.fixado {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: #fe2c55;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 2px;
+    z-index: 2;
+}
+
+.info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 8px 8px 8px;
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.85) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.info-texto {
+    font-size: 12px;
+    line-height: 1.3;
+    color: #ffffff;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.visualizacao {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}

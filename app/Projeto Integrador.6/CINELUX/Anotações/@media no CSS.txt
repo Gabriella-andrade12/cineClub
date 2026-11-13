@@ -1,0 +1,3 @@
+O @media no CSS serve para criar Media Queries (consultas de mídia), que permitem aplicar regras de estilo diferentes com base nas características ou no tipo do dispositivo que está acessando a página, é uma ferramenta para design que permite um site se adaptar bem a vários dispositivos.
+
+Serve para meu site mudar de visual dependendo do tamanho da tela onde ele está sendo aberto, é graças a ele que o site não fica com um efeito "esmagado" ou quebrado quando você sai do computador e abre a página do site pelo celular (design responsivo)

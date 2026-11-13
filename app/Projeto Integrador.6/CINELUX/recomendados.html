@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CINELUX - Recomendados para você</title>
+    <link rel="stylesheet" href="./CSS/recomendados.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" href="./img/Logo - LUX.png" type="image/x-icon">
+</head>
+
+<body>
+
+    <header class="cabecalho">
+        <a href="./inicio.html" class="logo">
+            <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
+        </a>
+
+        <nav class="navegacao-menu">
+            <a href="./inicio.html" class="navegacao-opcoes">Lançamentos</a>
+            <a href="#" class="navegacao-ativa">Recomendados</a>
+            <a href="./combos.html" class="navegacao-opcoes">Combos</a>
+            <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
+        </nav>
+
+        <div class="busca">
+            <input type="text" placeholder="Buscar filmes, gêneros, cinemas...">
+            <i class="fa-solid fa-magnifying-glass busca-icon"></i>
+        </div>
+
+        <div class="acoes-do-usuario">
+            <a href="carrinho.html" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
+            <a href="./minha_lista.html" class="link"><i class="fa-solid fa-bookmark"></i></a>
+            <a href="./perfil.html" class="link"><i class="fa-solid fa-user"></i></a>
+        </div>
+    </header>
+
+    <main class="faixa-principal">
+        <div class="cabecalho-boas-vindas">
+            <h2>OLÁ, SUAS RECOMENDAÇÕES PESSOAIS ESTÃO AQUI.</h2>
+        </div>
+        <section class="cartao painel-recomendacoes">
+            <div class="grade-recomendacoes">
+                <div class="grafico-recomendacoes">
+                    <div class="grafico-circulo">
+                        <div class="grafico-centro">
+                            <span class="porcentagem-destaque">45%</span>
+                            <span class="legenda-centro">DE ROMANCE</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="estatisticas-genero">
+                    <div class="item-genero">
+                        <span class="indicador-cor cor-romance"></span>
+                        <span class="nome-genero">Romance</span>
+                        <span class="valor-genero">45%</span>
+                    </div>
+                    <div class="item-genero">
+                        <span class="indicador-cor cor-drama"></span>
+                        <span class="nome-genero">Drama</span>
+                        <span class="valor-genero">25%</span>
+                    </div>
+                    <div class="item-genero">
+                        <span class="indicador-cor cor-comedia"></span>
+                        <span class="nome-genero">Comédia</span>
+                        <span class="valor-genero">20%</span>
+                    </div>
+                    <div class="item-genero">
+                        <span class="indicador-cor cor-acao"></span>
+                        <span class="nome-genero">Ação</span>
+                        <span class="valor-genero">10%</span>
+                    </div>
+
+                    <p class="resumo-recomendacoes">
+                        Sua afinidade por histórias focadas em desenvolvimento de personagens
+                        é alta. Romance e Drama compõem 70% do seu histórico de visualização.
+                    </p>
+                </div>
+            </div>
+        </section>
+        <section class="secao-recomendados">
+            <h3 class="titulo-secao">BASEADO NO QUE VOCÊ ASSISTIU ANTES</h3>
+
+            <div class="carrossel-filmes">
+                <article class="cartao-filme">
+                    <div class="cartaz-recomendacoes">
+                        <img src="./img/recomendados/MAMAMIA.jpg" alt="Mamma Mia" class="cartaz-filme">
+                    </div>
+                    <div class="info-filme">
+                        <h4 class="titulo-filme">MAMMA MIA!</h4>
+                        <div class="nota-geral">AVALIAÇÃO GERAL: 4.7/5.0</div>
+                        <div class="estrelas">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star-half-stroke"></i>
+                        </div>
+                        <div class="comentarios-curtos">
+                            <p class="comentario"><i class="fa-solid"></i> "Um musical imperdível!"</p>
+                            <p class="comentario"><i class="fa-solid"></i> "Encantador e divertido."</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="cartao-filme">
+                    <div class="cartaz-recomendacoes">
+                        <img src="./img/recomendados/A Morte Te Dá Parabéns.png" alt="A Morte Te Dá Parabéns"
+                            class="cartaz-filme">
+                    </div>
+                    <div class="info-filme">
+                        <h4 class="titulo-filme">A MORTE TE DÁ PARABÉNS</h4>
+                        <div class="nota-geral">AVALIAÇÃO GERAL: 4.5/5.0</div>
+                        <div class="estrelas">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <div class="comentarios-curtos">
+                            <p class="comentario"><i class="fa-solid"></i> "Tenso e engraçado!"</p>
+                            <p class="comentario"><i class="fa-solid"></i> "Uma premissa incrível."</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-filme">
+                    <div class="cartaz-recomendacoes">
+                        <img src="./img/recomendados/Resident_Evil.png" alt="Resident Evil" class="cartaz-filme">
+                    </div>
+                    <div class="info-filme">
+                        <h4 class="titulo-filme">RESIDENT EVIL</h4>
+                        <div class="nota-geral">AVALIAÇÃO GERAL: 4.3/5.0</div>
+                        <div class="estrelas">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
+                        </div>
+                        <div class="comentarios-curtos">
+                            <p class="comentario"><i class="fa-solid"></i> "Ação frenética!"</p>
+                            <p class="comentario"><i class="fa-solid"></i> "Perfeito para fãs."</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-filme">
+                    <div class="cartaz-recomendacoes">
+                        <img src="./img/recomendados/diarios de uma paixão.jpg" alt="diario de uma paixão"
+                            class="cartaz-filme">
+                    </div>
+                    <div class="info-filme">
+                        <h4 class="titulo-filme">DIÁRIO DE UMA PAIXÃO</h4>
+                        <div class="nota-geral">AVALIAÇÃO GERAL: 4.9/5.0</div>
+                        <div class="estrelas">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <div class="comentarios-curtos">
+                            <p class="comentario"><i class="fa-solid"></i> "Romance incríveis."</p>
+                            <p class="comentario"><i class="fa-solid"></i> "Uma boa história."</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-filme">
+                    <div class="cartaz-recomendacoes">
+                        <img src="./img/recomendados/drama.jpg" alt="drama" class="cartaz-filme">
+                    </div>
+                    <div class="info-filme">
+                        <h4 class="titulo-filme">O DRAMA</h4>
+                        <div class="nota-geral">AVALIAÇÃO GERAL: 3.9/5.0</div>
+                        <div class="estrelas">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star-half-stroke"></i>
+                            <i class="fa-regular fa-star"></i>
+                        </div>
+                        <div class="comentarios-curtos">
+                            <p class="comentario"><i class="fa-solid"></i> "História envolvente."</p>
+                            <p class="comentario"><i class="fa-solid"></i> "Um bom drama realmente."</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-filme">
+                    <div class="cartaz-recomendacoes">
+                        <img src="./img/recomendados/o auto da compadecida 2.jpg" alt="auto da compadecida"
+                            class="cartaz-filme">
+                    </div>
+                    <div class="info-filme">
+                        <h4 class="titulo-filme">O AUTO DA COMPADECIDA 2</h4>
+                        <div class="nota-geral">AVALIAÇÃO GERAL: 4.0/5.0</div>
+                        <div class="estrelas">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
+                        </div>
+                        <div class="comentarios-curtos">
+                            <p class="comentario"><i class="fa-solid"></i> "Boas piadas."</p>
+                            <p class="comentario"><i class="fa-solid"></i> "Uma bom filme igual o primeiro."</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-filme">
+                    <div class="cartaz-recomendacoes">
+                        <img src="./img/recomendados/homem aranha- um novo dia.jpg" alt="homem aranha"
+                            class="cartaz-filme">
+                    </div>
+                    <div class="info-filme">
+                        <h4 class="titulo-filme">HOMEM ARANHA: UM NOVO DIA</h4>
+                        <div class="nota-geral">AVALIAÇÃO GERAL: 4.9/5.0</div>
+                        <div class="estrelas">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <div class="comentarios-curtos">
+                            <p class="comentario"><i class="fa-solid"></i> "Uma continuação melhor do que a outra."</p>
+                            <p class="comentario"><i class="fa-solid"></i> "Melhor filme."</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-filme">
+                    <div class="cartaz-recomendacoes">
+                        <img src="./img/recomendados/sf.jpg" alt="Street Fighter" class="cartaz-filme">
+                    </div>
+                    <div class="info-filme">
+                        <h4 class="titulo-filme">STREET FIGHTER</h4>
+                        <div class="nota-geral">AVALIAÇÃO GERAL: 3.9/5.0</div>
+                        <div class="estrelas">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star-half-stroke"></i>
+                            <i class="fa-regular fa-star"></i>
+                        </div>
+                        <div class="comentarios-curtos">
+                            <p class="comentario"><i class="fa-solid"></i> "Combates incríveis."</p>
+                            <p class="comentario"><i class="fa-solid"></i> "Uma boa adaptação."</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="cartao-filme">
+                    <div class="cartaz-recomendacoes">
+                        <img src="./img/recomendados/tudo menos vc.jpg" alt="tudo menos voce" class="cartaz-filme">
+                    </div>
+                    <div class="info-filme">
+                        <h4 class="titulo-filme">TUDO MENOS VOCÊ</h4>
+                        <div class="nota-geral">AVALIAÇÃO GERAL: 3.9/5.0</div>
+                        <div class="estrelas">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star-half-stroke"></i>
+                            <i class="fa-regular fa-star"></i>
+                        </div>
+                        <div class="comentarios-curtos">
+                            <p class="comentario"><i class="fa-solid"></i> "Filme divertido."</p>
+                            <p class="comentario"><i class="fa-solid"></i> "Boa história."</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <p class="aviso-secao"></p>
+        </section>
+
+        <section class="faixa-de-informacoes">
+            <div class="informacoes">
+                <span class="faixa-titulo">CINELUX EXPERIENCE</span>
+                <h2>Sua plataforma completa de cinema</h2>
+                <p>Sua plataforma completa para acompanhar lançamentos de cinema, garantir ingressos sem filas,
+                    consultar
+                    horários de exibição em tempo real e reservar combos com facilidade.</p>
+            </div>
+            <div class="apps-disponiveis">
+                <button class="botao-app"><i class="fa-brands fa-apple"></i> App Store</button>
+                <button class="botao-app"><i class="fa-brands fa-google-play"></i> Google Play</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="rodape">
+        <div class="rodape-logo">
+            <img src="./img/Logo - LUX.png" alt="LUX Rodapé Logo">
+        </div>
+
+        <div class="grade-do-rodape">
+            <div class="rodape-informacoes">
+                <a href="#">Filmes em Cartaz</a>
+                <a href="#">Próximas Estreias</a>
+                <a href="./combos.html">Bomboniere & Combos</a>
+            </div>
+            <div class="rodape-informacoes">
+                <a href="#">Cinemas Parceiros</a>
+                <a href="#">Central de Ajuda</a>
+                <a href="#">Termos de Uso</a>
+            </div>
+            <div class="rodape-informacoes">
+                <a href="#">Política de Privacidade</a>
+                <a href="#">Meia Entrada</a>
+                <a href="#">Atendimento ao Cliente</a>
+            </div>
+            <div class="rodape-informacoes informacoes-contato">
+                <p>Atendimento ao Cliente</p>
+                <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
+                <div class="redes-informacoes">
+                    <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

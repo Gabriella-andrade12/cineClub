@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CINELUX - Meu Perfil</title>
+    <link rel="stylesheet" href="./CSS/perfil.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" href="./img/Logo - LUX.png" type="image/x-icon">
+</head>
+
+<body>
+
+    <header class="cabecalho">
+        <a href="./inicio.html" class="logo">
+            <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
+        </a>
+
+        <nav class="navegacao-menu">
+            <a href="./inicio.html" class="navegacao-opcoes">Lançamentos</a>
+            <a href="./recomendados.html" class="navegacao-opcoes">Recomendados</a>
+            <a href="./combos.html" class="navegacao-opcoes">Combos</a>
+            <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
+        </nav>
+
+        <div class="busca">
+            <input type="text" placeholder="Buscar filmes, gêneros, cinemas...">
+            <i class="fa-solid fa-magnifying-glass busca-icon"></i>
+        </div>
+
+        <div class="acoes-do-usuario">
+            <a href="carrinho.html" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
+            <a href="./minha_lista.html" class="link"><i class="fa-solid fa-bookmark"></i></a>
+        </div>
+    </header>
+
+    <main class="faixa-principal">
+        <div class="fita-de-filme" aria-hidden="true"></div>
+
+        <section class="conteudo-perfil">
+
+            <div class="perfil-cabecalho">
+                <div class="perfil-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="perfil-info-basica">
+                    <h1 class="perfil-nome">Nome do Usuário</h1>
+                    <p class="perfil-email">usuario@email.com</p>
+                </div>
+            </div>
+
+            <div class="perfil-informacoes">
+
+                <article class="cartao cartao-perfil">
+                    <h2 class="cartao-titulo">Dados Pessoais</h2>
+                    <p class="cartao-subtitulo">Informações cadastradas na sua conta</p>
+
+                    <div class="formulario">
+                        <div class="campo">
+                            <label>Nome Completo</label>
+                            <div class="campo-entrada">
+                                <i class="fa-regular fa-user campo-icone"></i>
+                                <input type="text" value="Nome do Usuário" readonly>
+                            </div>
+                        </div>
+
+                        <div class="campo">
+                            <label>CPF</label>
+                            <div class="campo-entrada">
+                                <i class="fa-regular fa-id-card campo-icone"></i>
+                                <input type="text" value="000.000.000-00" readonly>
+                            </div>
+                        </div>
+
+                        <div class="campo">
+                            <label>Data de Nascimento</label>
+                            <div class="campo-entrada">
+                                <i class="fa-regular fa-calendar campo-icone"></i>
+                                <input type="text" value="00/00/0000" readonly>
+                            </div>
+                        </div>
+
+                        <div class="campo">
+                            <label>Telefone</label>
+                            <div class="campo-entrada">
+                                <i class="fa-solid fa-phone campo-icone"></i>
+                                <input type="tel" value="(00) 00000-0000" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="cartao cartao-perfil">
+                    <h2 class="cartao-titulo">Sua Assinatura</h2>
+                    <p class="cartao-subtitulo">Detalhes do seu plano atual</p>
+
+                    <div class="caixa-plano-selecionado">
+                        <span class="rotulo-resumo">Plano Ativo</span>
+                        <h3 class="titulo-resumo">Plano 2 (Anual)</h3>
+                        <p class="detalhe-plano">Renova em: <strong>12/10/2027</strong></p>
+                    </div>
+
+                    <div class="bloco-beneficios-resumo">
+                        <h4 class="subtitulo-beneficios">Seus benefícios inclusos:</h4>
+                        <ul class="lista-beneficios-perfil">
+                            <li><i class="fa-solid fa-check icone-sim"></i> Catálogo de streaming ilimitado</li>
+                            <li><i class="fa-solid fa-check icone-sim"></i> 10% OFF nos ingressos presenciais</li>
+                            <li><i class="fa-solid fa-check icone-sim"></i> 5% OFF na bomboniere</li>
+                        </ul>
+                    </div>
+
+                    <div class="perfil-acoes">
+                        <a href="./cadastro.html" class="botao botao-mudar">Mudar de Plano</a>
+                        <a href="../CINELUX/PHP/logout.php" class="botao botao-sair">Sair da Conta</a>
+                    </div>
+                </article>
+
+            </div>
+
+        </section>
+
+        <section class="faixa-de-informacoes">
+            <div class="informacoes">
+                <span class="faixa-titulo">CINELUX EXPERIENCE</span>
+                <h2>Sua plataforma completa de cinema</h2>
+                <p>Sua plataforma completa para acompanhar lançamentos de cinema, garantir ingressos sem filas,
+                    consultar
+                    horários de exibição em tempo real e reservar combos com facilidade.</p>
+            </div>
+            <div class="apps-disponiveis">
+                <button class="botao-app"><i class="fa-brands fa-apple"></i> App Store</button>
+                <button class="botao-app"><i class="fa-brands fa-google-play"></i> Google Play</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="rodape">
+        <div class="rodape-logo">
+            <img src="./img/Logo - LUX.png" alt="LUX Rodapé Logo">
+        </div>
+
+        <div class="grade-do-rodape">
+            <div class="rodape-informacoes">
+                <a href="#">Filmes em Cartaz</a>
+                <a href="#">Próximas Estreias</a>
+                <a href="./combos.html">Bomboniere & Combos</a>
+            </div>
+            <div class="rodape-informacoes">
+                <a href="#">Cinemas Parceiros</a>
+                <a href="#">Central de Ajuda</a>
+                <a href="#">Termos de Uso</a>
+            </div>
+            <div class="rodape-informacoes">
+                <a href="#">Política de Privacidade</a>
+                <a href="#">Meia Entrada</a>
+                <a href="#">Atendimento ao Cliente</a>
+            </div>
+            <div class="rodape-informacoes informacoes-contato">
+                <p>Atendimento ao Cliente</p>
+                <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
+                <div class="redes-informacoes">
+                    <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

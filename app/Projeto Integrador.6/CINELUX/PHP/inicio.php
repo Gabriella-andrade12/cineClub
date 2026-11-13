@@ -1,52 +1,25 @@
 <?php
 
-$host = "localhost";
-$dbname = "lux_dados";
-$username = "root";
-$password = "senai123";
+require_once "./crud.php";
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Erro na conexão com o banco de dados: " . $e->getMessage());
-}
 
-$busca = isset($_GET['busca']) ? trim($_GET['busca']) : '';
-$genero_filtro = isset($_GET['genero']) ? trim($_GET['genero']) : 'Todos';
 
-$sql = "SELECT * FROM filmes WHERE 1=1";
-$params = [];
-
-if (!empty($busca)) {
-    $sql .= " AND (nome_filme LIKE ? OR gen_filme LIKE ?)";
-    $params[] = "%$busca%";
-    $params[] = "%$busca%";
-}
-
-if ($genero_filtro !== 'Todos' && !empty($genero_filtro)) {
-    $sql .= " AND gen_filme LIKE ?";
-    $params[] = "%$genero_filtro%";
-}
-
-$sql .= " ORDER BY id_filme DESC";
-
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$todos_filmes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-$filmes_cinema = [];
-$filmes_catalogo = [];
-
-foreach ($todos_filmes as $f) {
-    if (mb_strtolower(trim($f['exibicao_filme'])) === 'cinema') {
-        $filmes_cinema[] = $f;
-    } else {
-        $filmes_catalogo[] = $f;
-    }
-}
-
-$lista_generos = ['Todos', 'Suspense', 'Aventura', 'Romance', 'Terror', 'Drama', 'Ação', 'Comédia', 'Ficção', 'Animação', 'Fantasia', 'Crime', 'Musical', 'Documentário'];
+$lista_generos = [
+  'Todos', 
+  'Suspense', 
+  'Aventura', 
+  'Romance', 
+  'Terror', 
+  'Drama', 
+  'Ação', 
+  'Comédia', 
+  'Ficção', 
+  'Animação', 
+  'Fantasia', 
+  'Crime', 
+  'Musical', 
+  'Documentário'
+];
 
 ?>
 

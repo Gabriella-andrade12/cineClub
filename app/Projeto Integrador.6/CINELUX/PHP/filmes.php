@@ -70,7 +70,7 @@ if (strtotime($filme['data_filme'])) {
     <main class="filme">
         <div class="detalhes-do-filme">
             <div class="poster-do-filme">
-                <img src="<?= htmlspecialchars($filme['img_filme'] ?? './img/sem-poster.png') ?>"
+                <img src="<?= htmlspecialchars($filme['img_filme'] ?? './img/poster.png') ?>"
                     alt="Pôster do filme <?= htmlspecialchars($filme['nome_filme']) ?>" alt="" class="poster-do-filme-img">
             </div>
 

@@ -12,9 +12,9 @@ function database(): PDO
 
     $host = getenv('DB_HOST') ?: 'db';
     $port = getenv('DB_PORT') ?: '3306';
-    $database = getenv('DB_DATABASE') ?: 'integrador';
+    $database = getenv('DB_DATABASE') ?: 'cineClub';
     $username = getenv('DB_USERNAME') ?: 'integrador';
-    $password = getenv('DB_PASSWORD') ?: '';
+    $password = getenv('DB_PASSWORD') ?: 'senai123';
 
     $dsn = "mysql:host={$host};port={$port};dbname={$database};charset=utf8mb4";
 

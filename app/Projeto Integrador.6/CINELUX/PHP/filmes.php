@@ -1,9 +1,11 @@
 <?php
 
+require_once __DIR__ . "./init.php";
+
 $host = "localhost";
-$dbname = "cadastro";
+$dbname = "lux_dados";
 $username = "root";
-$password = "Desenvolvedor@123";
+$password = "senai123";
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);

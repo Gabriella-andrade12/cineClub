@@ -1,4 +1,4 @@
-CREATE DATABASE lux_dados
+CREATE DATABASE lux_dados; 
 
 USE lux_dados;
 -- teste
@@ -44,7 +44,7 @@ VALUES
     ('A Empregada', '2025-12-19', 131, '16', 'suspense', 'Cinema'),
     ('Invocação do Mal', '2013-07-19', 112, '16', 'terror', 'Cinema');
 
-–HISTÓRICO DE VISUALIZAÇÃO
+-- HISTÓRICO DE VISUALIZAÇÃO
 
 CREATE TABLE historico_visualizacao(
 id_visualizacao INT AUTO_INCREMENT PRIMARY KEY,
@@ -57,9 +57,9 @@ FOREIGN KEY (id_filme) REFERENCES filme (id_filme)
 
 INSERT INTO historico_visualizacao (data_visualizacao, id_usuario, id_filme)
 VALUES 
-(‘2026-09-16’, 2, 5),
-(‘2026-04-15’, 3, 7),
-(‘2026-07-28’, 1, 9);
+('2026-09-16', 2, 5),
+('2026-04-15', 3, 7),
+('2026-07-28', 1, 9);
 
 -- BOMBONIERE
 
@@ -75,7 +75,7 @@ INSERT INTO bomboniere(nome_produto, valor_produto, descricao_produto, categoria
 VALUES
     ('Combo Solo', 23.90, 'Pipoca salgada tamanho M + 1 bebida lata + 1 chocolate', 'Individual'),
     ('Quarteto Fantástico', 69.90, 'Caixa com 4 porções estilizadas (2 salgadas + 2 doces) + 4 bebidas lata + 2 doces', 'Família'),
-    ('Romance Misto', 38.90m 'Balde meio a meio tamanho G (metade salgada e metade doce) + 2 bebidas lata + 1 chocolate', 'Casal'),
+    ('Romance Misto', 38.90, 'Balde meio a meio tamanho G (metade salgada e metade doce) + 2 bebidas lata + 1 chocolate', 'Casal'),
     ('Doce Magia', 19.90, 'Pipoca doce colorida ou de Leite ninho tamanho P + 
 1 achocolatado/suco + 1 pacote de fini', 'Infantil'),
     ('Vinho a Dois', 98.90, 'Pipoca artesanal de azeite de trufas e parmesão tamanho G + 1 garrafa de vinho de 750ml + 1 tábua de frios', 'Especiais'),
@@ -210,9 +210,24 @@ CREATE TABLE venda (
 
 INSERT INTO venda(data_pedido, valor_pedido, id_usuario, id_reserva, id_produto)
 VALUES
-('2026-11-09', ‘60.00’, 1, 5, 2),
-(‘2026-09-10’, ‘40.00’, 3, 4, 3 ),
-(‘2026-01-08’, ‘20.00’, 2, null, 6);
+('2026-11-09', 60.00, 1, 5, 2),
+('2026-09-10', 40.00, 3, 4, 3 ),
+('2026-01-08', 20.00, 2, null, 6);
+
+CREATE TABLE pagamento(
+	id_pagamento INT AUTO_INCREMENT PRIMARY KEY,
+    forma_pagamento VARCHAR(30) NOT NULL, 
+    status_pagamento VARCHAR(20) NOT NULL, 
+    data_pagamento DATE NOT NULL,
+    id_venda INT NOT NULL, 
+    FOREIGN KEY (id_venda) REFERENCES venda(id_venda)
+    );
+
+INSERT INTO pagamento(forma_pagamento, status_pagamento, data_pagamento, id_venda)
+VALUES
+('Pix', 'Concluído', '2026-11-09', 1),
+('Cartão', 'Concluído', '2026-09-10', 2), 
+('Pix', 'Concluído', '2026-01-08', 3);
 
 CREATE TABLE ingressos (
     id_ingresso INT AUTO_INCREMENT PRIMARY KEY,
@@ -246,12 +261,9 @@ CREATE TABLE beneficios (
 
 INSERT INTO beneficios (nome_beneficio, pontos_beneficio, descricao_beneficio, beneficio_ativo)
 VALUES
-    ('Pipoca pequena Grátis', 50,
-     'Retirada na bomboniere do cinema', 'SIM'),
-    ('Refrigerante Grátis (lata)', 70,
-     'Refrigerante de lata, retirar no cinema', 'SIM'),
-    ('Desconto no ingresso', 90,
-     'Ganhe R$10 de desconto no seu próximo ingresso', 'SIM');
+    ('Pipoca pequena Grátis', 50, 'Retirada na bomboniere do cinema', 'SIM'),
+    ('Refrigerante Grátis (lata)', 70, 'Refrigerante de lata, retirar no cinema', 'SIM'),
+    ('Desconto no ingresso', 90, 'Ganhe R$10 de desconto no seu próximo ingresso', 'SIM');
 
 CREATE TABLE pontos_usuario (
     qntd_pontos INT NOT NULL,

@@ -204,6 +204,8 @@ CREATE TABLE IF NOT EXISTS resgate_beneficio (
     FOREIGN KEY (id_beneficio) REFERENCES beneficios(id_beneficio)
 );
 
+USE lux_bcd;
+
 CREATE TABLE IF NOT EXISTS cupom (
     id_cupom INT AUTO_INCREMENT PRIMARY KEY,
     codigo VARCHAR(30) NOT NULL UNIQUE,
@@ -212,6 +214,18 @@ CREATE TABLE IF NOT EXISTS cupom (
     valor_minimo_pedido DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     data_validade DATE NOT NULL,
     cupom_ativo CHAR(3) NOT NULL DEFAULT 'Sim'
+);
+
+USE lux_bcd;
+
+CREATE TABLE IF NOT EXISTS item_venda (
+    id_item INT AUTO_INCREMENT PRIMARY KEY,
+    id_venda INT NOT NULL,
+    id_produto INT NOT NULL,
+    quantidade INT NOT NULL DEFAULT 1,
+    valor_unitario DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (id_venda) REFERENCES venda(id_venda),
+    FOREIGN KEY (id_produto) REFERENCES bomboniere(id_produto)
 );
 
 USE lux_bcd;

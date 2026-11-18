@@ -1,6 +1,6 @@
 <?php
 
-require_once "./crud.php";
+require_once "./init.php";
 
 $id_filme = isset($_GET['id_filme']) ? (int)$_GET['id_filme'] : 0;
 

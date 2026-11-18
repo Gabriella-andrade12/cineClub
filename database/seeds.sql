@@ -491,17 +491,17 @@ INSERT INTO avaliacao (nota_avl, cometario_avl, id_usuario, id_produto, id_filme
 (7,  'Terror bem construído, deu sustos de verdade.', 10, NULL, 9);
 
 -- 18. LISTA
-INSERT INTO lista (nome_lista, descricao_lista, data_criacao, id_usuario) VALUES
-('Assistir mais tarde', NULL, '2026-08-20', 2),
-('Assistir com a Lu', 'NÃO ASSISTIR SEM A LUNA, SE NÃO ELA FICA BRAVA', '2026-02-27', 1),
-('Para não pensar', 'Momentos difíceis da vida onde só queremos assistir sem precisar raciocinar', '2026-04-15', 3),
-('Favoritos', 'Meus filmes favoritos de todos os tempos', '2026-03-10', 4),
-('Fim de semana', 'Filmes para maratonar no sábado', '2026-05-22', 5),
-('Para chorar', NULL, '2026-06-30', 6),
-('Clássicos', 'Filmes antigos que preciso ver', '2026-07-12', 7),
-('Em família', 'Filmes para ver com as crianças', '2026-09-01', 8),
-('Terror e suspense', NULL, '2026-10-05', 9),
-('Ficção científica', 'Viagens no espaço e no tempo', '2026-10-28', 10);
+INSERT INTO lista (nome_lista, descricao_lista, data_criacao, id_usuario, exib_lista) VALUES
+('Assistir mais tarde', NULL, '2026-08-20', 2, 'Privado'),
+('Assistir com a Lu', 'NÃO ASSISTIR SEM A LUNA, SE NÃO ELA FICA BRAVA', '2026-02-27', 1, 'Privado'),
+('Para não pensar', 'Momentos difíceis da vida onde só queremos assistir sem precisar raciocinar', '2026-04-15', 3, 'Público'),
+('Favoritos', 'Meus filmes favoritos de todos os tempos', '2026-03-10', 4, 'Privado'),
+('Fim de semana', 'Filmes para maratonar no sábado', '2026-05-22', 5, 'Público'),
+('Para chorar', NULL, '2026-06-30', 6, 'Privado'),
+('Clássicos', 'Filmes antigos que preciso ver', '2026-07-12', 7, 'Público'),
+('Em família', 'Filmes para ver com as crianças', '2026-09-01', 8, 'Público'),
+('Terror e suspense', NULL, '2026-10-05', 9, 'Público'),
+('Ficção científica', 'Viagens no espaço e no tempo', '2026-10-28', 10, 'Público');
 
 -- 19. FILME_LISTA
 INSERT INTO filme_lista (id_filme, id_lista) VALUES

@@ -18,7 +18,7 @@ USE lux_bcd;
 CREATE TABLE IF NOT EXISTS filme (
     id_filme INT AUTO_INCREMENT PRIMARY KEY,
     nome_filme VARCHAR(100) NOT NULL,
-    sinopse VARCHAR(250) NOT NULL, 
+    sinopse VARCHAR(250) NOT NULL,   
     imagem_capa VARCHAR(200) NOT NULL,
     data_filme DATE NOT NULL,
     duracao_filme INT NOT NULL,
@@ -236,7 +236,8 @@ CREATE TABLE IF NOT EXISTS lista (
     descricao_lista VARCHAR(100) NULL,
     data_criacao DATE NOT NULL,
     id_usuario INT NOT NULL,
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
+    exib_lista VARCHAR(10) NOT NULL
 );
 
 USE lux_bcd;

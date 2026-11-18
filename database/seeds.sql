@@ -383,6 +383,29 @@ INSERT INTO venda (data_pedido, valor_pedido, id_usuario, id_reserva, id_produto
 ('2026-11-17',  68.90,  9, NULL, 7),   -- 18.90 + 2x25.00
 ('2026-11-17',  72.90, 10, NULL, 10);  -- 44.90 + 1x28.00
 
+INSERT INTO cupom(codigo, tipo_desconto, valor_desconto, valor_minimo_pedido, data_validade, cupom_ativo)VALUES
+('BEMVINDO10',  'Porcentagem', 10.00,  30.00, '2027-12-31', 'Sim'),
+('LUX5',       'Fixo',         5.00,  20.00, '2027-06-30', 'Sim'),
+('CINEMA15',   'Porcentagem', 15.00,  50.00, '2027-03-31', 'Sim'),
+('COMBO10',    'Fixo',        10.00,  60.00, '2027-08-31', 'Sim'),
+('FAMILIA20',  'Porcentagem', 20.00, 100.00, '2027-07-31', 'Sim'),
+('LUX25',      'Fixo',        25.00, 150.00, '2027-05-31', 'Sim'),
+('VOLTE10',    'Porcentagem', 10.00,   0.00, '2027-09-30', 'Sim'),
+('ESPECIAL30', 'Fixo',        30.00, 200.00, '2027-12-31', 'Não'),
+('PROMO2025',  'Porcentagem',  5.00,  25.00, '2025-12-31', 'Sim'),
+('ANTIGO15',   'Fixo',        15.00,  80.00, '2025-06-30', 'Não');
+
+
+INSERT INTO item_venda (id_venda, id_produto, quantidade, valor_unitario) VALUES
+(1, 2, 1, 69.90),   -- Quarteto Fantástico
+(2, 3, 1, 38.90),   -- Romance Misto
+(4, 1, 1, 23.90),   -- Combo Solo
+(5, 6, 1, 34.90),   -- Combo Nachos Supremos
+(7, 4, 1, 19.90),   -- Doce Magia
+(8, 5, 1, 98.90),   -- Vinho a Dois
+(9, 7, 1, 18.90),   -- Pipoca Grande Salgada
+(10, 10, 1, 44.90); -- Combo Dupla
+
 -- ENDEREÇO
 
 USE lux_bcd;

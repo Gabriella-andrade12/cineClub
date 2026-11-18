@@ -66,12 +66,10 @@
           <div class="payment-selector">
             <input type="radio" name="forma_pagamento" id="radio-pix" value="pix" class="tab-radio" checked>
             <input type="radio" name="forma_pagamento" id="radio-cartao" value="cartao" class="tab-radio">
-            <input type="radio" name="forma_pagamento" id="radio-boleto" value="boleto" class="tab-radio">
 
             <div class="payment-tabs" role="tablist" aria-label="Forma de pagamento">
               <label for="radio-pix" class="tab-btn" role="tab"><i class="fa-brands fa-pix"></i> Pix</label>
               <label for="radio-cartao" class="tab-btn" role="tab"><i class="fa-regular fa-credit-card"></i> Cartão</label>
-              <label for="radio-boleto" class="tab-btn" role="tab"><i class="fa-solid fa-barcode"></i> Boleto</label>
             </div>
 
             <!-- ABA: PIX -->
@@ -141,18 +139,6 @@
                 </div>
               </div>
             </div>
-
-            <!-- ABA: BOLETO -->
-            <div id="tab-boleto" class="tab-pane" role="tabpanel">
-              <div class="boleto-box">
-                <p>O boleto bancário será gerado após clicar em pagar. A compensação ocorre em até 2 dias úteis.</p>
-                <div class="notice-warning">
-                  <i class="fa-solid fa-triangle-exclamation"></i>
-                  Atenção: a reserva dos seus assentos e combos fica garantida por apenas 24h.
-                </div>
-              </div>
-            </div>
-          </div>
 
           <button type="submit" class="btn-primary" id="btn-pay">Pagar R$ 325,00</button>
 

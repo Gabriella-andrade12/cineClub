@@ -1,26 +1,65 @@
 <?php
+require_once "./init.php";   // deve fornecer a conexão mysqli ($conn) e iniciar a sessão
 
-require_once "./init.php";
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+if (empty($_SESSION['id_usuario'])) { header('Location: login.php'); exit; }
 
+// Helper de escape (caso o init.php ainda não tenha um)
+if (!function_exists('h')) {
+  function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
+}
 
+/* Executa SELECT com Prepared Statement e devolve todas as linhas */
+function consulta($conn, $sql, $types = '', $params = []) {
+  $st = mysqli_prepare($conn, $sql);
+  if ($types !== '') { mysqli_stmt_bind_param($st, $types, ...$params); }
+  mysqli_stmt_execute($st);
+  $res = mysqli_stmt_get_result($st);
+  $rows = $res ? mysqli_fetch_all($res, MYSQLI_ASSOC) : [];
+  mysqli_stmt_close($st);
+  return $rows;
+}
 
-$lista_generos = [
-  'Todos', 
-  'Suspense', 
-  'Aventura', 
-  'Romance', 
-  'Terror', 
-  'Drama', 
-  'Ação', 
-  'Comédia', 
-  'Ficção', 
-  'Animação', 
-  'Fantasia', 
-  'Crime', 
-  'Musical', 
-  'Documentário'
+/* ---------- Filtros cumulativos: ?tipo=...&genero=... ---------- */
+$abas = [
+  'cartaz'    => 'Filmes em Cartaz',
+  'streaming' => 'Filmes em Streaming',
+  'series'    => 'Séries',
 ];
+$tipo = $_GET['tipo'] ?? 'cartaz';                 // inicia em cartaz
+if (!isset($abas[$tipo])) { $tipo = 'cartaz'; }
 
+// Gêneros dinâmicos (SELECT DISTINCT), na ordem preferida da interface
+$ordem = ['Suspense','Aventura','Romance','Terror','Drama','Ação','Comédia','Ficção','Animação','Fantasia','Crime','Musical','Documentário'];
+$no_banco = array_column(consulta($conn, "SELECT DISTINCT gen_filme FROM filme WHERE gen_filme IS NOT NULL AND gen_filme <> ''"), 'gen_filme');
+$lista_generos = array_merge(
+  array_values(array_intersect($ordem, $no_banco)),
+  array_values(array_diff($no_banco, $ordem))
+);
+
+$genero = trim($_GET['genero'] ?? '');
+if (!in_array($genero, $lista_generos, true)) { $genero = ''; }
+
+/* Monta URL preservando o outro filtro (valores nulos/vazios saem da URL) */
+function link_filtro($tipo, $genero) {
+  $p = array_filter(['tipo' => $tipo, 'genero' => $genero], function ($v) { return $v !== null && $v !== ''; });
+  return 'inicio.php' . ($p ? '?' . http_build_query($p) : '');
+}
+
+/* Consulta dos títulos conforme a aba + gênero */
+$sql = "SELECT id_filme, nome_filme, imagem_capa FROM filme WHERE ";
+if ($tipo === 'cartaz')         { $sql .= "exibicao_filme = 'Cinema' AND tipo_conteudo = 'Filme'"; }
+elseif ($tipo === 'streaming')  { $sql .= "exibicao_filme = 'Streaming' AND tipo_conteudo = 'Filme'"; }
+else                            { $sql .= "tipo_conteudo = 'Serie'"; }
+
+$types = ''; $params = [];
+if ($genero !== '') { $sql .= " AND gen_filme = ?"; $types = 's'; $params[] = $genero; }
+$sql .= " ORDER BY nome_filme";
+
+$filmes  = consulta($conn, $sql, $types, $params);
+$linhas  = array_chunk($filmes, 4);               // 4 cartões por linha (.grade-de-filmes)
+$grupo1  = array_slice($lista_generos, 0, 6);     // "Todos" + 6 = 7 pílulas visíveis
+$grupo2  = array_slice($lista_generos, 6);        // restante (botão de seta alterna)
 ?>
 
 <!DOCTYPE html>
@@ -234,126 +273,36 @@ $lista_generos = [
 
       <input type="checkbox" id="troca-de-generos" hidden />
 
-      <div class="lista-generos grupo-1">
-        <a href="./inicio.html">
-          <button class="genero-ativo">Todos</button>
-        </a>
-        <a href="./f_suspense.html">
-          <button class="genero-opcoes">Suspense</button>
-        </a>
-        <a href="./f_aventura.html">
-          <button class="genero-opcoes">Aventura</button>
-        </a>
-        <a href="./f_romance.html">
-          <button class="genero-opcoes">Romance</button>
-        </a>
-        <a href="./f_terror.html">
-          <button class="genero-opcoes">Terror</button>
-        </a>
-        <a href="./f_drama.html">
-          <button class="genero-opcoes">Drama</button>
-        </a>
-        <a href="./f_acao.html">
-          <button class="genero-opcoes">Ação</button>
-        </a>
-      </div>
-      <div class="lista-generos grupo-2">
-        <a href="./f_comedia.html">
-          <button class="genero-opcoes">Comédia</button>
-        </a>
-        <a href="./f_ficcao.html">
-          <button class="genero-opcoes">Ficção</button>
-        </a>
-        <a href="./f_animacao.html">
-          <button class="genero-opcoes">Animação</button>
-        </a>
-        <a href="./f_fantasia.html">
-          <button class="genero-opcoes">Fantasia</button>
-        </a>
-        <a href="./f_crime.html">
-          <button class="genero-opcoes">Crime</button>
-        </a>
-        <a href="./f_musical.html">
-          <button class="genero-opcoes">Musical</button>
-        </a>
-        <a href="./f_documentario.html">
-          <button class="genero-opcoes">Documentário</button>
-        </a>
-      </div>
-
-      <label for="troca-de-generos" class="navegacao-generos">
-        <i class="fa-solid fa-chevron-right"></i>
-      </label>
-    </section>
-
-    <section class="movies-container">
+      <section class="movies-container">
       <div class="selecione-filmes">
-        <button class="filmes-ativo">Filmes em Cartaz</button>
-        <button class="filmes-opcoes">Filmes Populares</button>
-        <button class="filmes-opcoes">Séries</button>
+        <?php foreach ($abas as $chave => $rotulo): ?>
+          <!-- Trocar de aba preserva o gênero ativo na URL -->
+          <a href="<?= h(link_filtro($chave, $genero)) ?>">
+            <button class="<?= $chave === $tipo ? 'filmes-ativo' : 'filmes-opcoes' ?>"><?= h($rotulo) ?></button>
+          </a>
+        <?php endforeach; ?>
       </div>
 
-      <div class="grade-de-filmes">
-        <div class="cartao-filme">
-          <div class="cartaz-filme">
-            <img src="./img/Lista de Filmes/pagina inicial/verity.png" alt="Verity">
-            <div class="filme-titulo">Verity</div>
-          </div>
-          <button class="botao-de-detalhes">Ver Detalhes</button>
-        </div>
-        <div class="cartao-filme">
-          <div class="cartaz-filme">
-            <img src="./img/Lista de Filmes/pagina inicial/Resident_Evil.png" alt="Resident Evil">
-            <div class="filme-titulo">Resident Evil</div>
-          </div>
-          <button class="botao-de-detalhes">Ver Detalhes</button>
-        </div>
-        <div class="cartao-filme">
-          <div class="cartaz-filme">
-            <img src="./img/Lista de Filmes/pagina inicial/sf.jpg" alt="Street Fighter">
-            <div class="filme-titulo">Street Fighter</div>
-          </div>
-          <button class="botao-de-detalhes">Ver Detalhes</button>
-        </div>
-        <div class="cartao-filme">
-          <div class="cartaz-filme">
-            <img src="./img/Lista de Filmes/pagina inicial/minha melhor amiga.jpg" alt="Minha Melhor Amiga">
-            <div class="filme-titulo">Minha Melhor Amiga</div>
-          </div>
-          <button class="botao-de-detalhes">Ver Detalhes</button>
-        </div>
-      </div>
+      <?php if (!$filmes): ?>
+        <p class="sem-resultados" style="text-align:center;padding:40px 0;">Nenhum título encontrado.</p>
+      <?php endif; ?>
 
-      <div class="grade-de-filmes">
-        <div class="cartao-filme">
-          <div class="cartaz-filme">
-            <img src="./img/Lista de Filmes/pagina inicial/a odisseia.jpg" alt="A Odisseia">
-            <div class="filme-titulo">A Odisseia</div>
-          </div>
-          <button class="botao-de-detalhes">Ver Detalhes</button>
+      <?php foreach ($linhas as $linha): ?>
+        <div class="grade-de-filmes">
+          <?php foreach ($linha as $f):
+            $capa = !empty($f['imagem_capa']) ? $f['imagem_capa'] : './img/Logo - LUX.png'; ?>
+            <div class="cartao-filme">
+              <div class="cartaz-filme">
+                <img src="<?= h($capa) ?>" alt="<?= h($f['nome_filme']) ?>">
+                <div class="filme-titulo"><?= h($f['nome_filme']) ?></div>
+              </div>
+              <a href="detalhes_filme.php?id=<?= (int)$f['id_filme'] ?>">
+                <button class="botao-de-detalhes">Ver Detalhes</button>
+              </a>
+            </div>
+          <?php endforeach; ?>
         </div>
-        <div class="cartao-filme">
-          <div class="cartaz-filme">
-            <img src="./img/Lista de Filmes/pagina inicial/A-Hora-do-Pesadelo.jpg" alt="Hora do Pesadelo">
-            <div class="filme-titulo">Hora do Pesadelo</div>
-          </div>
-          <button class="botao-de-detalhes">Ver Detalhes</button>
-        </div>
-        <div class="cartao-filme">
-          <div class="cartaz-filme">
-            <img src="./img/Lista de Filmes/pagina inicial/o exorcista.jpg" alt="O Exorcista">
-            <div class="filme-titulo">O Exorcista</div>
-          </div>
-          <button class="botao-de-detalhes">Ver Detalhes</button>
-        </div>
-        <div class="cartao-filme">
-          <div class="cartaz-filme">
-            <img src="./img/Lista de Filmes/pagina inicial/carrie a estranha.jpg" alt="Carrie">
-            <div class="filme-titulo">Carrie, A Estranha</div>
-          </div>
-          <button class="botao-de-detalhes">Ver Detalhes</button>
-        </div>
-      </div>
+      <?php endforeach; ?>
 
       <div class="expansao-de-filmes">
         <button class="botao-expansao" title="Ver mais filmes">

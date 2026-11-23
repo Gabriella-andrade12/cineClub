@@ -2,7 +2,7 @@
 
 session_start();
 
-require_once "./crud.php";
+require_once "/banco/crud.php";
 
 if (isset($_GET['u'])) {
     $_SESSION['id_usuario'] = (int) $_GET['u'];

@@ -600,3 +600,33 @@ textarea:focus {
   font-size: 14px;
   color: #fff;
 }
+
+@media (max-width: 600px) {
+  .cabecalho {
+    flex-wrap: wrap;
+    padding: 14px 18px;
+  }
+
+  .navegacao-menu {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .abas-tipo {
+    grid-template-columns: 1fr;
+  }
+
+  .escala-notas {
+    flex-wrap: wrap;
+  }
+
+  .escala-notas label {
+    flex: 0 0 calc(20% - 5px);
+  }
+
+  .grade-do-rodape {
+    grid-template-columns: 1fr;
+  }
+}

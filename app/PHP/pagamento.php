@@ -1,4 +1,182 @@
+<?php
+require_once "./init.php";   // deve fornecer a conexão mysqli ($conn) e iniciar a sessão
 
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+if (empty($_SESSION['id_usuario'])) { header('Location: login.php'); exit; }
+$uid = (int)$_SESSION['id_usuario'];
+
+/* ---------------- Helpers (Prepared Statements) ---------------- */
+if (!function_exists('h')) {
+  function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
+}
+function lx_stmt($conn, $sql, $types = '', $params = []) {
+  $st = mysqli_prepare($conn, $sql);
+  if ($types !== '') { mysqli_stmt_bind_param($st, $types, ...$params); }
+  mysqli_stmt_execute($st);
+  return $st;
+}
+function lx_um($conn, $sql, $types = '', $params = []) {
+  $st = lx_stmt($conn, $sql, $types, $params);
+  $r = mysqli_stmt_get_result($st);
+  $row = $r ? mysqli_fetch_assoc($r) : null;
+  mysqli_stmt_close($st);
+  return $row ?: null;
+}
+function lx_exec($conn, $sql, $types = '', $params = []) {   // INSERT/UPDATE: devolve o id gerado
+  $st = lx_stmt($conn, $sql, $types, $params);
+  $id = mysqli_stmt_insert_id($st);
+  mysqli_stmt_close($st);
+  return $id;
+}
+function brl($v) { return 'R$ ' . number_format((float)$v, 2, ',', '.'); }
+
+/* ---------------- Carrinho (sessão) ----------------
+ * $_SESSION['carrinho'] = [
+ *   'ingressos'   => [ chave => ['id_sessao','assento','tipo','valor','filme','dia','hora','sala'] ],
+ *   'produtos'    => [ id_produto => ['nome','valor','qtd'] ],
+ *   'cupom'       => código ou null,
+ *   'id_endereco' => id ou null ]
+ */
+$c = $_SESSION['carrinho'] ?? [];
+$ingressos = $c['ingressos'] ?? [];
+$produtos  = $c['produtos']  ?? [];
+if (!$ingressos && !$produtos) { header('Location: carrinho.php'); exit; }
+
+// Produtos da bomboniere exigem endereço de entrega escolhido no carrinho
+if ($produtos && empty($c['id_endereco'])) { header('Location: carrinho.php'); exit; }
+
+$subtotal = 0.0;
+foreach ($ingressos as $i) { $subtotal += $i['valor']; }
+foreach ($produtos as $p)  { $subtotal += $p['valor'] * $p['qtd']; }
+$subtotal = round($subtotal, 2);
+
+/* ---------------- Cupom (campo GET do resumo) ----------------
+ * REGRA: cupom existente, ativo, dentro da validade e com valor mínimo atingido. */
+function lx_cupom($conn, $codigo, $subtotal) {
+  $cp = lx_um($conn, "SELECT * FROM cupom WHERE UPPER(codigo) = UPPER(?) LIMIT 1", 's', [$codigo]);
+  if (!$cp) return [null, 'Cupom inexistente.'];
+  if (!in_array(strtoupper((string)$cp['cupom_ativo']), ['SIM', '1', 'S', 'ATIVO'], true)) return [null, 'Cupom inativo.'];
+  if (!empty($cp['data_validade']) && $cp['data_validade'] < date('Y-m-d')) return [null, 'Cupom vencido.'];
+  if ($subtotal < (float)$cp['valor_minimo_pedido']) return [null, 'Pedido mínimo do cupom: ' . brl($cp['valor_minimo_pedido']) . '.'];
+  return [$cp, null];
+}
+
+$msg_cupom = ''; $ok_cupom = false;
+if (isset($_GET['cupom']) && trim($_GET['cupom']) !== '') {
+  list($cp, $erro_cp) = lx_cupom($conn, trim($_GET['cupom']), $subtotal);
+  if ($cp) { $_SESSION['carrinho']['cupom'] = $cp['codigo']; $msg_cupom = 'Cupom aplicado!'; $ok_cupom = true; }
+  else     { $_SESSION['carrinho']['cupom'] = null;           $msg_cupom = $erro_cp; }
+}
+
+// Totais sempre recalculados no servidor (cupom revalidado a cada carregamento)
+$desconto = 0.0;
+$cupom_ativo = null;
+if (!empty($_SESSION['carrinho']['cupom'])) {
+  list($cp, $erro_cp) = lx_cupom($conn, $_SESSION['carrinho']['cupom'], $subtotal);
+  if ($cp) {
+    $cupom_ativo = $cp['codigo'];
+    $tipo_cp = strtolower((string)$cp['tipo_desconto']);
+    $desconto = (strpos($tipo_cp, 'perc') !== false || strpos($tipo_cp, '%') !== false)
+      ? $subtotal * ((float)$cp['valor_desconto'] / 100)
+      : (float)$cp['valor_desconto'];
+    $desconto = round(min($desconto, $subtotal), 2);
+  } else {
+    $_SESSION['carrinho']['cupom'] = null;
+  }
+}
+$total = round($subtotal - $desconto, 2);
+
+/* ---------------- Dados do usuário (somente leitura) ---------------- */
+$usuario = lx_um($conn, "SELECT nome, email, cpf FROM usuario WHERE id_usuario = ?", 'i', [$uid]);
+$cpf = preg_replace('/\D/', '', $usuario['cpf'] ?? '');
+$cpf_fmt = strlen($cpf) === 11 ? substr($cpf, 0, 3) . '.' . substr($cpf, 3, 3) . '.' . substr($cpf, 6, 3) . '-' . substr($cpf, 9) : $cpf;
+
+/* ---------------- Confirmação do pagamento (POST) ---------------- */
+$erro = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $escolha = $_POST['forma_pagamento'] ?? 'pix';
+  if ($escolha === 'pix') {
+    $forma = 'Pix';
+  } elseif ($escolha === 'cartao') {
+    $forma = (($_POST['tipo_cartao'] ?? '') === 'debito') ? 'Cartão de Débito' : 'Cartão de Crédito';
+    // Validação básica dos campos do cartão (nada é gravado: apenas simulação acadêmica)
+    $num = preg_replace('/\D/', '', $_POST['card_num'] ?? '');
+    $exp = trim($_POST['card_exp'] ?? '');
+    $cvv = preg_replace('/\D/', '', $_POST['card_cvv'] ?? '');
+    if (strlen($num) < 13 || strlen($num) > 19)                       $erro = 'Número do cartão inválido.';
+    elseif (trim($_POST['card_name'] ?? '') === '')                    $erro = 'Informe o nome impresso no cartão.';
+    elseif (!preg_match('/^(0[1-9]|1[0-2])\/(\d{2})$/', $exp, $m)
+            || ((int)('20' . $m[2]) . $m[1]) < (int)date('Ym'))        $erro = 'Validade inválida ou cartão vencido.';
+    elseif (strlen($cvv) < 3 || strlen($cvv) > 4)                      $erro = 'CVV inválido.';
+  } else {
+    $erro = 'Selecione a forma de pagamento.';
+  }
+
+  if ($erro === '') {
+    /*
+     * REGRA CRÍTICA: venda, item_venda, ingressos e pagamento só são gravados aqui,
+     * dentro de uma transação (tudo ou nada).
+     */
+    try {
+      mysqli_begin_transaction($conn);
+
+      // Reconfere os assentos dentro da transação (evita venda duplicada do mesmo lugar)
+      foreach ($ingressos as $i) {
+        $ja = lx_um($conn, "SELECT id_ingresso FROM ingressos WHERE id_sessao = ? AND assento = ? FOR UPDATE", 'is', [$i['id_sessao'], $i['assento']]);
+        if ($ja) throw new RuntimeException('O assento ' . $i['assento'] . ' acabou de ser ocupado. Remova-o do carrinho.');
+      }
+
+      $id_endereco = $produtos ? (int)$_SESSION['carrinho']['id_endereco'] : null;
+      $id_produto  = $produtos ? (int)array_key_first($produtos) : null;
+
+      // 2. venda
+      $id_venda = lx_exec($conn,
+        "INSERT INTO venda (id_usuario, data_pedido, valor_pedido, id_endereco, id_produto) VALUES (?, NOW(), ?, ?, ?)",
+        'idii', [$uid, $total, $id_endereco, $id_produto]);
+
+      // 3. item_venda
+      foreach ($produtos as $idp => $p) {
+        lx_exec($conn, "INSERT INTO item_venda (id_venda, id_produto, quantidade, valor_unitario) VALUES (?, ?, ?, ?)",
+          'iiid', [$id_venda, (int)$idp, (int)$p['qtd'], $p['valor']]);
+      }
+
+      // 4. ingressos
+      foreach ($ingressos as $i) {
+        lx_exec($conn, "INSERT INTO ingressos (assento, valor_ingresso, id_venda, id_sessao) VALUES (?, ?, ?, ?)",
+          'sdii', [$i['assento'], $i['valor'], $id_venda, $i['id_sessao']]);
+      }
+
+      // 5. pagamento
+      lx_exec($conn, "INSERT INTO pagamento (forma_pagamento, status_pagamento, data_pagamento, id_venda) VALUES (?, 'Concluído', NOW(), ?)",
+        'si', [$forma, $id_venda]);
+
+      // Fidelidade: 1 ponto por R$ 1 pago (usado em beneficios.php)
+      $pts = (int)floor($total);
+      if ($pts > 0) {
+        if (lx_um($conn, "SELECT qntd_pontos FROM pontos_usuario WHERE id_usuario = ? FOR UPDATE", 'i', [$uid]))
+          lx_exec($conn, "UPDATE pontos_usuario SET qntd_pontos = qntd_pontos + ? WHERE id_usuario = ?", 'ii', [$pts, $uid]);
+        else
+          lx_exec($conn, "INSERT INTO pontos_usuario (qntd_pontos, id_usuario) VALUES (?, ?)", 'ii', [$pts, $uid]);
+      }
+
+      // 6. commit, limpa o carrinho e segue para a confirmação
+      mysqli_commit($conn);
+      unset($_SESSION['carrinho']);
+      header('Location: confirmacao.php?id=' . $id_venda);
+      exit;
+    } catch (Throwable $e) {
+      mysqli_rollback($conn);
+      $erro = ($e instanceof RuntimeException) ? $e->getMessage() : 'Não foi possível concluir o pagamento. Tente novamente.';
+    }
+  }
+}
+
+// Código Pix de demonstração (varia conforme o total)
+$pix_codigo = '00020126580014br.gov.bcb.pix0136lux-cinelux-' . strtoupper(substr(md5(session_id() . $total), 0, 12));
+
+// Iniciais para a miniatura de cada item
+function lx_iniciais($t) { return mb_strtoupper(mb_substr(trim($t), 0, 3, 'UTF-8'), 'UTF-8'); }
+?>
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -15,7 +193,7 @@
 <body>
 
   <header class="cabecalho">
-    <a href="./inicio.html" class="logo">
+    <a href="./inicio.php" class="logo">
       <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
     </a>
 
@@ -27,9 +205,9 @@
     </nav>
 
     <div class="acoes-do-usuario">
-      <a href="carrinho.html" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
-      <a href="./minha_lista.html" class="link"><i class="fa-solid fa-bookmark"></i></a>
-      <a href="./perfil.html" class="link"><i class="fa-solid fa-user"></i></a>
+      <a href="carrinho.php" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
+      <a href="./listas.php" class="link"><i class="fa-solid fa-bookmark"></i></a>
+      <a href="./perfil.php" class="link"><i class="fa-solid fa-user"></i></a>
     </div>
   </header>
 
@@ -39,24 +217,28 @@
 
       <!-- COLUNA ESQUERDA: DADOS E PAGAMENTO -->
       <section class="card checkout-main">
-        <form id="checkout-form" action="confirmacao.html" method="get">
+        <form id="checkout-form" action="pagamento.php" method="post">
           <span class="card-badge"><i class="fa-solid fa-shield-halved"></i> PAGAMENTO SEGURO</span>
           <h1 class="card-title">Finalize seu pedido</h1>
           <p class="card-subtitle">Garanta seus combos e ingressos antes de entrar na sala.</p>
+
+          <?php if ($erro !== ''): ?>
+            <p role="alert" style="background:#4a1f25;border:1px solid #a33a48;padding:10px 14px;border-radius:10px;"><?= h($erro) ?></p>
+          <?php endif; ?>
 
           <h2 class="section-label">Seus dados</h2>
           <div class="form-grid">
             <div class="form-group full">
               <label for="nome">Nome completo</label>
-              <input type="text" id="nome" name="nome" placeholder="Seu nome completo" autocomplete="name" required>
+              <input type="text" id="nome" value="<?= h($usuario['nome'] ?? '') ?>" autocomplete="name" readonly>
             </div>
             <div class="form-group half">
               <label for="email">E-mail</label>
-              <input type="email" id="email" name="email" placeholder="voce@email.com" autocomplete="email" required>
+              <input type="email" id="email" value="<?= h($usuario['email'] ?? '') ?>" autocomplete="email" readonly>
             </div>
             <div class="form-group half">
               <label for="cpf">CPF</label>
-              <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" inputmode="numeric" maxlength="14" pattern="\d{3}\.?\d{3}\.?\d{3}-?\d{2}" required>
+              <input type="text" id="cpf" value="<?= h($cpf_fmt) ?>" inputmode="numeric" readonly>
             </div>
           </div>
 
@@ -64,8 +246,8 @@
 
           <!-- ABAS 100% EM HTML/CSS (SEM JAVASCRIPT) -->
           <div class="payment-selector">
-            <input type="radio" name="forma_pagamento" id="radio-pix" value="pix" class="tab-radio" checked>
-            <input type="radio" name="forma_pagamento" id="radio-cartao" value="cartao" class="tab-radio">
+            <input type="radio" name="forma_pagamento" id="radio-pix" value="pix" class="tab-radio" <?= (($_POST['forma_pagamento'] ?? 'pix') !== 'cartao') ? 'checked' : '' ?>>
+            <input type="radio" name="forma_pagamento" id="radio-cartao" value="cartao" class="tab-radio" <?= (($_POST['forma_pagamento'] ?? '') === 'cartao') ? 'checked' : '' ?>>
 
             <div class="payment-tabs" role="tablist" aria-label="Forma de pagamento">
               <label for="radio-pix" class="tab-btn" role="tab"><i class="fa-brands fa-pix"></i> Pix</label>
@@ -101,15 +283,23 @@
                 <div class="pix-info">
                   <p class="pix-title">Pague com Pix em segundos</p>
                   <input type="text" id="pixCode" class="pix-code" readonly aria-label="Código Pix copia e cola"
-                         value="00020126580014br.gov.bcb.pix0136lux-cinelux-pedido-8841">
+                         value="<?= h($pix_codigo) ?>">
                   <span class="pix-hint">Selecione e copie o código acima (Ctrl + C)</span>
                 </div>
               </div>
             </div>
 
-            <!-- ABA: CARTÃO -->
+
+            <!-- ABA: CARTÃO (dados usados só para validar; nada é armazenado) -->
             <div id="tab-cartao" class="tab-pane" role="tabpanel">
               <div class="form-grid">
+                <div class="form-group full">
+                  <label for="card-tipo">Tipo do cartão</label>
+                  <select id="card-tipo" name="tipo_cartao" class="form-select">
+                    <option value="credito" <?= (($_POST['tipo_cartao'] ?? '') !== 'debito') ? 'selected' : '' ?>>Crédito</option>
+                    <option value="debito" <?= (($_POST['tipo_cartao'] ?? '') === 'debito') ? 'selected' : '' ?>>Débito (à vista)</option>
+                  </select>
+                </div>
                 <div class="form-group full">
                   <label for="card-num">Número do cartão</label>
                   <input type="text" id="card-num" name="card_num" placeholder="0000 0000 0000 0000" inputmode="numeric" maxlength="19" autocomplete="cc-number">
@@ -127,20 +317,18 @@
                   <input type="text" id="card-cvv" name="card_cvv" placeholder="123" inputmode="numeric" maxlength="4" autocomplete="cc-csc">
                 </div>
                 <div class="form-group full">
-                  <label for="card-parc">Parcelamento</label>
+                  <label for="card-parc">Parcelamento (somente crédito)</label>
                   <select id="card-parc" name="parcelas" class="form-select">
-                    <option value="1">1x de R$ 325,00 sem juros</option>
-                    <option value="2">2x de R$ 162,50 sem juros</option>
-                    <option value="3">3x de R$ 108,33 sem juros</option>
-                    <option value="4">4x de R$ 81,25 sem juros</option>
-                    <option value="5">5x de R$ 65,00 sem juros</option>
-                    <option value="6">6x de R$ 54,17 sem juros</option>
+                    <?php for ($n = 1; $n <= 6; $n++): ?>
+                      <option value="<?= $n ?>"><?= $n ?>x de <?= brl($total / $n) ?> sem juros</option>
+                    <?php endfor; ?>
                   </select>
                 </div>
               </div>
             </div>
+          </div><!-- /.payment-selector -->
 
-          <button type="submit" class="btn-primary" id="btn-pay">Pagar R$ 325,00</button>
+          <button type="submit" class="btn-primary" id="btn-pay">Pagar <?= brl($total) ?></button>
 
           <p class="security-guarantee">
             <i class="fa-solid fa-lock"></i>
@@ -149,55 +337,64 @@
         </form>
       </section>
 
+
       <!-- COLUNA DIREITA: RESUMO DO PEDIDO -->
       <aside class="card summary-card" aria-label="Resumo do pedido">
         <h2 class="section-label">Resumo do pedido</h2>
 
         <ul class="order-items">
-          <li class="order-item">
-            <div class="item-thumb thumb-ghost">PÂNICO</div>
-            <div class="item-details">
-              <span class="combo-tag">EDIÇÃO LIMITADA</span>
-              <p class="item-title">COMBO GHOSTFACE PÂNICO</p>
-              <p class="item-desc">2 bebidas grandes, 1 balde refil e copo colecionável · 1x</p>
-            </div>
-            <span class="item-price">R$ 190,00</span>
-          </li>
+          <?php foreach ($ingressos as $i): ?>
+            <li class="order-item">
+              <div class="item-thumb"><?= h(lx_iniciais($i['filme'])) ?></div>
+              <div class="item-details">
+                <span class="combo-tag">INGRESSO <?= h(strtoupper($i['tipo'])) ?></span>
+                <p class="item-title"><?= h(mb_strtoupper($i['filme'], 'UTF-8')) ?></p>
+                <p class="item-desc"><?= h(date('d/m/Y', strtotime($i['dia']))) ?> às <?= h(substr($i['hora'], 0, 5)) ?> · Sala <?= h($i['sala']) ?> · Assento <?= h($i['assento']) ?></p>
+              </div>
+              <span class="item-price"><?= brl($i['valor']) ?></span>
+            </li>
+          <?php endforeach; ?>
 
-          <li class="order-item">
-            <div class="item-thumb thumb-mms">M&amp;M's</div>
-            <div class="item-details">
-              <span class="combo-tag">PROMOÇÃO DA SEMANA</span>
-              <p class="item-title">COMBO M&amp;M'S DUO</p>
-              <p class="item-desc">Pipoca grande, 2 refris G, M&amp;M's e copo · 1x</p>
-            </div>
-            <span class="item-price">R$ 135,00</span>
-          </li>
+          <?php foreach ($produtos as $p): ?>
+            <li class="order-item">
+              <div class="item-thumb"><?= h(lx_iniciais($p['nome'])) ?></div>
+              <div class="item-details">
+                <span class="combo-tag">BOMBONIERE</span>
+                <p class="item-title"><?= h(mb_strtoupper($p['nome'], 'UTF-8')) ?></p>
+                <p class="item-desc"><?= (int)$p['qtd'] ?>x <?= brl($p['valor']) ?></p>
+              </div>
+              <span class="item-price"><?= brl($p['valor'] * $p['qtd']) ?></span>
+            </li>
+          <?php endforeach; ?>
         </ul>
 
-        <!-- Formulário de cupom tradicional via GET -->
-        <form class="coupon-group" action="" method="get">
-          <input type="text" id="coupon-code" name="cupom" placeholder="Cupom (teste: LUX10)" aria-label="Cupom de desconto">
+        <!-- Cupom via GET (validado no servidor) -->
+        <form class="coupon-group" action="pagamento.php" method="get">
+          <input type="text" id="coupon-code" name="cupom" placeholder="Código do cupom" value="<?= h($cupom_ativo ?? '') ?>" aria-label="Cupom de desconto">
           <button type="submit" class="btn-outline" id="btn-coupon">Aplicar</button>
         </form>
+        <?php if ($msg_cupom !== ''): ?>
+          <p role="status" style="margin:8px 0;font-size:.85rem;color:<?= $ok_cupom ? '#7bd9a0' : '#ff8f9b' ?>;"><?= h($msg_cupom) ?></p>
+        <?php endif; ?>
 
         <dl class="summary-totals">
           <div class="line-row">
             <dt>Subtotal</dt>
-            <dd id="subtotal">R$ 325,00</dd>
+            <dd id="subtotal"><?= brl($subtotal) ?></dd>
           </div>
           <div class="line-row">
             <dt>Desconto</dt>
-            <dd id="discount">– R$ 0,00</dd>
+            <dd id="discount">– <?= brl($desconto) ?></dd>
           </div>
           <div class="line-row total">
             <dt>Total</dt>
-            <dd id="total">R$ 325,00</dd>
+            <dd id="total"><?= brl($total) ?></dd>
           </div>
         </dl>
       </aside>
 
     </div>
+
 
   <section class="faixa-de-informacoes">
       <div class="informacoes">
@@ -222,7 +419,7 @@
       <div class="rodape-informacoes">
         <a href="#">Filmes em Cartaz</a>
         <a href="#">Próximas Estreias</a>
-        <a href="./combos.html">Bomboniere & Combos</a>
+        <a href="./bomboniere.php">Bomboniere & Combos</a>
       </div>
       <div class="rodape-informacoes">
         <a href="#">Cinemas Parceiros</a>

@@ -1,7 +1,143 @@
 <?php
+require_once "./init.php";   // deve fornecer a conexão mysqli ($conn) e iniciar a sessão
 
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+if (empty($_SESSION['id_usuario'])) { header('Location: login.php'); exit; }
+$uid = (int)$_SESSION['id_usuario'];
 
+/* ---------------- Helpers (Prepared Statements) ---------------- */
+if (!function_exists('h')) {
+    function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
+}
+function lx_stmt($conn, $sql, $types = '', $params = []) {
+    $st = mysqli_prepare($conn, $sql);
+    if ($types !== '') { mysqli_stmt_bind_param($st, $types, ...$params); }
+    mysqli_stmt_execute($st);
+    return $st;
+}
+function lx_todos($conn, $sql, $types = '', $params = []) {
+    $st = lx_stmt($conn, $sql, $types, $params);
+    $r = mysqli_stmt_get_result($st);
+    $rows = $r ? mysqli_fetch_all($r, MYSQLI_ASSOC) : [];
+    mysqli_stmt_close($st);
+    return $rows;
+}
+function lx_exec($conn, $sql, $types = '', $params = []) {
+    $st = lx_stmt($conn, $sql, $types, $params);
+    $id = mysqli_stmt_insert_id($st);
+    mysqli_stmt_close($st);
+    return $id;
+}
+function lx_nota($v) { return number_format((float)$v, 1, ',', ''); }
 
+/* ---------------- "Minha Lista" = lista privada do usuário ----------------
+ * Usa as tabelas lista + filme_lista. Criada automaticamente no primeiro acesso. */
+$lista = lx_todos($conn, "SELECT id_lista FROM lista WHERE id_usuario = ? AND nome_lista = 'Minha Lista' LIMIT 1", 'i', [$uid]);
+if ($lista) {
+    $id_lista = (int)$lista[0]['id_lista'];
+} else {
+    $id_lista = lx_exec(
+        $conn,
+        "INSERT INTO lista (nome_lista, descricao_lista, data_criacao, id_usuario, exib_lista) VALUES ('Minha Lista', 'Títulos salvos para assistir depois', CURDATE(), ?, 'Privada')",
+        'i',
+        [$uid]
+    );
+}
+
+/* Data de adição é opcional: só é usada se filme_lista tiver a coluna data_adicao
+ * (ALTER TABLE filme_lista ADD COLUMN data_adicao TIMESTAMP DEFAULT CURRENT_TIMESTAMP;) */
+$tem_data = (bool)lx_todos($conn, "SHOW COLUMNS FROM filme_lista LIKE 'data_adicao'");
+
+/* ---------------- Filtros e ordenação (via URL) ---------------- */
+$filtros = ['todos' => 'Todos', 'filmes' => 'Filmes', 'series' => 'Séries', 'continuar' => 'Continuar'];
+$ordens  = ['data' => 'Data de adição', 'nota' => 'Nota', 'az' => 'A–Z'];
+$filtro = $_REQUEST['filtro'] ?? 'todos'; if (!isset($filtros[$filtro])) $filtro = 'todos';
+$ordem  = $_REQUEST['ordem']  ?? 'data';  if (!isset($ordens[$ordem]))   $ordem  = 'data';
+function lx_url($filtro, $ordem) { return 'minha_lista.php?' . http_build_query(['filtro' => $filtro, 'ordem' => $ordem]); }
+
+/* ---------------- Ações (POST, sem JavaScript) ---------------- */
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $acao = $_POST['acao'] ?? '';
+    $idf  = (int)($_POST['id_filme'] ?? 0);
+
+    if ($acao === 'salvar') {
+        $existe = lx_todos($conn, "SELECT id_filme FROM filme WHERE id_filme = ?", 'i', [$idf]);
+        $ja     = lx_todos($conn, "SELECT 1 FROM filme_lista WHERE id_lista = ? AND id_filme = ?", 'ii', [$id_lista, $idf]);
+        if ($existe && !$ja) lx_exec($conn, "INSERT INTO filme_lista (id_filme, id_lista) VALUES (?, ?)", 'ii', [$idf, $id_lista]);
+
+    } elseif ($acao === 'remover') {
+        lx_exec($conn, "DELETE FROM filme_lista WHERE id_lista = ? AND id_filme = ?", 'ii', [$id_lista, $idf]);
+
+    } elseif ($acao === 'assistido') {          // marcar como assistido = registrar no histórico
+        $ja = lx_todos($conn, "SELECT 1 FROM historico_visualizacao WHERE id_usuario = ? AND id_filme = ?", 'ii', [$uid, $idf]);
+        if (!$ja) lx_exec($conn, "INSERT INTO historico_visualizacao (data_visualizacao, id_usuario, id_filme) VALUES (NOW(), ?, ?)", 'ii', [$uid, $idf]);
+
+    } elseif ($acao === 'desmarcar') {
+        lx_exec($conn, "DELETE FROM historico_visualizacao WHERE id_usuario = ? AND id_filme = ?", 'ii', [$uid, $idf]);
+
+    } elseif ($acao === 'esvaziar_todos') {
+        lx_exec($conn, "DELETE FROM filme_lista WHERE id_lista = ?", 'i', [$id_lista]);
+
+    } elseif ($acao === 'esvaziar_assistidos') {
+        lx_exec(
+            $conn,
+            "DELETE FROM filme_lista WHERE id_lista = ? AND id_filme IN (SELECT id_filme FROM historico_visualizacao WHERE id_usuario = ?)",
+            'ii',
+            [$id_lista, $uid]
+        );
+    }
+    header('Location: ' . lx_url($filtro, $ordem));   // PRG: evita reenvio ao recarregar
+    exit;
+}
+
+/* ---------------- Títulos salvos ---------------- */
+$sql = "SELECT f.id_filme, f.nome_filme, f.imagem_capa, f.class_filme, f.gen_filme, f.exibicao_filme, f.tipo_conteudo,
+               (SELECT AVG(a.nota_avl) FROM avaliacao a WHERE a.id_filme = f.id_filme) AS media,
+               EXISTS(SELECT 1 FROM historico_visualizacao h WHERE h.id_usuario = ? AND h.id_filme = f.id_filme) AS assistido"
+     . ($tem_data ? ", fl.data_adicao" : "")
+     . " FROM filme_lista fl JOIN filme f ON f.id_filme = fl.id_filme WHERE fl.id_lista = ?";
+$types = 'ii'; $params = [$uid, $id_lista];
+if ($filtro === 'filmes')    { $sql .= " AND f.tipo_conteudo = 'Filme'"; }
+if ($filtro === 'series')    { $sql .= " AND f.tipo_conteudo = 'Serie'"; }
+if ($filtro === 'continuar') {   // streaming ainda não assistido
+    $sql .= " AND f.exibicao_filme = 'Streaming' AND NOT EXISTS(SELECT 1 FROM historico_visualizacao h2 WHERE h2.id_usuario = ? AND h2.id_filme = f.id_filme)";
+    $types .= 'i'; $params[] = $uid;
+}
+$sql .= ($ordem === 'nota') ? " ORDER BY media IS NULL, media DESC, f.nome_filme"
+      : (($ordem === 'az')  ? " ORDER BY f.nome_filme"
+      : ($tem_data ? " ORDER BY fl.data_adicao DESC, f.nome_filme" : " ORDER BY f.id_filme DESC"));
+$titulos = lx_todos($conn, $sql, $types, $params);
+
+$total_lista = (int)lx_todos($conn, "SELECT COUNT(*) AS t FROM filme_lista WHERE id_lista = ?", 'i', [$id_lista])[0]['t'];
+
+// Gêneros predominantes da lista
+$favoritos = lx_todos(
+    $conn,
+    "SELECT f.gen_filme AS genero, COUNT(*) AS qtd FROM filme_lista fl JOIN filme f ON f.id_filme = fl.id_filme
+      WHERE fl.id_lista = ? AND f.gen_filme IS NOT NULL AND f.gen_filme <> ''
+      GROUP BY f.gen_filme ORDER BY qtd DESC, f.gen_filme LIMIT 3",
+    'i',
+    [$id_lista]
+);
+
+/* ---------------- Sugestões: mesmos gêneros, ainda fora da lista ---------------- */
+$sug_base = "SELECT f.id_filme, f.nome_filme, f.imagem_capa, f.exibicao_filme, f.tipo_conteudo,
+                    (SELECT AVG(a.nota_avl) FROM avaliacao a WHERE a.id_filme = f.id_filme) AS media
+               FROM filme f
+              WHERE f.id_filme NOT IN (SELECT id_filme FROM filme_lista WHERE id_lista = ?)";
+if ($favoritos) {
+    $gens = array_column($favoritos, 'genero');
+    $marc = implode(',', array_fill(0, count($gens), '?'));
+    $sugestoes = lx_todos($conn, $sug_base . " AND f.gen_filme IN ($marc) ORDER BY media IS NULL, media DESC, f.nome_filme LIMIT 4",
+                          'i' . str_repeat('s', count($gens)), array_merge([$id_lista], $gens));
+    $sug_texto = 'Com base em ' . implode(', ', $gens) . '.';
+} else {
+    $sugestoes = lx_todos($conn, $sug_base . " ORDER BY media IS NULL, media DESC, f.nome_filme LIMIT 4", 'i', [$id_lista]);
+    $sug_texto = 'Os títulos mais bem avaliados da LUX.';
+}
+
+function lx_capa($f) { return !empty($f['imagem_capa']) ? $f['imagem_capa'] : './img/Logo - LUX.png'; }
+function lx_classif($c) { $n = preg_replace('/\D/', '', (string)$c); return $n !== '' ? $n : (string)$c; }
 ?>
 
 <!DOCTYPE html>
@@ -19,14 +155,14 @@
 <body>
 
   <header class="cabecalho">
-    <a href="./inicio.html" class="logo">
+    <a href="./inicio.php" class="logo">
       <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
     </a>
 
     <nav class="navegacao-menu">
-      <a href="./inicio.html" class="navegacao-ativa">Lançamentos</a>
-      <a href="./recomendados.html" class="navegacao-opcoes">Recomendados</a>
-      <a href="./combos.html" class="navegacao-opcoes">Combos</a>
+      <a href="./inicio.php" class="navegacao-ativa">Lançamentos</a>
+      <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
+      <a href="./bomboniere.php" class="navegacao-opcoes">Combos</a>
       <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
     </nav>
 
@@ -36,15 +172,164 @@
     </div>
 
     <div class="acoes-do-usuario">
-      <a href="carrinho.html" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
-      <a href="./minha_lista.html" class="link"><i class="fa-solid fa-bookmark"></i></a>
-      <a href="./perfil.html" class="link"><i class="fa-solid fa-user"></i></a>
+      <a href="carrinho.php" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
+      <a href="./minha_lista.php" class="link"><i class="fa-solid fa-bookmark"></i></a>
+      <a href="./perfil.php" class="link"><i class="fa-solid fa-user"></i></a>
     </div>
   </header>
 
+  <main class="principal">
+
+    <!-- Título e botão de esvaziar -->
+    <section class="lista-topo">
+      <div>
+        <h1 class="lista-titulo">Minha Lista</h1>
+        <p class="lista-subtitulo">Os filmes e séries que você salvou para assistir depois.</p>
+      </div>
+
+      <?php if ($total_lista > 0): ?>
+      <details class="esvaziar">
+        <summary class="botao botao-contorno"><i class="fa-solid fa-trash"></i> Esvaziar lista</summary>
+        <div class="esvaziar-caixa">
+          <p>O que você quer remover?</p>
+          <form method="post" action="minha_lista.php" style="display:contents">
+            <input type="hidden" name="filtro" value="<?= h($filtro) ?>">
+            <input type="hidden" name="ordem" value="<?= h($ordem) ?>">
+            <button type="submit" name="acao" value="esvaziar_todos" class="botao botao-laranja">Todos os títulos</button>
+            <button type="submit" name="acao" value="esvaziar_assistidos" class="botao botao-amarelo">Só os assistidos</button>
+          </form>
+        </div>
+      </details>
+      <?php endif; ?>
+    </section>
+
+    <?php if ($favoritos): ?>
+    <!-- Gêneros predominantes -->
+    <section class="generos-favoritos">
+      <span class="generos-rotulo">Seus gêneros favoritos:</span>
+      <?php foreach ($favoritos as $g): ?>
+        <span class="genero-tag"><?= h($g['genero']) ?> <b><?= (int)$g['qtd'] ?></b></span>
+      <?php endforeach; ?>
+    </section>
+    <?php endif; ?>
+
+    <!-- Filtros e ordenação -->
+    <section class="barra-filtros">
+      <nav class="filtro-categorias">
+        <?php foreach ($filtros as $chave => $rotulo): ?>
+          <a href="<?= h(lx_url($chave, $ordem)) ?>" class="filtro-chip<?= $chave === $filtro ? ' filtro-ativo' : '' ?>"><?= h($rotulo) ?></a>
+        <?php endforeach; ?>
+      </nav>
+
+      <nav class="filtro-ordem">
+        <span>Ordenar por:</span>
+        <?php foreach ($ordens as $chave => $rotulo): ?>
+          <a href="<?= h(lx_url($filtro, $chave)) ?>"<?= $chave === $ordem ? ' class="ordem-ativa"' : '' ?>><?= h($rotulo) ?></a>
+        <?php endforeach; ?>
+      </nav>
+    </section>
+
+    <?php if ($titulos): ?>
+    <!-- Títulos salvos -->
+    <section class="grade-titulos">
+
+      <?php foreach ($titulos as $f):
+        $assistido = (bool)$f['assistido'];
+        $cartaz    = ($f['exibicao_filme'] === 'Cinema');
+        $url       = 'detalhes_filme.php?id=' . (int)$f['id_filme'];
+      ?>
+      <article class="cartao<?= $assistido ? ' cartao-assistido' : '' ?>">
+        <a href="<?= h($url) ?>" class="cartao-capa">
+          <img src="<?= h(lx_capa($f)) ?>" alt="Pôster de <?= h($f['nome_filme']) ?>">
+          <?php if ($assistido): ?><span class="selo selo-assistido">Assistido</span>
+          <?php elseif ($cartaz): ?><span class="selo selo-cartaz">Em Cartaz</span><?php endif; ?>
+        </a>
+        <div class="cartao-info">
+          <h3 class="cartao-titulo"><a href="<?= h($url) ?>"><?= h($f['nome_filme']) ?></a></h3>
+          <p class="cartao-meta">
+            <?php if ($f['media'] !== null): ?><span class="nota"><i class="fa-solid fa-star"></i> <?= h(lx_nota($f['media'])) ?></span><?php endif; ?>
+            <span><?= $f['tipo_conteudo'] === 'Serie' ? 'Série' : 'Filme' ?></span>
+            <?php if (lx_classif($f['class_filme']) !== ''): ?><span class="classificacao"><?= h(lx_classif($f['class_filme'])) ?></span><?php endif; ?>
+          </p>
+          <?php if ($tem_data && !empty($f['data_adicao'])): ?>
+            <p class="cartao-data">Adicionado em <?= h(date('d/m/Y', strtotime($f['data_adicao']))) ?></p>
+          <?php endif; ?>
+          <?php if ($cartaz): ?>
+            <a href="ingressos.php?id_filme=<?= (int)$f['id_filme'] ?>" class="botao botao-laranja botao-bloco"><i class="fa-solid fa-ticket"></i> Comprar ingresso</a>
+          <?php endif; ?>
+          <div class="cartao-acoes">
+            <a href="<?= h($url) ?>" class="botao botao-contorno">Ver detalhes</a>
+            <form method="post" action="minha_lista.php" style="display:contents">
+              <input type="hidden" name="id_filme" value="<?= (int)$f['id_filme'] ?>">
+              <input type="hidden" name="filtro" value="<?= h($filtro) ?>">
+              <input type="hidden" name="ordem" value="<?= h($ordem) ?>">
+              <?php if ($assistido): ?>
+                <button type="submit" name="acao" value="desmarcar" class="botao-icone" title="Desmarcar como assistido"><i class="fa-solid fa-rotate-left"></i></button>
+              <?php else: ?>
+                <button type="submit" name="acao" value="assistido" class="botao-icone" title="Marcar como assistido"><i class="fa-solid fa-check"></i></button>
+              <?php endif; ?>
+              <button type="submit" name="acao" value="remover" class="botao-icone botao-remover" title="Remover da lista"><i class="fa-solid fa-xmark"></i></button>
+            </form>
+          </div>
+        </div>
+      </article>
+      <?php endforeach; ?>
+
+    </section>
+    <?php else: ?>
+    <!-- Estado vazio -->
+    <section class="lista-vazia">
+      <i class="fa-regular fa-bookmark"></i>
+      <?php if ($total_lista === 0): ?>
+        <h2>Sua lista está vazia</h2>
+        <p>Use o botão “Salvar” em qualquer filme ou série do catálogo.</p>
+      <?php else: ?>
+        <h2>Nenhum título encontrado</h2>
+        <p>Nenhum título da sua lista corresponde a este filtro.</p>
+      <?php endif; ?>
+      <a href="./inicio.php" class="botao botao-amarelo">Explorar catálogo</a>
+    </section>
+    <?php endif; ?>
+
+    <?php if ($sugestoes): ?>
+    <!-- Você também pode gostar de -->
+    <section class="sugestoes">
+      <h2 class="sugestoes-titulo">Você também pode gostar de:</h2>
+      <p class="sugestoes-sub"><?= h($sug_texto) ?></p>
+
+      <div class="grade-titulos grade-pequena">
+        <?php foreach ($sugestoes as $f):
+          $url = 'detalhes_filme.php?id=' . (int)$f['id_filme'];
+        ?>
+        <article class="cartao cartao-pequeno">
+          <a href="<?= h($url) ?>" class="cartao-capa">
+            <img src="<?= h(lx_capa($f)) ?>" alt="Pôster de <?= h($f['nome_filme']) ?>">
+            <?php if ($f['exibicao_filme'] === 'Cinema'): ?><span class="selo selo-cartaz">Em Cartaz</span><?php endif; ?>
+          </a>
+          <div class="cartao-info">
+            <h3 class="cartao-titulo"><a href="<?= h($url) ?>"><?= h($f['nome_filme']) ?></a></h3>
+            <p class="cartao-meta">
+              <?php if ($f['media'] !== null): ?><span class="nota"><i class="fa-solid fa-star"></i> <?= h(lx_nota($f['media'])) ?></span><?php endif; ?>
+              <span><?= $f['tipo_conteudo'] === 'Serie' ? 'Série' : 'Filme' ?></span>
+            </p>
+            <?php if ($f['exibicao_filme'] === 'Cinema'): ?>
+              <a href="ingressos.php?id_filme=<?= (int)$f['id_filme'] ?>" class="botao botao-laranja botao-bloco">Comprar ingresso</a>
+            <?php endif; ?>
+            <form method="post" action="minha_lista.php" style="display:contents">
+              <input type="hidden" name="id_filme" value="<?= (int)$f['id_filme'] ?>">
+              <input type="hidden" name="filtro" value="<?= h($filtro) ?>">
+              <input type="hidden" name="ordem" value="<?= h($ordem) ?>">
+              <button type="submit" name="acao" value="salvar" class="botao-salvar"><i class="fa-regular fa-bookmark"></i> Salvar</button>
+            </form>
+          </div>
+        </article>
+        <?php endforeach; ?>
+      </div>
+    </section>
+    <?php endif; ?>
 
 
-<section class="faixa-de-informacoes">
+    <section class="faixa-de-informacoes">
       <div class="informacoes">
         <span class="faixa-titulo">CINELUX EXPERIENCE</span>
         <h2>Sua plataforma completa de cinema</h2>
@@ -67,7 +352,7 @@
       <div class="rodape-informacoes">
         <a href="#">Filmes em Cartaz</a>
         <a href="#">Próximas Estreias</a>
-        <a href="./combos.html">Bomboniere & Combos</a>
+        <a href="./bomboniere.php">Bomboniere & Combos</a>
       </div>
       <div class="rodape-informacoes">
         <a href="#">Cinemas Parceiros</a>

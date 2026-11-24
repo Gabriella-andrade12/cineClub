@@ -2,88 +2,299 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CINELUX - Minha Lista</title>
-    <link rel="stylesheet" href="./CSS/perfil.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="shortcut icon" href="./img/Logo - LUX.png" type="image/x-icon">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CINE - LUX</title>
+  <link rel="stylesheet" href="./CSS/minha_lista.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="shortcut icon" href="./img/Logo - LUX.png" type="image/x-icon">
 </head>
 
 <body>
 
-    <header class="cabecalho">
-        <a href="./inicio.html" class="logo">
-            <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
+  <header class="cabecalho">
+    <a href="./inicio.html" class="logo">
+      <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
+    </a>
+
+    <nav class="navegacao-menu">
+      <a href="./inicio.html" class="navegacao-ativa">Lançamentos</a>
+      <a href="./recomendados.html" class="navegacao-opcoes">Recomendados</a>
+      <a href="./combos.html" class="navegacao-opcoes">Combos</a>
+      <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
+    </nav>
+
+    <div class="busca">
+      <input type="text" placeholder="Buscar filmes, gêneros, cinemas...">
+      <i class="fa-solid fa-magnifying-glass busca-icon"></i>
+    </div>
+
+    <div class="acoes-do-usuario">
+      <a href="carrinho.html" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
+      <a href="./minha_lista.html" class="link"><i class="fa-solid fa-bookmark"></i></a>
+      <a href="./perfil.html" class="link"><i class="fa-solid fa-user"></i></a>
+    </div>
+  </header>
+
+  <main class="principal">
+
+    <!-- Título e botão de esvaziar -->
+    <section class="lista-topo">
+      <div>
+        <h1 class="lista-titulo">Minha Lista</h1>
+        <p class="lista-subtitulo">Os filmes e séries que você salvou para assistir depois.</p>
+      </div>
+
+      <details class="esvaziar">
+        <summary class="botao botao-contorno"><i class="fa-solid fa-trash"></i> Esvaziar lista</summary>
+        <div class="esvaziar-caixa">
+          <p>O que você quer remover?</p>
+          <button class="botao botao-laranja">Todos os títulos</button>
+          <button class="botao botao-amarelo">Só os assistidos</button>
+        </div>
+      </details>
+    </section>
+
+    <!-- Gêneros predominantes -->
+    <section class="generos-favoritos">
+      <span class="generos-rotulo">Seus gêneros favoritos:</span>
+      <span class="genero-tag">Terror <b>3</b></span>
+      <span class="genero-tag">Suspense <b>2</b></span>
+      <span class="genero-tag">Drama <b>2</b></span>
+    </section>
+
+    <!-- Filtros e ordenação -->
+    <section class="barra-filtros">
+      <nav class="filtro-categorias">
+        <a href="#" class="filtro-chip filtro-ativo">Todos</a>
+        <a href="#" class="filtro-chip">Filmes</a>
+        <a href="#" class="filtro-chip">Séries</a>
+        <a href="#" class="filtro-chip">Continuar</a>
+      </nav>
+
+      <nav class="filtro-ordem">
+        <span>Ordenar por:</span>
+        <a href="#" class="ordem-ativa">Data de adição</a>
+        <a href="#">Nota</a>
+        <a href="#">A–Z</a>
+      </nav>
+    </section>
+
+    <!-- Títulos salvos -->
+    <section class="grade-titulos">
+
+      <article class="cartao">
+        <a href="./detalhes.html" class="cartao-capa">
+          <img src="./img/posters/batman.jpg" alt="Pôster de Batman">
+          <span class="selo selo-cartaz">Em Cartaz</span>
         </a>
-
-        <nav class="navegacao-menu">
-            <a href="./inicio.html" class="navegacao-opcoes">Lançamentos</a>
-            <a href="./recomendados.html" class="navegacao-opcoes">Recomendados</a>
-            <a href="./combos.html" class="navegacao-opcoes">Combos</a>
-            <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
-        </nav>
-
-        <div class="busca">
-            <input type="text" placeholder="Buscar filmes, gêneros, cinemas...">
-            <i class="fa-solid fa-magnifying-glass busca-icon"></i>
+        <div class="cartao-info">
+          <h3 class="cartao-titulo"><a href="./detalhes.html">Batman</a></h3>
+          <p class="cartao-meta">
+            <span class="nota"><i class="fa-solid fa-star"></i> 9,1</span>
+            <span>Filme</span>
+            <span class="classificacao">14</span>
+          </p>
+          <p class="cartao-data">Adicionado em 20/08/2026</p>
+          <a href="./ingressos.html" class="botao botao-laranja botao-bloco"><i class="fa-solid fa-ticket"></i> Comprar ingresso</a>
+          <div class="cartao-acoes">
+            <a href="./detalhes.html" class="botao botao-contorno">Ver detalhes</a>
+            <button class="botao-icone" title="Marcar como assistido"><i class="fa-solid fa-check"></i></button>
+            <button class="botao-icone botao-remover" title="Remover da lista"><i class="fa-solid fa-xmark"></i></button>
+          </div>
         </div>
+      </article>
 
-        <div class="acoes-do-usuario">
-            <a href="carrinho.html" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
-            <a href="./perfil.html" class="link"><i class="fa-solid fa-user"></i></a>
+      <article class="cartao">
+        <a href="./detalhes.html" class="cartao-capa">
+          <img src="./img/posters/psicose.jpg" alt="Pôster de Psicose">
+        </a>
+        <div class="cartao-info">
+          <h3 class="cartao-titulo"><a href="./detalhes.html">Psicose</a></h3>
+          <p class="cartao-meta">
+            <span class="nota"><i class="fa-solid fa-star"></i> 8,5</span>
+            <span>Filme</span>
+            <span class="classificacao">16</span>
+          </p>
+          <p class="cartao-data">Adicionado em 12/07/2026</p>
+          <div class="cartao-acoes">
+            <a href="./detalhes.html" class="botao botao-contorno">Ver detalhes</a>
+            <button class="botao-icone" title="Marcar como assistido"><i class="fa-solid fa-check"></i></button>
+            <button class="botao-icone botao-remover" title="Remover da lista"><i class="fa-solid fa-xmark"></i></button>
+          </div>
         </div>
-    </header>
+      </article>
 
+      <article class="cartao cartao-assistido">
+        <a href="./detalhes.html" class="cartao-capa">
+          <img src="./img/posters/poderoso-chefao.jpg" alt="Pôster de O Poderoso Chefão">
+          <span class="selo selo-assistido">Assistido</span>
+        </a>
+        <div class="cartao-info">
+          <h3 class="cartao-titulo"><a href="./detalhes.html">O Poderoso Chefão</a></h3>
+          <p class="cartao-meta">
+            <span class="nota"><i class="fa-solid fa-star"></i> 9,1</span>
+            <span>Filme</span>
+            <span class="classificacao">16</span>
+          </p>
+          <p class="cartao-data">Adicionado em 10/03/2026</p>
+          <div class="cartao-acoes">
+            <a href="./detalhes.html" class="botao botao-contorno">Ver detalhes</a>
+            <button class="botao-icone" title="Desmarcar como assistido"><i class="fa-solid fa-rotate-left"></i></button>
+            <button class="botao-icone botao-remover" title="Remover da lista"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        </div>
+      </article>
 
+      <article class="cartao">
+        <a href="./detalhes.html" class="cartao-capa">
+          <img src="./img/posters/o-exorcista.jpg" alt="Pôster de O Exorcista">
+          <span class="selo selo-cartaz">Em Cartaz</span>
+          <span class="progresso"><i style="width: 45%"></i></span>
+        </a>
+        <div class="cartao-info">
+          <h3 class="cartao-titulo"><a href="./detalhes.html">O Exorcista</a></h3>
+          <p class="cartao-meta">
+            <span class="nota"><i class="fa-solid fa-star"></i> 8,1</span>
+            <span>Filme</span>
+            <span class="classificacao">18</span>
+          </p>
+          <p class="cartao-data">Adicionado em 05/10/2026</p>
+          <a href="./ingressos.html" class="botao botao-laranja botao-bloco"><i class="fa-solid fa-ticket"></i> Comprar ingresso</a>
+          <div class="cartao-acoes">
+            <a href="./detalhes.html" class="botao botao-contorno">Ver detalhes</a>
+            <button class="botao-icone" title="Marcar como assistido"><i class="fa-solid fa-check"></i></button>
+            <button class="botao-icone botao-remover" title="Remover da lista"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- Estado vazio (mostrar no lugar da grade quando não houver títulos) -->
+    <!--
+    <section class="lista-vazia">
+      <i class="fa-regular fa-bookmark"></i>
+      <h2>Sua lista está vazia</h2>
+      <p>Use o botão “Salvar” em qualquer filme ou série do catálogo.</p>
+      <a href="./inicio.html" class="botao botao-amarelo">Explorar catálogo</a>
+    </section>
+    -->
+
+    <!-- Você também pode gostar de -->
+    <section class="sugestoes">
+      <h2 class="sugestoes-titulo">Você também pode gostar de:</h2>
+      <p class="sugestoes-sub">Com base em Terror, Suspense e Drama.</p>
+
+      <div class="grade-titulos grade-pequena">
+
+        <article class="cartao cartao-pequeno">
+          <a href="./detalhes.html" class="cartao-capa">
+            <img src="./img/posters/carrie.jpg" alt="Pôster de Carrie, a Estranha">
+            <span class="selo selo-cartaz">Em Cartaz</span>
+          </a>
+          <div class="cartao-info">
+            <h3 class="cartao-titulo"><a href="./detalhes.html">Carrie, a Estranha</a></h3>
+            <p class="cartao-meta">
+              <span class="nota"><i class="fa-solid fa-star"></i> 7,4</span>
+              <span>Filme</span>
+            </p>
+            <a href="./ingressos.html" class="botao botao-laranja botao-bloco">Comprar ingresso</a>
+            <button class="botao-salvar"><i class="fa-regular fa-bookmark"></i> Salvar</button>
+          </div>
+        </article>
+
+        <article class="cartao cartao-pequeno">
+          <a href="./detalhes.html" class="cartao-capa">
+            <img src="./img/posters/hora-do-pesadelo.jpg" alt="Pôster de A Hora do Pesadelo">
+          </a>
+          <div class="cartao-info">
+            <h3 class="cartao-titulo"><a href="./detalhes.html">A Hora do Pesadelo</a></h3>
+            <p class="cartao-meta">
+              <span class="nota"><i class="fa-solid fa-star"></i> 7,4</span>
+              <span>Filme</span>
+            </p>
+            <button class="botao-salvar"><i class="fa-regular fa-bookmark"></i> Salvar</button>
+          </div>
+        </article>
+
+        <article class="cartao cartao-pequeno">
+          <a href="./detalhes.html" class="cartao-capa">
+            <img src="./img/posters/resident-evil.jpg" alt="Pôster de Resident Evil">
+          </a>
+          <div class="cartao-info">
+            <h3 class="cartao-titulo"><a href="./detalhes.html">Resident Evil</a></h3>
+            <p class="cartao-meta">
+              <span class="nota"><i class="fa-solid fa-star"></i> 6,6</span>
+              <span>Filme</span>
+            </p>
+            <button class="botao-salvar botao-salvo"><i class="fa-solid fa-bookmark"></i> Salvo</button>
+          </div>
+        </article>
+
+        <article class="cartao cartao-pequeno">
+          <a href="./detalhes.html" class="cartao-capa">
+            <img src="./img/posters/verity.jpg" alt="Pôster de Verity">
+          </a>
+          <div class="cartao-info">
+            <h3 class="cartao-titulo"><a href="./detalhes.html">Verity</a></h3>
+            <p class="cartao-meta">
+              <span class="nota"><i class="fa-solid fa-star"></i> 6,0</span>
+              <span>Filme</span>
+            </p>
+            <button class="botao-salvar"><i class="fa-regular fa-bookmark"></i> Salvar</button>
+          </div>
+        </article>
+
+      </div>
+    </section>
 
     <section class="faixa-de-informacoes">
-        <div class="informacoes">
-            <span class="faixa-titulo">CINELUX EXPERIENCE</span>
-            <h2>Sua plataforma completa de cinema</h2>
-            <p>Sua plataforma completa para acompanhar lançamentos de cinema, garantir ingressos sem filas,
-                consultar
-                horários de exibição em tempo real e reservar combos com facilidade.</p>
-        </div>
-        <div class="apps-disponiveis">
-            <button class="botao-app"><i class="fa-brands fa-apple"></i> App Store</button>
-            <button class="botao-app"><i class="fa-brands fa-google-play"></i> Google Play</button>
-        </div>
+      <div class="informacoes">
+        <span class="faixa-titulo">CINELUX EXPERIENCE</span>
+        <h2>Sua plataforma completa de cinema</h2>
+        <p>Sua plataforma completa para acompanhar lançamentos de cinema, garantir ingressos sem filas, consultar
+          horários de exibição em tempo real e reservar combos com facilidade.</p>
+      </div>
+      <div class="apps-disponiveis">
+        <button class="botao-app"><i class="fa-brands fa-apple"></i> App Store</button>
+        <button class="botao-app"><i class="fa-brands fa-google-play"></i> Google Play</button>
+      </div>
     </section>
-    </main>
+  </main>
 
-    <footer class="rodape">
-        <div class="rodape-logo">
-            <img src="./img/Logo - LUX.png" alt="LUX Rodapé Logo">
-        </div>
+  <footer class="rodape">
+    <div class="rodape-logo">
+      <img src="./img/Logo - LUX.png" alt="LUX Rodapé Logo">
+    </div>
 
-        <div class="grade-do-rodape">
-            <div class="rodape-informacoes">
-                <a href="#">Filmes em Cartaz</a>
-                <a href="#">Próximas Estreias</a>
-                <a href="./combos.html">Bomboniere & Combos</a>
-            </div>
-            <div class="rodape-informacoes">
-                <a href="#">Cinemas Parceiros</a>
-                <a href="#">Central de Ajuda</a>
-                <a href="#">Termos de Uso</a>
-            </div>
-            <div class="rodape-informacoes">
-                <a href="#">Política de Privacidade</a>
-                <a href="#">Meia Entrada</a>
-                <a href="#">Atendimento ao Cliente</a>
-            </div>
-            <div class="rodape-informacoes informacoes-contato">
-                <p>Atendimento ao Cliente</p>
-                <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
-                <div class="redes-informacoes">
-                    <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
-                </div>
-            </div>
+    <div class="grade-do-rodape">
+      <div class="rodape-informacoes">
+        <a href="#">Filmes em Cartaz</a>
+        <a href="#">Próximas Estreias</a>
+        <a href="./combos.html">Bomboniere & Combos</a>
+      </div>
+      <div class="rodape-informacoes">
+        <a href="#">Cinemas Parceiros</a>
+        <a href="#">Central de Ajuda</a>
+        <a href="#">Termos de Uso</a>
+      </div>
+      <div class="rodape-informacoes">
+        <a href="#">Política de Privacidade</a>
+        <a href="#">Meia Entrada</a>
+        <a href="#">Atendimento ao Cliente</a>
+      </div>
+      <div class="rodape-informacoes informacoes-contato">
+        <p>Atendimento ao Cliente</p>
+        <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
+        <div class="redes-informacoes">
+          <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
         </div>
-    </footer>
+      </div>
+    </div>
+  </footer>
 
 </body>
 

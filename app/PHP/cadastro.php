@@ -1,0 +1,436 @@
+<?php
+require_once "./init.php";   // deve fornecer a conexão mysqli ($conn)
+
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+if (!empty($_SESSION['id_usuario'])) { header('Location: inicio.php'); exit; }
+
+if (!function_exists('h')) {
+    function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
+}
+function lx_stmt($conn, $sql, $types = '', $params = []) {
+    $st = mysqli_prepare($conn, $sql);
+    if ($types !== '') { mysqli_stmt_bind_param($st, $types, ...$params); }
+    mysqli_stmt_execute($st);
+    return $st;
+}
+function lx_todos($conn, $sql, $types = '', $params = []) {
+    $st = lx_stmt($conn, $sql, $types, $params);
+    $r = mysqli_stmt_get_result($st);
+    $rows = $r ? mysqli_fetch_all($r, MYSQLI_ASSOC) : [];
+    mysqli_stmt_close($st);
+    return $rows;
+}
+function lx_insert($conn, $sql, $types = '', $params = []) {
+    $st = lx_stmt($conn, $sql, $types, $params);
+    $id = mysqli_stmt_insert_id($st);
+    mysqli_stmt_close($st);
+    return $id;
+}
+function lx_brl($v) { return 'R$ ' . number_format((float)$v, 2, ',', '.'); }
+
+// Planos ativos (Lux Play, Lux Plus, Lux Prime...)
+$planos = lx_todos($conn, "SELECT id_plano, nome_plano, descricao_plano, valor_mensal, valor_anual FROM plano WHERE UPPER(plano_ativo) = 'SIM' ORDER BY valor_mensal");
+
+$erros = [];
+$v = ['nome' => '', 'nascimento' => '', 'endereco' => '', 'cpf' => '', 'email' => '', 'telefone' => '', 'id_plano' => '', 'periodo' => ''];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['escolha'])) {
+    // Etapa 1 -> 2 (sem JavaScript): o botão do plano envia "id_plano|Ciclo"
+    list($idp, $per) = array_pad(explode('|', $_POST['escolha'], 2), 2, '');
+    foreach ($planos as $p) {
+        if ((string)$p['id_plano'] === $idp) {
+            $v['id_plano'] = $idp;
+            $v['periodo']  = ($per === 'Anual') ? 'Anual' : 'Mensal';
+        }
+    }
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    foreach ($v as $k => $_) { $v[$k] = trim($_POST[$k] ?? ''); }
+    $senha = $_POST['senha'] ?? '';
+    $cpf   = preg_replace('/\D/', '', $v['cpf']);
+    $tel   = preg_replace('/\D/', '', $v['telefone']);
+
+    // Plano escolhido na etapa 1 (precisa existir e estar ativo)
+    $plano = null;
+    foreach ($planos as $p) { if ((string)$p['id_plano'] === $v['id_plano']) { $plano = $p; break; } }
+    $periodo = ($v['periodo'] === 'Anual') ? 'Anual' : 'Mensal';
+    if (!$plano) $erros[] = 'Escolha um plano na etapa 1.';
+
+    if ($v['nome'] === '') $erros[] = 'Informe o nome completo.';
+
+    // Nascimento digitado como DD/MM/AAAA -> gravado como AAAA-MM-DD
+    $nasc_sql = null;
+    $dt = DateTime::createFromFormat('d/m/Y', $v['nascimento']);
+    $dterr = DateTime::getLastErrors();
+    if (!$dt || ($dterr && ($dterr['warning_count'] || $dterr['error_count'])) || $dt->format('d/m/Y') !== $v['nascimento'] || $dt > new DateTime('today')) {
+        $erros[] = 'Data de nascimento inválida (use DD/MM/AAAA).';
+    } else {
+        $nasc_sql = $dt->format('Y-m-d');
+    }
+
+    if ($v['endereco'] === '') $erros[] = 'Informe o endereço.';
+    if (!preg_match('/^\d{11}$/', $cpf)) $erros[] = 'O CPF deve ter 11 dígitos numéricos.';
+    if (!filter_var($v['email'], FILTER_VALIDATE_EMAIL)) $erros[] = 'E-mail inválido.';
+    if ($tel !== '' && !preg_match('/^\d{10,11}$/', $tel)) $erros[] = 'Telefone deve ter 10 ou 11 dígitos.';
+    if (strlen($senha) < 6) $erros[] = 'A senha deve ter ao menos 6 caracteres.';
+
+    // Unicidade de CPF e e-mail
+    if (!$erros) {
+        if (lx_todos($conn, "SELECT id_usuario FROM usuario WHERE cpf = ?", 's', [$cpf]))           $erros[] = 'CPF já cadastrado.';
+        if (lx_todos($conn, "SELECT id_usuario FROM usuario WHERE email = ?", 's', [$v['email']])) $erros[] = 'E-mail já cadastrado.';
+    }
+
+    if (!$erros) {
+        try {
+            mysqli_begin_transaction($conn);   // conta + endereço + assinatura: tudo ou nada
+
+            $hash = password_hash($senha, PASSWORD_DEFAULT);   // coluna senha: VARCHAR(255)
+            $telbd = $tel !== '' ? $tel : null;
+            $id = lx_insert(
+                $conn,
+                "INSERT INTO usuario (nome, nascimento, cpf, email, telefone, senha) VALUES (?, ?, ?, ?, ?, ?)",
+                'ssssss',
+                [$v['nome'], $nasc_sql, $cpf, $v['email'], $telbd, $hash]
+            );
+            lx_insert($conn, "INSERT INTO pontos_usuario (qntd_pontos, id_usuario) VALUES (0, ?)", 'i', [$id]);
+
+            // Endereço informado em texto livre: guardado em endereco_entrega.logradouro
+            // (o cliente pode cadastrar um endereço completo depois, no carrinho)
+            lx_insert(
+                $conn,
+                "INSERT INTO endereco_entrega (id_usuario, logradouro, numero, complemento, bairro, cidade, estado, cep) VALUES (?, ?, 'S/N', '', '', '', '', '')",
+                'is',
+                [$id, $v['endereco']]
+            );
+
+            // Assinatura: status Ativo, início hoje, fim = +1 mês (Mensal) ou +1 ano (Anual)
+            $intervalo = $periodo === 'Anual' ? 'INTERVAL 1 YEAR' : 'INTERVAL 1 MONTH';
+            lx_insert(
+                $conn,
+                "INSERT INTO assinatura (periodo, data_inicio, data_fim, status_assinatura, id_usuario, id_plano)
+                 VALUES (?, CURDATE(), DATE_ADD(CURDATE(), $intervalo), 'Ativo', ?, ?)",
+                'sii',
+                [$periodo, $id, (int)$plano['id_plano']]
+            );
+
+            mysqli_commit($conn);
+            header('Location: login.php?cadastro=ok');
+            exit;
+        } catch (Throwable $e) {
+            mysqli_rollback($conn);
+            $erros[] = 'Não foi possível concluir o cadastro. Tente novamente.';
+        }
+    }
+}
+
+// Em caso de erro, reabre direto a etapa 2 (formulário)
+$abrir_etapa2 = ($_SERVER['REQUEST_METHOD'] === 'POST');
+$nome_plano_escolhido = 'Plano Escolhido';
+foreach ($planos as $p) {
+    if ((string)$p['id_plano'] === $v['id_plano']) { $nome_plano_escolhido = $p['nome_plano'] . ' (' . ($v['periodo'] === 'Anual' ? 'Anual' : 'Mensal') . ')'; }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CINELUX | Assinatura e Cadastro</title>
+    <link rel="stylesheet" href="./CSS/cadastro.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" href="./img/Logo - LUX.png" type="image/x-icon">
+</head>
+
+<body>
+    <input type="radio" name="etapa-fluxo" id="etapa-1-trigger" <?= $abrir_etapa2 ? '' : 'checked' ?> class="gatilho-etapa">
+    <input type="radio" name="etapa-fluxo" id="etapa-2-trigger" <?= $abrir_etapa2 ? 'checked' : '' ?> class="gatilho-etapa">
+
+    <header class="cabecalho">
+        <a href="./login.php" class="logo">
+            <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
+        </a>
+    </header>
+
+    <main class="faixa-principal">
+        <div class="fita-de-filme" aria-hidden="true"></div>
+
+        <div class="passos-progresso">
+            <label for="etapa-1-trigger" class="passo passo-1">
+                <span class="passo-numero">1</span>
+                <span class="passo-texto">Escolha seu plano</span>
+            </label>
+            <div class="passo-divisor"></div>
+            <label for="etapa-2-trigger" class="passo passo-2">
+                <span class="passo-numero">2</span>
+                <span class="passo-texto">Crie sua conta</span>
+            </label>
+        </div>
+
+        <section class="secao-fluxo secao-planos">
+            <h1 class="apresentacao-titulo centralizado">
+                Escolha o plano da<br>sua história.
+            </h1>
+            <p class="apresentacao-texto centralizado">
+                Assine um plano para criar sua conta na LUX e aproveitar<br>
+                o catálogo de streaming e vantagens nos nossos cinemas.
+            </p>
+
+            <input type="checkbox" class="parte-ver-beneficios" id="aba-ver-beneficios">
+            <div class="ver-beneficios">
+                <label for="aba-ver-beneficios" class="botao-ver-beneficios">
+                    <i class="fa-solid"></i>Ver todos os benefícios e vantagens dos planos
+                </label>
+            </div>
+
+            <div class="aba-beneficios">
+                <div class="ver-beneficios-conteudo">
+                    <h3 class="beneficios-titulo">Benefícios dos Planos LUX</h3>
+                    <p class="beneficios-subtitulo">Veja o que cada plano te oferece e qual deve ser a melhor escolha
+                        para você</p><br>
+                    <div class="grande-beneficios">
+                        <div class="cartao-de-beneficio">
+                            <h4 class="planos-titulo">Plano 1</h4>
+                            <p class="planos-beneficio-descricao">
+                                É a porta de entrada para a plataforma LUX. Pelo menor valor mensal (R$ 19,90), garante
+                                acesso completo aos filmes em casa e ainda gera economia no ingresso presencial.
+                            </p>
+                        </div>
+
+                        <div class="cartao-de-beneficio">
+                            <h4 class="planos-titulo">Plano 2</h4>
+                            <p class="planos-beneficio-descricao">
+                                Dobra a porcentagem de desconto nos ingressos (de 5% para 10%) e estende a economia para
+                                a bomboniere (5%). Para quem vai ao cinema ao menos uma vez por mês, a diferença de
+                                valor se paga rapidamente nos descontos das compras no balcão.
+                            </p>
+                        </div>
+
+                        <div class="cartao-de-beneficio">
+                            <h4 class="planos-titulo">Plano 3</h4>
+                            <p class="planos-beneficio-descricao">
+                                Oferece a maior taxa de desconto da plataforma (15% nos ingressos e 10% nos
+                                alimentos/bebidas). Além disso, o diferencial exclusivo dos Pontos em Dobro acelera o
+                                resgate de brindes, ingressos gratuitos e benefícios no programa de fidelidade.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="caixa-vantagem-anual">
+                        <h4 class="vantagem-anual-titulo">Vantagens do Ciclo Anual</h4>
+                        <p class="vantagem-anual-descricao">
+                            Em todas as opções, a assinatura anual gera 2 meses de desconto direto em relação ao
+                            pagamento mensal recorrente (por exemplo, no Plano 1 o valor anual é R$ 199,00 em vez de R$
+                            238,80).
+                            Ao optar pelo plano anual em qualquer uma das modalidades do Cinema LUX, a principal
+                            vantagem é a economia financeira equivalente a dois meses gratuitos de assinatura. Em vez de
+                            efetuar doze pagamentos mensais ao longo do ano, a cobrança anual é feita uma única vez por
+                            ano com um desconto direto sobre o montante total.
+                        </p>
+
+                        <ul class="lista-economica-anual">
+                            <li>
+                                <strong>No Plano 1, cujo custo mensal é de R$ 19,90 (totalizando R$ 238,80 ao fim de
+                                    doze meses), o valor do plano anual cai para R$ 199,00, gerando uma economia
+                                    imediata de R$ 39,80.</strong>
+                            </li>
+                            <li>
+                                <strong>No Plano 2, o pagamento mensal de R$ 29,90 resulta em R$ 358,80 por ano,
+                                    enquanto a assinatura anual custa R$ 299,00, garantindo uma economia de R$ 59,80 ao
+                                    assinante.</strong>
+                            </li>
+                            <li>
+                                <strong>No Plano 3, o valor de R$ 39,90 por mês somaria R$ 478,80 ao longo do ano, mas
+                                    no formato anual reduz-se para R$ 399,00, proporcionando uma poupança total de R$
+                                    79,80.
+                                </strong>
+                            </li>
+                        </ul>
+
+                        <p class="congelamento-tarifa">
+                            <i class="fa-solid"></i>Além da vantagem financeira direta, a escolha pelo ciclo anual
+                            assegura o congelamento da tarifa contratada durante todo o período de doze meses,
+                            protegendo o utilizador contra eventuais reajustes de preço da mensalidade.
+                        </p>
+                    </div>
+
+                    <div class="ver-beneficios-rodape">
+                        <label for="aba-ver-beneficios" class="botao botao-mustard">Escolher Plano</label>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <form action="cadastro.php" method="post">
+            <div class="alternador-ciclo-container">
+                <input type="radio" name="ciclo-cobranca" id="cobranca-mensal" checked class="gatilho-cobranca">
+                <input type="radio" name="ciclo-cobranca" id="cobranca-anual" class="gatilho-cobranca">
+
+                <div class="alternador-ciclo-rotulos">
+                    <label for="cobranca-mensal" class="rotulo-alternador rotulo-mensal">Mensal</label>
+                    <label for="cobranca-anual" class="rotulo-alternador rotulo-anual">
+                        Anual <span class="selo-desconto">mais barato</span>
+                    </label>
+                </div>
+
+                <div class="grade-planos">
+                    <?php foreach ($planos as $n => $p): ?>
+                    <article class="cartao-plano<?= $n === 1 ? ' destacado' : '' ?>">
+                        <div class="radio-plano"></div>
+                        <h3 class="plano-nome"><?= h($p['nome_plano']) ?></h3>
+
+                        <div class="plano-preco preco-mensal">
+                            <span class="preco-valor"><?= h(lx_brl($p['valor_mensal'])) ?></span>
+                            <span class="preco-periodo">/mês</span>
+                        </div>
+                        <div class="plano-preco preco-anual">
+                            <span class="preco-valor"><?= h(lx_brl($p['valor_anual'])) ?></span>
+                            <span class="preco-periodo">/ano</span>
+                        </div>
+
+                        <p class="preco-subtexto sub-mensal">Cobrado todo mês</p>
+                        <p class="preco-subtexto sub-anual">Cobrado uma vez por ano</p>
+
+                        <div class="plano-recursos">
+                            <p><?= h($p['descricao_plano']) ?></p>
+                        </div>
+
+                        <button type="submit" name="escolha" value="<?= (int)$p['id_plano'] ?>|Mensal" class="botao botao-mustard texto-btn-mensal">Assinar plano mensal</button>
+                        <br>
+                        <button type="submit" name="escolha" value="<?= (int)$p['id_plano'] ?>|Anual" class="botao botao-mustard texto-btn-anual">Assinar plano anual</button>
+                    </article>
+                    <?php endforeach; ?>
+                    <?php if (!$planos): ?><p class="apresentacao-texto centralizado">Nenhum plano disponível no momento.</p><?php endif; ?>
+                </div>
+            </div>
+            </form>
+
+
+            <p class="aviso-anual">
+                Os valores anuais são cobrados uma vez por ano e saem mais baratos do que pagar 12 mensalidades.
+            </p>
+        </section>
+
+        <section class="secao-fluxo secao-cadastro">
+            <div class="conteudo-cadastro">
+                <section class="apresentacao">
+                    <h1 class="apresentacao-titulo">
+                        Sua próxima<br>história começa<br>
+                        <span class="titulo-destaque">aqui.</span>
+                    </h1>
+                    <p class="apresentacao-texto">
+                        Entre para descobrir filmes, sessões<br>
+                        e experiências inesquecíveis
+                    </p>
+                    <span class="apresentacao-linha"></span>
+
+                    <div class="caixa-plano-selecionado">
+                        <span class="rotulo-resumo">Plano Selecionado</span>
+                        <h4 class="titulo-resumo"><?= h($nome_plano_escolhido) ?></h4>
+                        <label for="etapa-1-trigger" class="link-alterar-plano">Alterar Plano</label>
+                    </div>
+                </section>
+
+                <section class="cartao cartao-cadastro">
+                    <h2 class="cartao-titulo">Criar nova conta</h2>
+                    <p class="cartao-subtitulo">Preencha seus dados para se cadastrar</p>
+
+
+                    <?php foreach ($erros as $e): ?>
+                        <div role="alert" style="padding:10px 14px;border-radius:10px;margin-bottom:12px;background:#4a1f25;border:1px solid #a33a48;"><?= h($e) ?></div>
+                    <?php endforeach; ?>
+
+                    <form class="formulario" action="cadastro.php" method="post">
+                        <!-- plano escolhido na etapa 1 (definido pelo servidor) -->
+                        <input type="hidden" name="id_plano" value="<?= h($v['id_plano']) ?>">
+                        <input type="hidden" name="periodo" value="<?= h($v['periodo']) ?>">
+
+
+                        <div class="campo">
+                            <label for="nome">Nome completo</label>
+                            <div class="campo-entrada">
+                                <i class="fa-regular fa-user campo-icone"></i>
+                                <input type="text" id="nome" name="nome" value="<?= h($v['nome']) ?>" placeholder="Digite seu nome completo"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="campo">
+                            <label for="nascimento">Data de nascimento</label>
+                            <div class="campo-entrada">
+                                <i class="fa-regular fa-calendar campo-icone"></i>
+                                <input type="text" id="nascimento" name="nascimento" value="<?= h($v['nascimento']) ?>" placeholder="DD/MM/AAAA"
+                                    inputmode="numeric" maxlength="10" required>
+                            </div>
+                        </div>
+
+                        <div class="campo">
+                            <label for="endereco">Endereço</label>
+                            <div class="campo-entrada">
+                                <i class="fa-regular fa-user campo-icone"></i>
+                                <input type="text" id="endereco" name="endereco" value="<?= h($v['endereco']) ?>" placeholder="Digite seu endereço"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="campo">
+                            <label for="cpf">CPF</label>
+                            <div class="campo-entrada">
+                                <i class="fa-regular fa-id-card campo-icone"></i>
+                                <input type="text" id="cpf" name="cpf" value="<?= h($v['cpf']) ?>" placeholder="000.000.000-00" inputmode="numeric"
+                                    maxlength="14" required>
+                            </div>
+                        </div>
+
+                        <div class="campo">
+                            <label for="email">E-mail</label>
+                            <div class="campo-entrada">
+                                <i class="fa-regular fa-envelope campo-icone"></i>
+                                <input type="email" id="email" name="email" value="<?= h($v['email']) ?>" placeholder="Digite seu melhor e-mail"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="campo">
+                            <label for="telefone">Telefone (opcional)</label>
+                            <div class="campo-entrada">
+                                <i class="fa-solid fa-phone campo-icone"></i>
+                                <input type="tel" id="telefone" name="telefone" value="<?= h($v['telefone']) ?>"
+                                    placeholder="(00) 00000-0000 (Opcional)">
+                            </div>
+                        </div>
+
+                        <div class="campo">
+                            <label for="senha">Senha</label>
+                            <div class="campo-entrada">
+                                <i class="fa-solid fa-lock campo-icone"></i>
+                                <input type="password" id="senha" name="senha" placeholder="Crie uma senha forte"
+                                    required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="botao botao-mustard">Cadastrar e Finalizar Assinatura</button>
+
+                    </form>
+                </section>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="rodape">
+        <a href="./login.php" class="logo">
+            <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
+        </a>
+        <nav class="rodape-links" aria-label="Links legais">
+            <a href="#termos">Termos de Uso</a>
+            <a href="#privacidade">Privacidade</a>
+            <a href="#trocas">Política de Trocas</a>
+        </nav>
+        <p class="rodape-direitos">LUX Media® 2026. Todos os direitos reservados.</p>
+    </footer>
+
+</body>
+
+</html>

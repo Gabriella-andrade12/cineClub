@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CINE - LUX</title>
+  <link rel="stylesheet" href="./CSS/avaliacao.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="shortcut icon" href="./img/Logo - LUX.png" type="image/x-icon">
+</head>
+
+<body>
+
+  <header class="cabecalho">
+    <a href="./inicio.html" class="logo">
+      <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
+    </a>
+
+    <nav class="navegacao-menu">
+      <a href="./inicio.html" class="navegacao-ativa">Lançamentos</a>
+      <a href="./recomendados.html" class="navegacao-opcoes">Recomendados</a>
+      <a href="./combos.html" class="navegacao-opcoes">Combos</a>
+      <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
+    </nav>
+
+    <div class="busca">
+      <input type="text" placeholder="Buscar filmes, gêneros, cinemas...">
+      <i class="fa-solid fa-magnifying-glass busca-icon"></i>
+    </div>
+
+    <div class="acoes-do-usuario">
+      <a href="carrinho.html" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
+      <a href="./minha_lista.html" class="link"><i class="fa-solid fa-bookmark"></i></a>
+      <a href="./perfil.html" class="link"><i class="fa-solid fa-user"></i></a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- TÍTULO DA PÁGINA -->
+    <header class="hero-avaliacao">
+      <span class="etiqueta-secao">SUA OPINIÃO VALE PONTOS</span>
+      <h1>AVALIE SUA <span>EXPERIÊNCIA</span></h1>
+      <p class="subtitulo-hero">
+        Compartilhe o que achou dos filmes que você assistiu nos cinemas LUX ou dos combos e produtos adquiridos na bomboniere.
+      </p>
+    </header>
+
+    <!-- GRADE PRINCIPAL: FORMULÁRIO + HISTÓRICO RECENTE -->
+    <div class="grade-avaliacao">
+
+      <!-- CARD DO FORMULÁRIO (PRONTO PARA ENVIAR AO PHP DA TABELA `avaliacao`) -->
+      <section class="card-formulario">
+        <form action="salvar_avaliacao.php" method="post" class="form-avaliacao">
+
+          <!-- SELETOR DE CATEGORIA 100% EM CSS -->
+          <div class="grupo-campo">
+            <label class="rotulo-campo">O que você deseja avaliar?</label>
+
+            <div class="seletor-tipo">
+              <input type="radio" name="tipo_avaliacao" id="tipo-filme" value="filme" class="radio-oculto" checked>
+              <input type="radio" name="tipo_avaliacao" id="tipo-produto" value="produto" class="radio-oculto">
+
+              <div class="abas-tipo">
+                <label for="tipo-filme" class="aba-tipo">
+                  <i class="fa-solid fa-film"></i> Filme Assistido
+                </label>
+                <label for="tipo-produto" class="aba-tipo">
+                  <i class="fa-solid fa-bucket"></i> Produto / Combo Comprado
+                </label>
+              </div>
+
+              <!-- SELECT DE FILMES (aparece quando 'Filme Assistido' está marcado) -->
+              <div class="campo-dinamico campo-filme">
+                <label for="id_filme" class="sub-rotulo">Selecione um filme do seu histórico de sessões</label>
+                <div class="select-wrapper">
+                  <select name="id_filme" id="id_filme" class="campo-select">
+                    <option value="">-- Escolha o filme assistido --</option>
+                    <option value="1">A Morte te Dá Parabéns (Assistido em 18/11/2026)</option>
+                    <option value="2">Batman (Assistido em 10/11/2026)</option>
+                    <option value="3">O Poderoso Chefão (Assistido em 02/11/2026)</option>
+                    <option value="4">Street Fighter (Assistido em 25/10/2026)</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down select-seta"></i>
+                </div>
+              </div>
+
+              <!-- SELECT DE PRODUTOS (aparece quando 'Produto Comprado' está marcado) -->
+              <div class="campo-dinamico campo-produto">
+                <label for="id_produto" class="sub-rotulo">Selecione um combo ou produto comprado</label>
+                <div class="select-wrapper">
+                  <select name="id_produto" id="id_produto" class="campo-select">
+                    <option value="">-- Escolha o produto ou combo --</option>
+                    <option value="10">Combo Ghostface Pânico (Pedido #8841)</option>
+                    <option value="11">Combo M&amp;M's Duo (Pedido #8841)</option>
+                    <option value="12">Balde Pipoca Mega Caramelo (Pedido #8710)</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down select-seta"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CAMPO DE NOTA DE 1 A 10 (INTERATIVO SEM JS) -->
+          <div class="grupo-campo">
+            <div class="linha-rotulo-nota">
+              <label class="rotulo-campo">Sua Nota (de 1 a 10)</label>
+              <span class="legenda-nota">1 = Ruim · 10 = Obra-prima</span>
+            </div>
+
+            <div class="escala-notas" role="radiogroup" aria-label="Nota de 1 a 10">
+              <input type="radio" name="nota" id="nota-10" value="10" required>
+              <label for="nota-10" title="Nota 10">10</label>
+
+              <input type="radio" name="nota" id="nota-9" value="9">
+              <label for="nota-9" title="Nota 9">9</label>
+
+              <input type="radio" name="nota" id="nota-8" value="8">
+              <label for="nota-8" title="Nota 8">8</label>
+
+              <input type="radio" name="nota" id="nota-7" value="7">
+              <label for="nota-7" title="Nota 7">7</label>
+
+              <input type="radio" name="nota" id="nota-6" value="6">
+              <label for="nota-6" title="Nota 6">6</label>
+
+              <input type="radio" name="nota" id="nota-5" value="5">
+              <label for="nota-5" title="Nota 5">5</label>
+
+              <input type="radio" name="nota" id="nota-4" value="4">
+              <label for="nota-4" title="Nota 4">4</label>
+
+              <input type="radio" name="nota" id="nota-3" value="3">
+              <label for="nota-3" title="Nota 3">3</label>
+
+              <input type="radio" name="nota" id="nota-2" value="2">
+              <label for="nota-2" title="Nota 2">2</label>
+
+              <input type="radio" name="nota" id="nota-1" value="1">
+              <label for="nota-1" title="Nota 1">1</label>
+            </div>
+          </div>
+
+          <!-- COMENTÁRIO TEXTUAL -->
+          <div class="grupo-campo">
+            <label for="comentario" class="rotulo-campo">Seu Comentário</label>
+            <textarea
+              name="comentario"
+              id="comentario"
+              rows="5"
+              maxlength="600"
+              placeholder="Conte detalhes sobre o filme, a qualidade da sala, som ou o sabor do combo..."
+              required></textarea>
+            <span class="dica-campo">Máximo de 600 caracteres · Evite spoilers sem aviso.</span>
+          </div>
+
+          <button type="submit" class="btn-enviar">
+            <i class="fa-solid fa-paper-plane"></i> Publicar Avaliação
+          </button>
+        </form>
+      </section>
+
+      <!-- COLUNA LATERAL: SUAS ÚLTIMAS AVALIAÇÕES -->
+      <aside class="coluna-historico">
+        <div class="card-lateral">
+          <div class="cabecalho-lateral">
+            <i class="fa-solid fa-star"></i>
+            <h2>Suas Avaliações Recentes</h2>
+          </div>
+
+          <div class="lista-avaliacoes">
+            <article class="item-avaliacao">
+              <div class="topo-item">
+                <span class="badge-tipo filme">FILME</span>
+                <span class="nota-badge"><i class="fa-solid fa-star"></i> 9/10</span>
+              </div>
+              <h3>Batman</h3>
+              <p>"Fotografia impecável e som da sala LUX absurdamente imersivo. Vale muito assistir na tela grande!"</p>
+              <span class="data-avaliacao">Avaliado em 12/11/2026</span>
+            </article>
+
+            <article class="item-avaliacao">
+              <div class="topo-item">
+                <span class="badge-tipo produto">COMBO</span>
+                <span class="nota-badge"><i class="fa-solid fa-star"></i> 10/10</span>
+              </div>
+              <h3>Combo Ghostface Pânico</h3>
+              <p>"O balde colecionável é muito bem acabado e a pipoca chegou quentinha direto no assento."</p>
+              <span class="data-avaliacao">Avaliado em 19/11/2026</span>
+            </article>
+          </div>
+
+          <div class="aviso-pontos">
+            <i class="fa-solid fa-crown"></i>
+            <p>Cada avaliação válida de item comprado ou assistido rende <strong>+100 PTS</strong> no Clube LUX.</p>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+  <section class="faixa-de-informacoes">
+      <div class="informacoes">
+        <span class="faixa-titulo">CINELUX EXPERIENCE</span>
+        <h2>Sua plataforma completa de cinema</h2>
+        <p>Sua plataforma completa para acompanhar lançamentos de cinema, garantir ingressos sem filas, consultar
+          horários de exibição em tempo real e reservar combos com facilidade.</p>
+      </div>
+      <div class="apps-disponiveis">
+        <button class="botao-app"><i class="fa-brands fa-apple"></i> App Store</button>
+        <button class="botao-app"><i class="fa-brands fa-google-play"></i> Google Play</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="rodape-logo">
+      <img src="./img/Logo - LUX.png" alt="LUX Rodapé Logo">
+    </div>
+
+    <div class="grade-do-rodape">
+      <div class="rodape-informacoes">
+        <a href="#">Filmes em Cartaz</a>
+        <a href="#">Próximas Estreias</a>
+        <a href="./combos.html">Bomboniere & Combos</a>
+      </div>
+      <div class="rodape-informacoes">
+        <a href="#">Cinemas Parceiros</a>
+        <a href="#">Central de Ajuda</a>
+        <a href="#">Termos de Uso</a>
+      </div>
+      <div class="rodape-informacoes">
+        <a href="#">Política de Privacidade</a>
+        <a href="#">Meia Entrada</a>
+        <a href="#">Atendimento ao Cliente</a>
+      </div>
+      <div class="rodape-informacoes informacoes-contato">
+        <p>Atendimento ao Cliente</p>
+        <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
+        <div class="redes-informacoes">
+          <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>

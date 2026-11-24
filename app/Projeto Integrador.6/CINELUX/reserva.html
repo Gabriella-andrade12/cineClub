@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CINE - LUX</title>
+  <link rel="stylesheet" href="./CSS/reserva.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="shortcut icon" href="./img/Logo - LUX.png" type="image/x-icon">
+</head>
+
+<body>
+
+  <header class="cabecalho">
+    <a href="./inicio.html" class="logo">
+      <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
+    </a>
+
+    <nav class="navegacao-menu">
+      <a href="./inicio.html" class="navegacao-ativa">Lançamentos</a>
+      <a href="./recomendados.html" class="navegacao-opcoes">Recomendados</a>
+      <a href="./combos.html" class="navegacao-opcoes">Combos</a>
+      <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
+    </nav>
+
+    <div class="busca">
+      <input type="text" placeholder="Buscar filmes, gêneros, cinemas...">
+      <i class="fa-solid fa-magnifying-glass busca-icon"></i>
+    </div>
+
+    <div class="acoes-do-usuario">
+      <a href="carrinho.html" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
+      <a href="./minha_lista.html" class="link"><i class="fa-solid fa-bookmark"></i></a>
+      <a href="./perfil.html" class="link"><i class="fa-solid fa-user"></i></a>
+    </div>
+  </header>
+
+<main class="container">
+
+    <!-- TÍTULO DA PÁGINA -->
+    <header class="hero-reserva">
+      <span class="etiqueta-secao">EXCLUSIVIDADE CINELUX</span>
+      <h1>RESERVE UMA <span>SALA DE CINEMA</span> SÓ PARA VOCÊ</h1>
+      <p class="subtitulo-hero">
+        Organize sessões privadas para aniversários, eventos corporativos ou encontros entre amigos. Escolha o cinema, a sala, o filme em cartaz e verifique a disponibilidade na hora.
+      </p>
+    </header>
+
+    <!-- GRADE PRINCIPAL: FORMULÁRIO + RESUMO / VALIDAÇÃO -->
+    <div class="grade-reserva">
+
+      <!-- COLUNA ESQUERDA: FORMULÁRIO DE RESERVA -->
+      <section class="card-formulario">
+        <div class="card-cabecalho">
+          <h2><i class="fa-solid fa-film"></i> Configurar Sessão Privada</h2>
+          <p>Preencha todos os campos abaixo para consultar a grade e agendar.</p>
+        </div>
+
+        <form action="processar_reserva.php" method="post" class="form-reserva">
+
+          <!-- Seleção de Cinema -->
+          <div class="campo-grupo">
+            <label for="id_cinema"><i class="fa-solid fa-building"></i> Cinema LUX</label>
+            <select id="id_cinema" name="id_cinema" required>
+              <option value="" disabled selected>Selecione a unidade desejada...</option>
+              <option value="1">CineLUX Shopping Paulista — São Paulo, SP</option>
+              <option value="2">CineLUX Morumbi Town — São Paulo, SP</option>
+              <option value="3">CineLUX ParkShopping São Caetano — São Caetano do Sul, SP</option>
+              <option value="4">CineLUX BarraShopping — Rio de Janeiro, RJ</option>
+            </select>
+          </div>
+
+          <!-- Seleção de Sala -->
+          <div class="campo-grupo">
+            <label for="id_sala"><i class="fa-solid fa-couch"></i> Sala de Exibição</label>
+            <select id="id_sala" name="id_sala" required>
+              <option value="" disabled selected>Selecione o tipo de sala...</option>
+              <option value="101">Sala 01 — VIP Recliner (40 lugares · Dolby Atmos)</option>
+              <option value="102">Sala 02 — Stadium 2D/3D (85 lugares)</option>
+              <option value="103">Sala 03 — IMAX Laser Exclusiva (140 lugares)</option>
+              <option value="104">Sala 04 — Lounge Boutique (24 lugares)</option>
+            </select>
+          </div>
+
+          <!-- Data e Horário lado a lado -->
+          <div class="linha-dupla">
+            <div class="campo-grupo">
+              <label for="data_reserva"><i class="fa-regular fa-calendar"></i> Data da Reserva</label>
+              <input type="date" id="data_reserva" name="data_reserva" min="2026-11-24" required>
+            </div>
+
+            <div class="campo-grupo">
+              <label for="horario_reserva"><i class="fa-regular fa-clock"></i> Horário Desejado</label>
+              <select id="horario_reserva" name="horario_reserva" required>
+                <option value="" disabled selected>Escolha o horário...</option>
+                <option value="10:30">10:30 (Sessão Matinê)</option>
+                <option value="14:00">14:00 (Tarde)</option>
+                <option value="16:45">16:45 (Tarde / Fim de tarde)</option>
+                <option value="19:30">19:30 (Noite)</option>
+                <option value="22:15">22:15 (Corujão Exclusivo)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Seleção de Filme em Cartaz -->
+          <div class="campo-grupo">
+            <label for="id_filme"><i class="fa-solid fa-clapperboard"></i> Filme em Cartaz Desejado</label>
+            <select id="id_filme" name="id_filme" required>
+              <option value="" disabled selected>Escolha um título em cartaz...</option>
+              <option value="10">A Morte te Dá Parabéns — Terror / Suspense (1h 36m)</option>
+              <option value="11">Batman — Ação / Suspense (2h 56m)</option>
+              <option value="12">O Poderoso Chefão (Clássico LUX) — Drama (2h 55m)</option>
+              <option value="13">Psicose — Suspense / Terror (1h 49m)</option>
+              <option value="14">Street Fighter — Ação / Aventura (1h 42m)</option>
+              <option value="15">Resident Evil — Ação / Terror (1h 40m)</option>
+            </select>
+          </div>
+
+          <!-- Observações opcionais -->
+          <div class="campo-grupo">
+            <label for="observacoes"><i class="fa-regular fa-comment-dots"></i> Observações para o Evento (Opcional)</label>
+            <textarea id="observacoes" name="observacoes" rows="3" placeholder="Ex.: Exibição de vídeo de parabéns antes do filme, necessidade de microfone ou reserva de combos..."></textarea>
+          </div>
+
+          <!-- Botão Principal -->
+          <button type="submit" class="btn-confirmar">
+            <i class="fa-solid fa-calendar-check"></i> VERIFICAR DISPONIBILIDADE E AGENDAR
+          </button>
+        </form>
+      </section>
+
+      <!-- COLUNA DIREITA: VALIDAÇÃO DE CONFLITO, STATUS E RESUMO -->
+      <aside class="coluna-lateral">
+
+        <!-- CARD DE STATUS E VALIDAÇÃO (100% CSS COM ABAS DE VISUALIZAÇÃO) -->
+        <div class="card-status">
+          <div class="status-topo">
+            <span class="badge-sistema"><i class="fa-solid fa-shield-halved"></i> VALIDAÇÃO EM TEMPO REAL</span>
+            <h3>Status da Sala & Agenda</h3>
+            <p>O sistema cruza automaticamente as tabelas <code>sessao</code> e <code>reserva</code> para impedir conflitos no mesmo dia e horário.</p>
+          </div>
+
+          <!-- Controles CSS para pré-visualizar os 3 retornos possíveis do sistema -->
+          <div class="simulador-estados">
+            <input type="radio" name="estado_validacao" id="estado-agendada" class="radio-estado" checked>
+            <input type="radio" name="estado_validacao" id="estado-conflito-sessao" class="radio-estado">
+            <input type="radio" name="estado_validacao" id="estado-conflito-reserva" class="radio-estado">
+
+            <div class="seletor-estados">
+              <label for="estado-agendada" class="pill-estado">Disponível</label>
+              <label for="estado-conflito-sessao" class="pill-estado">Conflito Sessão</label>
+              <label for="estado-conflito-reserva" class="pill-estado">Conflito Reserva</label>
+            </div>
+
+            <!-- Estado 1: Disponível -> Status Agendada -->
+            <div class="box-resultado resultado-ok">
+              <div class="resultado-icone">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <div class="resultado-texto">
+                <span class="tag-status status-agendada">STATUS: AGENDADA</span>
+                <h4>Sala Livre para Reserva!</h4>
+                <p>Nenhuma sessão comercial (<code>sessao</code>) ou outra reserva privada (<code>reserva</code>) encontrada para esta data e horário. Sua reserva será gravada como <strong>Agendada</strong>.</p>
+              </div>
+            </div>
+
+            <!-- Estado 2: Conflito com Sessão em Cartaz -->
+            <div class="box-resultado resultado-erro">
+              <div class="resultado-icone">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              </div>
+              <div class="resultado-texto">
+                <span class="tag-status status-indisponivel">INDISPONÍVEL · SESSÃO ATIVA</span>
+                <h4>Conflito com Programação Regular</h4>
+                <p>Esta sala já possui uma exibição regular cadastrada (<code>sessao</code>) neste dia e horário. Escolha outro horário ou outra sala LUX.</p>
+              </div>
+            </div>
+
+            <!-- Estado 3: Conflito com Outra Reserva -->
+            <div class="box-resultado resultado-erro">
+              <div class="resultado-icone">
+                <i class="fa-solid fa-ban"></i>
+              </div>
+              <div class="resultado-texto">
+                <span class="tag-status status-indisponivel">INDISPONÍVEL · JÁ RESERVADA</span>
+                <h4>Sala Reservada por Outro Cliente</h4>
+                <p>Já existe uma reserva com status <strong>Agendada</strong> (<code>reserva</code>) para esta sala no mesmo dia e horário.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD DE BENEFÍCIOS DA SALA PRIVADA -->
+        <div class="card-info-vip">
+          <h3>O que está incluso na reserva?</h3>
+          <ul class="lista-vantagens">
+            <li>
+              <i class="fa-solid fa-check"></i>
+              <span><strong>Projeção Exclusiva:</strong> Exibição fechada apenas para os seus convidados.</span>
+            </li>
+            <li>
+              <i class="fa-solid fa-check"></i>
+              <span><strong>Bloqueio Imediato:</strong> Ao confirmar, o horário é bloqueado automaticamente na grade.</span>
+            </li>
+            <li>
+              <i class="fa-solid fa-check"></i>
+              <span><strong>Combos Especiais:</strong> Desconto exclusivo na bomboniere para grupos fechados.</span>
+            </li>
+          </ul>
+          <a href="./combos.html" class="btn-combos">Ver Combos para Grupos</a>
+        </div>
+
+      </aside>
+    </div>
+
+  <section class="faixa-de-informacoes">
+      <div class="informacoes">
+        <span class="faixa-titulo">CINELUX EXPERIENCE</span>
+        <h2>Sua plataforma completa de cinema</h2>
+        <p>Sua plataforma completa para acompanhar lançamentos de cinema, garantir ingressos sem filas, consultar
+          horários de exibição em tempo real e reservar combos com facilidade.</p>
+      </div>
+      <div class="apps-disponiveis">
+        <button class="botao-app"><i class="fa-brands fa-apple"></i> App Store</button>
+        <button class="botao-app"><i class="fa-brands fa-google-play"></i> Google Play</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="rodape-logo">
+      <img src="./img/Logo - LUX.png" alt="LUX Rodapé Logo">
+    </div>
+
+    <div class="grade-do-rodape">
+      <div class="rodape-informacoes">
+        <a href="#">Filmes em Cartaz</a>
+        <a href="#">Próximas Estreias</a>
+        <a href="./combos.html">Bomboniere & Combos</a>
+      </div>
+      <div class="rodape-informacoes">
+        <a href="#">Cinemas Parceiros</a>
+        <a href="#">Central de Ajuda</a>
+        <a href="#">Termos de Uso</a>
+      </div>
+      <div class="rodape-informacoes">
+        <a href="#">Política de Privacidade</a>
+        <a href="#">Meia Entrada</a>
+        <a href="#">Atendimento ao Cliente</a>
+      </div>
+      <div class="rodape-informacoes informacoes-contato">
+        <p>Atendimento ao Cliente</p>
+        <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
+        <div class="redes-informacoes">
+          <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>

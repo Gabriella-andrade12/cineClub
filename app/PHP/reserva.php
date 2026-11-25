@@ -149,7 +149,7 @@ $minhas = $st->fetchAll();
       <a href="./inicio.php" class="navegacao-ativa">Lançamentos</a>
       <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
       <a href="./bomboniere.php" class="navegacao-opcoes">Combos</a>
-      <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
+      <a href="./infantil.php" class="navegacao-opcoes">Infantil</a>
     </nav>
 
     <div class="busca">

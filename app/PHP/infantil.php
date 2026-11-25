@@ -86,7 +86,7 @@ foreach ($todos as $f) {
 }
 
 /* ---------------- Destaque (carrossel por links): estreias infantis em cartaz ---------------- */
-$cand = $pdo->query("SELECT id_filme, nome_filme, sinopse, imagem_capa, data_filme, duracao_filme, class_filme FROM filme
+$cand = $pdo->query("SELECT id_filme, nome_filme, sinope, imagem_capa, data_filme, duracao_filme, class_filme FROM filme
                      WHERE exibicao_filme = 'Cinema' AND tipo_conteudo = 'Filme' ORDER BY data_filme DESC")->fetchAll();
 $destaques = [];
 foreach ($cand as $f) {
@@ -141,7 +141,7 @@ function lx_imagem($nome) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CINE - LUX</title>
-  <link rel="stylesheet" href="./CSS/inicio.css">
+  <link rel="stylesheet" href="./CSS/infantil.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="shortcut icon" href="./img/Logo - LUX.png" type="image/x-icon">
 </head>
@@ -149,15 +149,15 @@ function lx_imagem($nome) {
 <body>
 
   <header class="cabecalho">
-    <a href="./inicio.html" class="logo">
+    <a href="./inicio.php" class="logo">
       <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
     </a>
 
     <nav class="navegacao-menu">
-      <a href="./inicio.html" class="navegacao-ativa">Lançamentos</a>
-      <a href="./recomendados.html" class="navegacao-opcoes">Recomendados</a>
-      <a href="./combos.html" class="navegacao-opcoes">Combos</a>
-      <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
+      <a href="./inicio.php" class="navegacao-ativa">Lançamentos</a>
+      <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
+      <a href="./combos.php" class="navegacao-opcoes">Combos</a>
+      <a href="./infantil.php" class="navegacao-opcoes">Infantil</a>
     </nav>
 
     <div class="busca">
@@ -166,9 +166,9 @@ function lx_imagem($nome) {
     </div>
 
     <div class="acoes-do-usuario">
-      <a href="carrinho.html" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
-      <a href="./minha_lista.html" class="link"><i class="fa-solid fa-bookmark"></i></a>
-      <a href="./perfil.html" class="link"><i class="fa-solid fa-user"></i></a>
+      <a href="carrinho.php" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
+      <a href="./minha_lista.php" class="link"><i class="fa-solid fa-bookmark"></i></a>
+      <a href="./perfil.php" class="link"><i class="fa-solid fa-user"></i></a>
     </div>
   </header>
 
@@ -202,7 +202,7 @@ function lx_imagem($nome) {
 
         <h1 class="hero-title"><?= h($hero['nome_filme']) ?></h1>
 
-        <p class="hero-synopsis"><?= h(mb_strimwidth((string)$hero['sinopse'], 0, 420, '…', 'UTF-8')) ?></p>
+        <p class="hero-synopsis"><?= $hero['sinope'] ?></p>
 
         <div class="hero-buttons">
           <a href="ingressos.php?id_filme=<?= (int)$hero['id_filme'] ?>"><button type="button" class="btn-orange"><i class="fa-solid fa-ticket"></i> Comprar Ingressos</button></a>
@@ -310,8 +310,8 @@ function lx_imagem($nome) {
           <img src="<?= h(lx_imagem($c['nome_produto'])) ?>" alt="<?= h($c['nome_produto']) ?>">
           <div class="combo-content">
             <div class="combo-top">
-              <h4><?= h(mb_strtoupper($c['nome_produto'], 'UTF-8')) ?></h4>
-              <span class="combo-tag"><?= h(mb_strtoupper($c['categoria_produto'], 'UTF-8')) ?></span>
+              <h4><?= $c['nome_produto'] ?></h4>
+              <span class="combo-tag"><?= $c['categoria_produto'] ?></span>
             </div>
             <p><?= h($c['descricao_produto']) ?></p>
             <div class="combo-bottom">
@@ -355,7 +355,7 @@ function lx_imagem($nome) {
       <div class="rodape-informacoes">
         <a href="#">Filmes em Cartaz</a>
         <a href="#">Próximas Estreias</a>
-        <a href="./combos.html">Bomboniere & Combos</a>
+        <a href="./combos.php">Bomboniere & Combos</a>
       </div>
       <div class="rodape-informacoes">
         <a href="#">Cinemas Parceiros</a>

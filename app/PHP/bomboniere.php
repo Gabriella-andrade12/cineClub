@@ -109,7 +109,7 @@ if ($destaque) {
       <a href="./inicio.php" class="navegacao-opcoes">Lançamentos</a>
       <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
       <a href="./bomboniere.php" class="navegacao-ativa">Combos</a>
-      <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
+      <a href="./infantil.php" class="navegacao-opcoes">Infantil</a>
     </nav>
 
     <div class="busca">
@@ -118,7 +118,7 @@ if ($destaque) {
     </div>
 
     <div class="acoes-do-usuario">
-      <a href="carrinho.php" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
+      <a href="./carrinho.php" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
       <a href="./minha_lista.php" class="link"><i class="fa-solid fa-bookmark"></i></a>
       <a href="./perfil.php" class="link"><i class="fa-solid fa-user"></i></a>
     </div>
@@ -150,7 +150,7 @@ if ($destaque) {
     <?php if ($destaque): ?>
     <section class="combo-destaque-bloco" id="destaque">
       <div class="combo-destaque-informacoes">
-        <h1 class="combo-destaque-titulo"><?= h(mb_strtoupper($destaque['nome_produto'], 'UTF-8')) ?> <span class="combo-destaque-subtitulo"><?= h($destaque['categoria_produto']) ?></span></h1>
+        <h1 class="combo-destaque-titulo"><?= $destaque['nome_produto'] ?> <span class="combo-destaque-subtitulo"><?= h($destaque['categoria_produto']) ?></span></h1>
         <p class="combo-destaque-descricao"><?= h($destaque['descricao_produto']) ?></p>
 
         <div class="combo-destaque-precos">

@@ -40,15 +40,15 @@ if (strtotime($filme['data_filme'])) {
 <body>
 
     <header class="cabecalho">
-        <a href="./inicio.html" class="logo">
+        <a href="./inicio.php" class="logo">
             <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
         </a>
 
         <nav class="navegacao-menu">
-            <a href="./inicio.html" class="navegacao-ativa">Lançamentos</a>
-            <a href="./recomendados.html" class="navegacao-opcoes">Recomendados</a>
-            <a href="./combos.html" class="navegacao-opcoes">Combos</a>
-            <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
+            <a href="./inicio.php" class="navegacao-ativa">Lançamentos</a>
+            <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
+            <a href="./combos.php" class="navegacao-opcoes">Combos</a>
+            <a href="./infantil.php" class="navegacao-opcoes">Infantil</a>
         </nav>
 
         <div class="busca">
@@ -57,9 +57,9 @@ if (strtotime($filme['data_filme'])) {
         </div>
 
         <div class="acoes-do-usuario">
-            <a href="carrinho.html" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
-            <a href="./minha_lista.html" class="link"><i class="fa-solid fa-bookmark"></i></a>
-            <a href="./perfil.html" class="link"><i class="fa-solid fa-user"></i></a>
+            <a href="carrinho.php" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
+            <a href="./minha_lista.php" class="link"><i class="fa-solid fa-bookmark"></i></a>
+            <a href="./perfil.php" class="link"><i class="fa-solid fa-user"></i></a>
         </div>
     </header>
 
@@ -151,7 +151,7 @@ if (strtotime($filme['data_filme'])) {
             <div class="rodape-informacoes">
                 <a href="#">Filmes em Cartaz</a>
                 <a href="#">Próximas Estreias</a>
-                <a href="./combos.html">Bomboniere & Combos</a>
+                <a href="./combos.php">Bomboniere & Combos</a>
             </div>
             <div class="rodape-informacoes">
                 <a href="#">Cinemas Parceiros</a>

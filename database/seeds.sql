@@ -134,6 +134,38 @@ INSERT INTO filme (nome_filme, sinopse, imagem_capa, data_filme, duracao_filme, 
 ('Missa da Meia-Noite', 'A chegada de um padre a uma ilha isolada desencadeia milagres e acontecimentos inquietantes.', 'Imagens/s.terror/missa-meia-noite.jpg', '2021-09-24', 50, '16', 'terror', 'Streaming', 'Serie'),
 ('Origem', 'Moradores de uma cidade misteriosa tentam sobreviver a criaturas que aparecem durante a noite.', 'Imagens/s.terror/origem.jpg', '2022-02-20', 50, '16', 'terror', 'Streaming', 'Serie');
 
+--INFANTIL--
+
+ -- Filmes em cartaz
+    ('O Gatola da Cartola', 'Um gato excêntrico recebe a missão de animar dois irmãos que acabaram de se mudar, mas suas invenções transformam a visita em uma aventura caótica.', 'Imagens/f-infantil/o gato da cartola.jpg', '2026-11-05', 91, 'livre', 'animação', 'Cinema', 'Filme'),
+    ('Ebenezer e os Fantasmas do Natal', 'Na véspera de Natal, três espíritos visitam o avarento Ebenezer Scrooge e o fazem encarar o passado, o presente e o futuro que o espera.', 'Imagens/f-infanti/Ebenezer e os Fantasmas do Natal.jpg', '2026-11-12', 115, '12', 'fantasia', 'Cinema', 'Filme'),
+    ('Divertida Mente 2', 'Com a chegada da adolescência, Riley passa a lidar com novas emoções, e a Ansiedade assume o controle da sala de comando.', 'Imagens/f-infanti/Divertida Mente 2.jpg', '2024-06-20', 96, 'livre', 'animação', 'Cinema', 'Filme'),
+    ('A Ilha Esquecida', 'As melhores amigas Jo e Raissa atravessam um portal para uma ilha habitada por criaturas do folclore filipino, onde precisam encontrar um caminho de volta para casa.', 'Imagens/f-infanti/A Ilha Esquecida.jpg', '2026-09-24', 109, '10', 'animação', 'Cinema', 'Filme'),
+    ('Enfeitiçadas: Bem-vindos a Hexe', 'Quando Billie descobre que tem poderes mágicos, ela e sua mãe encontram um mundo escondido que transforma a maneira como enxergam uma à outra.', 'Imagens/f-infanti/Enfeitiçadas- Bem-vindos a Hexe.jpg', '2026-11-26', 103, 'livre', 'fantasia', 'Cinema', 'Filme'),
+    ('Toy Story 5', 'Woody, Buzz e Jessie enfrentam um novo desafio quando um dispositivo eletrônico começa a tomar o lugar dos brinquedos nas brincadeiras de Bonnie.', 'Imagens/f-infanti/Toy Story 5.jpg', '2026-06-18', 102, 'livre', 'animação', 'Cinema', 'Filme'),
+    ('Lilo & Stitch', 'Uma garota havaiana adota uma criatura alienígena que se passa por cachorro. Juntos, eles descobrem que uma família pode surgir dos encontros mais improváveis.', 'Imagens/f-infanti/Lilo & Stich (2025.jpg', '2025-05-22', 108, 'livre', 'aventura', 'Cinema', 'Filme'),
+    ('Meu Malvado Favorito', 'Gru planeja roubar a Lua com a ajuda dos Minions, mas sua vida muda quando ele adota três irmãs para colocar o plano em prática.', 'Imagens/f-infanti/Meu Malvado Favorito 4.jpg', '2010-08-06', 95, 'livre', 'animação', 'Cinema', 'Filme'),
+    ('Super Charlie', 'Wille sonha em ser super-herói e fica surpreso ao descobrir que seu irmão bebê tem superpoderes. Quando a cidade corre perigo, os dois precisam trabalhar juntos.', 'Imagens/f-infanti/Super Charlie.jpg', '2026-11-12', 80, 'livre', 'animação', 'Cinema', 'Filme'),
+
+    -- Filmes populares
+    ('A Família Mitchell e a Revolta das Máquinas', 'Uma viagem de família sai do controle quando os robôs se voltam contra a humanidade e os Mitchell precisam deixar as diferenças de lado para salvar o mundo.', 'Imagens/p-infantil/A Familia Mitchell e a Revlta das Máquinas.jpg', '2021-04-30', 114, 'livre', 'animação', 'Streaming', 'Filme'),
+    ('Wonka', 'O jovem Willy Wonka chega à cidade decidido a abrir uma chocolateria, mas precisa enfrentar um cartel que não quer dividir o mercado com ninguém.', 'Imagens/p-infantil/A fantastica fabrica.jpg', '2023-12-07', 116, 'livre', 'fantasia', 'Streaming', 'Filme'),
+    ('A Bela e a Fera', 'Para salvar o pai, Bela aceita ficar em um castelo encantado, onde descobre a história da Fera e a maldição que transformou seus moradores.', 'Imagens/p-infantil/a bela e a fera.jpg', '2017-03-16', 129, '10', 'fantasia', 'Streaming', 'Filme'),
+    ('Como Treinar o Seu Dragão', 'Soluço, um jovem viking, faz amizade com o dragão Banguela e começa a questionar a rivalidade entre seu povo e os dragões.', 'Imagens/p-infantil/como treinar seu dragao.jpg', '2010-03-26', 98, 'livre', 'aventura', 'Streaming', 'Filme'),
+    ('Aladdin', 'Um jovem de Agrabah encontra uma lâmpada mágica e, com a ajuda do Gênio, tenta conquistar a confiança de Jasmine e impedir os planos de Jafar.', 'Imagens/p-infantil/aladdin.jpg', '2019-05-23', 128, 'livre', 'fantasia', 'Streaming', 'Filme'),
+    ('Os Incríveis', 'Uma família de super-heróis que vivia no anonimato volta à ação quando uma missão secreta coloca o Sr. Incrível em perigo.', 'Imagens/p-infantil/os incriveis.jpg', '2004-12-10', 115, 'livre', 'animação', 'Streaming', 'Filme'),
+    ('Ratatouille', 'Remy, um rato com talento para a gastronomia, faz uma parceria improvável com um ajudante de cozinha para realizar o sonho de cozinhar em Paris.', 'Imagens/p-infantil/ratatouille.jpg', '2007-07-06', 111, 'livre', 'animação', 'Streaming', 'Filme'),
+    ('Monstros S.A.', 'Mike e Sulley trabalham assustando crianças, até que uma garotinha entra no mundo dos monstros e vira a rotina dos dois de cabeça para baixo.', 'Imagens/p-infantil/monstros sa.jpg', '2001-11-30', 92, 'livre', 'animação', 'Streaming', 'Filme'),
+
+    -- Séries
+    ('O Show da Luna!', 'Curiosa e apaixonada por ciência, Luna investiga fenômenos do cotidiano ao lado de seu irmão Júpiter e do furão Cláudio.', 'Imagens/s-infantil/o show da luna.jpg', '2014-10-13', 12, 'livre', 'animação', 'Streaming', 'Série'),
+    ('Turma da Mônica', 'Mônica, Cebolinha, Cascão e Magali vivem aventuras no bairro do Limoeiro, entre brincadeiras, confusões e planos que raramente dão certo.', 'Imagens/s-infantil/turma da monica.jpg', '1976-12-11', 7, 'livre', 'animação', 'Streaming', 'Série'),
+    ('Avatar: A Lenda de Aang', 'Aang, o último dominador de ar, precisa aprender a controlar os quatro elementos para impedir que a Nação do Fogo conquiste o mundo.', 'Imagens/s-infantil/avatar a lenda de aang.jpg', '2005-02-21', 23, 'livre', 'fantasia', 'Streaming', 'Série'),
+    ('Irmão do Jorel', 'Conhecido apenas como irmão do garoto mais popular da escola, um menino tenta encontrar seu lugar em meio às aventuras absurdas da própria família.', 'Imagens/s-infantil/irmao do jorel.jpg', '2014-09-22', 11, 'livre', 'comédia', 'Streaming', 'Série'),
+    ('Steven Universo', 'Steven aprende a usar os poderes que herdou da mãe enquanto protege a Terra ao lado das Crystal Gems.', 'Imagens/s-infantil/steven universe.jpg', '2013-11-04', 11, '10', 'fantasia', 'Streaming', 'Série'),
+    ('Hilda', 'Ao trocar a floresta pela cidade de Trolburgo, Hilda faz novos amigos e descobre que criaturas mágicas também vivem entre os humanos.', 'Imagens/s-infantil/hilda.jpg', '2018-09-21', 24, 'livre', 'fantasia', 'Streaming', 'Série'),
+    ('Phineas e Ferb', 'Dois irmãos inventam projetos mirabolantes durante as férias, enquanto o ornitorrinco Perry leva uma vida secreta como agente especial.', 'Imagens/s-infantil/phineas e ferb.jpg', '2007-08-17', 11, 'livre', 'comédia', 'Streaming', 'Série'),
+    ('Detetives do Prédio Azul', 'Três amigos formam um clube de detetives para investigar acontecimentos estranhos no prédio onde moram, incluindo segredos que envolvem magia.', 'Imagens/s-infantil/detetives do preio azul.jpg', '2012-06-15', 13, 'livre', 'mistério', 'Streaming', 'Série');
 
 -- 3. HISTORICO_VISUALIZACAO
 INSERT INTO historico_visualizacao (data_visualizacao, id_usuario, id_filme) VALUES

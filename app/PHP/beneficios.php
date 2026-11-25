@@ -2,7 +2,7 @@
 
 session_start();
 
-require_once "/banco/crud.php";
+require_once "../init.php";
 
 if (isset($_GET['u'])) {
     $_SESSION['id_usuario'] = (int) $_GET['u'];
@@ -82,10 +82,10 @@ unset($_SESSION['msg']);
         </a>
 
         <nav class="navegacao-menu">
-            <a href="./inicio.html" class="navegacao-ativa">Lançamentos</a>
-            <a href="./recomendados.html" class="navegacao-opcoes">Recomendados</a>
-            <a href="./combos.html" class="navegacao-opcoes">Combos</a>
-            <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
+            <a href="./inicio.php" class="navegacao-opcoes">Lançamentos</a>
+            <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
+            <a href="./combos.php" class="navegacao-opcoes">Combos</a>
+            <a href="./infantil.php" class="navegacao-opcoes">Infantil</a>
         </nav>
 
         <div class="busca">
@@ -94,9 +94,9 @@ unset($_SESSION['msg']);
         </div>
 
         <div class="acoes-do-usuario">
-            <a href="carrinho.html" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
-            <a href="./minha_lista.html" class="link"><i class="fa-solid fa-bookmark"></i></a>
-            <a href="./perfil.html" class="link"><i class="fa-solid fa-user"></i></a>
+            <a href="./carrinho.php" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
+            <a href="./minha_lista.php" class="link"><i class="fa-solid fa-bookmark"></i></a>
+            <a href="./perfil.php" class="link"><i class="fa-solid fa-user"></i></a>
         </div>
     </header>
 

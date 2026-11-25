@@ -1,5 +1,5 @@
 <?php
-require_once "./init.php";   // deve fornecer a conexão mysqli ($conn)
+require_once "../init.php";   // deve fornecer a conexão mysqli ($conn)
 
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
@@ -16,19 +16,18 @@ $email = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $email = trim($_POST['email'] ?? '');
   $senha = $_POST['senha'] ?? '';
-
   if ($email === '' || $senha === '') {
     $erro = 'Informe e-mail e senha.';
-  } else {
-    // Prepared Statement: busca o usuário pelo e-mail
-    $st = mysqli_prepare($conn, "SELECT id_usuario, nome, senha FROM usuario WHERE email = ? LIMIT 1");
-    mysqli_stmt_bind_param($st, 's', $email);
-    mysqli_stmt_execute($st);
-    $usuario = mysqli_fetch_assoc(mysqli_stmt_get_result($st));
-    mysqli_stmt_close($st);
-
+    } else {
+      
+      // Prepared Statement: busca o usuário pelo e-mail
+      // $st = mysqli_prepare($connection, "SELECT id_usuario, nome, senha FROM usuario WHERE email = ? LIMIT 1");
+          $usuario = read($pdo, 'usuario', 'email = ?', [$email]);
+   print_r($usuario);
+print $senha;
     // senha gravada com password_hash() no cadastro (coluna VARCHAR(255))
-    if ($usuario && password_verify($senha, $usuario['senha'])) {
+    // if ($usuario && password_verify($senha, $usuario['senha'])) {
+    if ($usuario && $senha === $usuario['senha']) {
       session_regenerate_id(true);
       $_SESSION['id_usuario'] = (int)$usuario['id_usuario'];
       $_SESSION['nome']       = $usuario['nome'];
@@ -68,7 +67,7 @@ $aviso_estilo = 'padding:10px 14px;border-radius:10px;margin-bottom:14px;font-si
   </svg>
 
   <header class="cabecalho">
-    <a href="./inicio.php" class="logo">
+    <a href="../inicio.php" class="logo">
       <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
     </a>
   </header>

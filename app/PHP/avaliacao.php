@@ -1,5 +1,5 @@
 <?php
-require_once "./init.php";   // deve fornecer a conexão mysqli ($conn) e iniciar a sessão
+require_once  "../init.php";   // deve fornecer a conexão mysqli ($conn) e iniciar a sessão
 
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (empty($_SESSION['id_usuario'])) { header('Location: login.php'); exit; }

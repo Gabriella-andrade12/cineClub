@@ -1,106 +1,304 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CINELUX - Sessão Infantil</title>
-    <link rel="stylesheet" href="./CSS/inicio.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="shortcut icon" href="./img/Logo - LUX.png" type="image/x-icon">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cinelux - Plataforma de Cinema</title>
+  <!-- Ícones (FontAwesome) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Fonte Google -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./CSS/infantil.css">
 </head>
-
 <body>
 
-    <header class="cabecalho">
-        <a href="./inicio.html" class="logo">
-            <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
-        </a>
+  <!-- CABEÇALHO / NAVBAR -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#" class="logo">
+        <i class="fa-solid fa-film"></i>
+      </a>
+      <nav class="nav-links">
+        <a href="#">Lançamentos</a>
+        <a href="#">Recomendados</a>
+        <a href="#">Combos</a>
+        <a href="#" class="btn-pill-yellow">Infantil</a>
+      </nav>
+      <div class="nav-actions">
+        <div class="search-bar">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="Buscar filmes...">
+        </div>
+        <button class="icon-btn yellow-icon"><i class="fa-solid fa-bookmark"></i></button>
+        <button class="icon-btn orange-icon"><i class="fa-solid fa-user"></i></button>
+      </div>
+    </div>
+  </header>
 
-        <nav class="navegacao-menu">
-            <a href="./inicio.html" class="navegacao-ativa">Lançamentos</a>
-            <a href="./recomendados.html" class="navegacao-opcoes">Recomendados</a>
-            <a href="./combos.html" class="navegacao-opcoes">Combos</a>
-            <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
-        </nav>
+  <!-- BARRA DE LOCALIZAÇÃO -->
+  <section class="location-bar">
+    <div class="container location-grid">
+      <div class="select-group">
+        <label>Sua Localização:</label>
+        <div class="custom-select">
+          <select>
+            <option>Selecione sua cidade</option>
+            <option>São Paulo - SP</option>
+            <option>Rio de Janeiro - RJ</option>
+          </select>
+        </div>
+      </div>
+      <div class="select-group">
+        <label>Cinema Preferencial:</label>
+        <div class="custom-select">
+          <select>
+            <option>Escolha o cinema</option>
+            <option>Cinelux Shopping Center</option>
+            <option>Cinelux Plaza</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        <div class="busca">
-            <input type="text" placeholder="Buscar filmes, gêneros, cinemas...">
-            <i class="fa-solid fa-magnifying-glass busca-icon"></i>
+  <!-- BANNER HERO / DESTAQUE PRINCIPAL -->
+  <section class="hero-section">
+    <div class="container hero-grid">
+      <div class="hero-info">
+        <div class="badges">
+          <span class="badge badge-yellow">Diversão para todas as idades</span>
+          <span class="meta-item"><i class="fa-regular fa-clock"></i> 1 hora e 31 minutos</span>
+          <span class="meta-item"><i class="fa-regular fa-calendar"></i> 5 de novembro de 2026</span>
+          <span class="badge badge-orange">7 anos</span>
         </div>
 
-        <div class="acoes-do-usuario">
-            <a href="#" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
-            <a href="#" class="link"><i class="fa-solid fa-bookmark"></i></a>
-            <a href="#" class="link"><i class="fa-solid fa-user"></i></a>
-        </div>
-    </header>
+        <h1 class="hero-title">
+          O Gato da Cartola <span class="subtitle">The cat in the hat</span>
+        </h1>
 
-    <section class="localizacao">
-        <div class="selecao">
-            <span>Sua Localização:</span>
-            <select>
-                <option>São Paulo, SP</option>
-                <option>Rio de Janeiro, RJ</option>
-            </select>
-        </div>
-        <div class="selecao">
-            <span>Cinema Preferencial:</span>
-            <select>
-                <option>Selecione o cinema preferencial...</option>
-            </select>
-        </div>
-    </section>
+        <p class="hero-synopsis">
+          O felino mais animado e engraçado da literatura embarca em uma aventura épica e hilária. Conhecido por seu jeito atrapalhado, ele precisa alegrar dois irmãos que acabaram de se mudar para uma nova cidade, enfrentando grandes desafios e confusões para provar seu valor.
+        </p>
 
+        <p class="hero-credits">
+          <strong>Direção e Roteiro:</strong> Alesandro Carloni, Erica Rivinoja
+        </p>
 
-
-    <section class="faixa-de-informacoes">
-        <div class="informacoes">
-            <span class="faixa-titulo">CINELUX EXPERIENCE</span>
-            <h2>Sua plataforma completa de cinema</h2>
-            <p>Sua plataforma completa para acompanhar lançamentos de cinema, garantir ingressos sem filas, consultar
-                horários de exibição em tempo real e reservar combos com facilidade.</p>
+        <div class="hero-buttons">
+          <button class="btn-orange"><i class="fa-solid fa-play"></i> Ver Trailer</button>
+          <button class="btn-dark">Ver Detalhes</button>
         </div>
-        <div class="apps-disponiveis">
-            <button class="botao-app"><i class="fa-brands fa-apple"></i> App Store</button>
-            <button class="botao-app"><i class="fa-brands fa-google-play"></i> Google Play</button>
-        </div>
-    </section>
-    </main>
+      </div>
 
-    <footer class="rodape">
-        <div class="rodape-logo">
-            <img src="./img/Logo - LUX.png" alt="LUX Rodapé Logo">
+      <div class="hero-poster">
+        <img src="https://via.placeholder.com/300x430/1b3b5a/ffffff?text=Poster+Destaque" alt="Pôster do Filme">
+      </div>
+    </div>
+
+    <!-- Paginação do Carrossel -->
+    <div class="carousel-controls">
+      <button class="arrow-btn"><i class="fa-solid fa-chevron-left"></i></button>
+      <div class="dots">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot active"></span>
+      </div>
+      <button class="arrow-btn"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+  </section>
+
+  <!-- FILTROS E CATÁLOGO EM CARTAZ -->
+  <section class="catalog-section">
+    <div class="container">
+      <!-- Linha de Filtros de Idade -->
+      <div class="filter-row">
+        <button class="filter-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <button class="filter-icon"><i class="fa-solid fa-sliders"></i></button>
+        <button class="pill-filter active-dark">Todos</button>
+        <button class="pill-filter yellow">5-10 anos</button>
+        <button class="pill-filter yellow">10-14 anos</button>
+      </div>
+
+      <!-- Abas de Categoria -->
+      <div class="category-tabs">
+        <button class="tab-btn active">Filmes em Cartaz</button>
+        <button class="tab-btn">Filmes Populares</button>
+        <button class="tab-btn">Séries</button>
+      </div>
+
+      <!-- Grid de Filmes -->
+      <div class="movies-grid">
+        <div class="movie-card">
+          <img src="https://via.placeholder.com/240x340/1b2a3c/ffffff?text=Filme+1" alt="Filme 1">
+          <h3>Ebenezer e os Fantasmas do Natal</h3>
+          <a href="#" class="details-link">Ver Detalhes</a>
         </div>
 
-        <div class="grade-do-rodape">
-            <div class="rodape-informacoes">
-                <a href="#">Filmes em Cartaz</a>
-                <a href="#">Próximas Estreias</a>
-                <a href="./combos.html">Bomboniere & Combos</a>
+        <div class="movie-card">
+          <img src="https://via.placeholder.com/240x340/1b2a3c/ffffff?text=Filme+2" alt="Filme 2">
+          <h3>Divertidamente 2</h3>
+          <a href="#" class="details-link">Ver Detalhes</a>
+        </div>
+
+        <div class="movie-card">
+          <img src="https://via.placeholder.com/240x340/1b2a3c/ffffff?text=Filme+3" alt="Filme 3">
+          <h3>A Ilha Esquecida</h3>
+          <a href="#" class="details-link">Ver Detalhes</a>
+        </div>
+
+        <div class="movie-card">
+          <img src="https://via.placeholder.com/240x340/1b2a3c/ffffff?text=Filme+4" alt="Filme 4">
+          <h3>Enfeitiçadas</h3>
+          <a href="#" class="details-link">Ver Detalhes</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEÇÃO CLÁSSICOS / AVALIAÇÕES -->
+  <section class="classics-section">
+    <div class="container">
+      <div class="classics-grid">
+        <div class="classic-card">
+          <img src="https://via.placeholder.com/280x380/221c18/ffffff?text=O+Poderoso+Chefao" alt="Clássico 1">
+          <div class="classic-meta">
+            <div>
+              <small>Estreia mundial: 14 de março de 1972</small>
+              <small>Duração: 2 horas e 55 minutos.</small>
             </div>
-            <div class="rodape-informacoes">
-                <a href="#">Cinemas Parceiros</a>
-                <a href="#">Central de Ajuda</a>
-                <a href="#">Termos de Uso</a>
-            </div>
-            <div class="rodape-informacoes">
-                <a href="#">Política de Privacidade</a>
-                <a href="#">Meia Entrada</a>
-                <a href="#">Atendimento ao Cliente</a>
-            </div>
-            <div class="rodape-informacoes informacoes-contato">
-                <p>Atendimento ao Cliente</p>
-                <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
-                <div class="redes-informacoes">
-                    <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
-                </div>
-            </div>
+            <span class="rating"><i class="fa-solid fa-star"></i> 9,2/10</span>
+          </div>
+          <a href="#" class="details-link">Ver Detalhes</a>
         </div>
-    </footer>
+
+        <div class="classic-card">
+          <img src="https://via.placeholder.com/280x380/142330/ffffff?text=Cavaleiro+das+Trevas" alt="Clássico 2">
+          <div class="classic-meta">
+            <div>
+              <small>Lançado no Brasil: 18 de julho de 2008</small>
+              <small>Duração: 2 horas e 32 minutos.</small>
+            </div>
+            <span class="rating"><i class="fa-solid fa-star"></i> 9,1/10</span>
+          </div>
+          <a href="#" class="details-link">Ver Detalhes</a>
+        </div>
+
+        <div class="classic-card">
+          <img src="https://via.placeholder.com/280x380/3a1212/ffffff?text=Psicose" alt="Clássico 3">
+          <div class="classic-meta">
+            <div>
+              <small>Estreia mundial: 16 de junho de 1960</small>
+              <small>Duração: 1 hora e 49 minutos.</small>
+            </div>
+            <span class="rating"><i class="fa-solid fa-star"></i> 8,5/10</span>
+          </div>
+          <a href="#" class="details-link">Ver Detalhes</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOMBONIERE EXCLUSIVA -->
+  <section class="bomboniere-section">
+    <div class="container">
+      <div class="bomboniere-header">
+        <div>
+          <span class="badge badge-orange">BOMBONIERE EXCLUSIVA</span>
+          <h2>Combos Especiais & Exclusivos</h2>
+          <p>Garanta seus petiscos e itens exclusivos antes de entrar na sala</p>
+        </div>
+        <button class="btn-yellow"><i class="fa-solid fa-cart-shopping"></i> Ver Cardápio Completo</button>
+      </div>
+
+      <div class="combos-grid">
+        <!-- Combo 1 -->
+        <div class="combo-card">
+          <img src="https://via.placeholder.com/160x210/2b0c0c/ffffff?text=Combo+1" alt="Combo Ghostface">
+          <div class="combo-content">
+            <div class="combo-top">
+              <h4>COMBO<br>GHOSTFACE</h4>
+              <span class="combo-tag">CENAS DO<br>CRIME</span>
+            </div>
+            <p>Composição do combo: 2 bebidas grandes, 1 balde refil e 1 copo colecionável temático.</p>
+            <div class="combo-bottom">
+              <span class="price">190,00</span>
+              <button class="btn-orange-sm">Adicionar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Combo 2 -->
+        <div class="combo-card">
+          <img src="https://via.placeholder.com/160x210/1b2938/ffffff?text=Combo+2" alt="Combo M&M's Duo">
+          <div class="combo-content">
+            <div class="combo-top">
+              <h4>COMBO<br>M&M'S DUO</h4>
+              <span class="combo-tag">SALVAÇÃO DA<br>VIZINHANÇA</span>
+            </div>
+            <p>Combo completo: Composto por pipoca grande, dois copos de refrigerante tamanho G, pacote de chocolate e copo colecionável.</p>
+            <div class="combo-bottom">
+              <span class="price">135,00</span>
+              <button class="btn-orange-sm">Adicionar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- APP BANNER / CINELUX EXPERIENCE -->
+  <section class="app-section">
+    <div class="container app-box">
+      <div class="app-text">
+        <span class="app-label"><i class="fa-solid fa-ticket"></i> CINELUX EXPERIENCE</span>
+        <h2>Sua plataforma completa de cinema</h2>
+        <p>Sua plataforma completa para acompanhar lançamentos de cinema, garantir ingressos sem filas, consultar horários de exibição em tempo real e reservar combos com facilidade.</p>
+      </div>
+      <div class="app-buttons">
+        <a href="#" class="store-btn"><i class="fa-brands fa-apple"></i> App Store</a>
+        <a href="#" class="store-btn"><i class="fa-brands fa-google-play"></i> Google Play</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- RODAPÉ -->
+  <footer class="footer">
+    <div class="footer-logo">
+      <i class="fa-solid fa-film"></i>
+    </div>
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <p>Sua plataforma completa para acompanhar lançamentos de cinema, garantir ingressos, ver horários de exibição e reservar combos com facilidade.</p>
+      </div>
+      <div class="footer-col">
+        <ul>
+          <li><a href="#">Filmes em Cartaz</a></li>
+          <li><a href="#">Próximas Estreias</a></li>
+          <li><a href="#">Bomboniere & Combos</a></li>
+          <li><a href="#">Cinemas Parceiros</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <ul>
+          <li><a href="#">Central de Ajuda</a></li>
+          <li><a href="#">Termos de Uso</a></li>
+          <li><a href="#">Política de Privacidade</a></li>
+          <li><a href="#">Meia Entrada</a></li>
+        </ul>
+      </div>
+      <div class="footer-col social-col">
+        <div class="social-icons">
+          <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-telegram"></i></a>
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+        </div>
+        <small>Atendimento ao Cliente:<br>contato@lux.com.br</small>
+      </div>
+    </div>
+  </footer>
 
 </body>
-
 </html>

@@ -1,32 +1,13 @@
 <?php
-require_once "../init.php";   // deve fornecer a conexão mysqli ($conn) e iniciar a sessão
+require_once "../init.php";   // fornece a conexão PDO ($pdo), crud() e inicia a sessão
 
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (empty($_SESSION['id_usuario'])) { header('Location: login.php'); exit; }
 $uid = (int)$_SESSION['id_usuario'];
 
-/* ---------------- Helpers (Prepared Statements) ---------------- */
+/* ---------------- Helpers ---------------- */
 if (!function_exists('h')) {
     function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
-}
-function lx_stmt($conn, $sql, $types = '', $params = []) {
-    $st = mysqli_prepare($conn, $sql);
-    if ($types !== '') { mysqli_stmt_bind_param($st, $types, ...$params); }
-    mysqli_stmt_execute($st);
-    return $st;
-}
-function lx_todos($conn, $sql, $types = '', $params = []) {
-    $st = lx_stmt($conn, $sql, $types, $params);
-    $r = mysqli_stmt_get_result($st);
-    $rows = $r ? mysqli_fetch_all($r, MYSQLI_ASSOC) : [];
-    mysqli_stmt_close($st);
-    return $rows;
-}
-function lx_insert($conn, $sql, $types = '', $params = []) {
-    $st = lx_stmt($conn, $sql, $types, $params);
-    $id = mysqli_stmt_insert_id($st);
-    mysqli_stmt_close($st);
-    return $id;
 }
 function lx_duracao($d) {
     if (!is_numeric($d)) return (string)$d;
@@ -44,7 +25,7 @@ $horarios = [
 
 /* Observações só são gravadas se a tabela reserva tiver a coluna "observacoes"
  * (ALTER TABLE reserva ADD COLUMN observacoes VARCHAR(255) NULL;) */
-$tem_obs = (bool)lx_todos($conn, "SHOW COLUMNS FROM reserva LIKE 'observacoes'");
+$tem_obs = (bool)$pdo->query("SHOW COLUMNS FROM reserva LIKE 'observacoes'")->fetchAll();
 
 /* ---------------- Processa a reserva (POST) ----------------
  * REGRA CRÍTICA: a sala não pode ter sessão (sessao) nem outra reserva (reserva)
@@ -60,8 +41,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
     $res = ['estado' => 'erro', 'erros' => [], 'old' => $old];
 
-    $sala  = lx_todos($conn, "SELECT sa.id_sala, sa.numero_sala, c.endereco_cinema FROM sala sa JOIN cinema c ON c.id_cinema = sa.id_cinema WHERE sa.id_sala = ? AND sa.id_cinema = ?", 'ii', [$old['id_sala'], $old['id_cinema']]);
-    $filme = lx_todos($conn, "SELECT id_filme, nome_filme FROM filme WHERE id_filme = ? AND exibicao_filme = 'Cinema'", 'i', [$old['id_filme']]);
+    $st = $pdo->prepare("SELECT sa.id_sala, sa.numero_sala, c.endereco_cinema FROM sala sa JOIN cinema c ON c.id_cinema = sa.id_cinema WHERE sa.id_sala = ? AND sa.id_cinema = ?");
+    $st->execute([$old['id_sala'], $old['id_cinema']]);
+    $sala = $st->fetch();
+
+    $st = $pdo->prepare("SELECT id_filme, nome_filme FROM filme WHERE id_filme = ? AND exibicao_filme = 'Cinema'");
+    $st->execute([$old['id_filme']]);
+    $filme = $st->fetch();
+
     $d = DateTime::createFromFormat('Y-m-d', $old['data']);
     $dok = $d && $d->format('Y-m-d') === $old['data'];
 
@@ -75,28 +62,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$res['erros']) {
         $hora_bd = $old['hora'] . ':00';
         try {
-            mysqli_begin_transaction($conn);
-            $sess = lx_todos($conn, "SELECT 1 FROM sessao WHERE id_sala = ? AND dia_sessao = ? AND hora_sessao = ?", 'iss', [$old['id_sala'], $old['data'], $hora_bd]);
-            $resv = lx_todos($conn, "SELECT 1 FROM reserva WHERE id_sala = ? AND dia_reserva = ? AND hora_reserva = ? AND status_reserva <> 'Cancelada' FOR UPDATE", 'iss', [$old['id_sala'], $old['data'], $hora_bd]);
+            $pdo->beginTransaction();
+            $st = $pdo->prepare("SELECT 1 FROM sessao WHERE id_sala = ? AND dia_sessao = ? AND hora_sessao = ?");
+            $st->execute([$old['id_sala'], $old['data'], $hora_bd]);
+            $sess = $st->fetch();
+
+            $st = $pdo->prepare("SELECT 1 FROM reserva WHERE id_sala = ? AND dia_reserva = ? AND hora_reserva = ? AND status_reserva <> 'Cancelada' FOR UPDATE");
+            $st->execute([$old['id_sala'], $old['data'], $hora_bd]);
+            $resv = $st->fetch();
+
             if ($sess) {
                 $res['estado'] = 'conflito_sessao';
             } elseif ($resv) {
                 $res['estado'] = 'conflito_reserva';
             } else {
+                $dadosReserva = [
+                    'dia_reserva'    => $old['data'],
+                    'hora_reserva'   => $hora_bd,
+                    'status_reserva' => 'Agendada',
+                    'id_usuario'     => $uid,
+                    'id_sala'        => $old['id_sala'],
+                    'id_filme'       => $old['id_filme'],
+                ];
                 if ($tem_obs) {
-                    $id = lx_insert($conn, "INSERT INTO reserva (dia_reserva, hora_reserva, status_reserva, id_usuario, id_sala, id_filme, observacoes) VALUES (?, ?, 'Agendada', ?, ?, ?, ?)",
-                                    'ssiiis', [$old['data'], $hora_bd, $uid, $old['id_sala'], $old['id_filme'], $old['obs']]);
-                } else {
-                    $id = lx_insert($conn, "INSERT INTO reserva (dia_reserva, hora_reserva, status_reserva, id_usuario, id_sala, id_filme) VALUES (?, ?, 'Agendada', ?, ?, ?)",
-                                    'ssiii', [$old['data'], $hora_bd, $uid, $old['id_sala'], $old['id_filme']]);
+                    $dadosReserva['observacoes'] = $old['obs'];
                 }
+                $id = (int)create($pdo, 'reserva', $dadosReserva);
+
                 $res['estado'] = 'agendada';
-                $res['resumo'] = ['id' => $id, 'cinema' => $sala[0]['endereco_cinema'], 'sala' => $sala[0]['numero_sala'],
-                                  'data' => $old['data'], 'hora' => $old['hora'], 'filme' => $filme[0]['nome_filme'], 'obs_salva' => $tem_obs, 'obs' => $old['obs']];
+                $res['resumo'] = ['id' => $id, 'cinema' => $sala['endereco_cinema'], 'sala' => $sala['numero_sala'],
+                                  'data' => $old['data'], 'hora' => $old['hora'], 'filme' => $filme['nome_filme'], 'obs_salva' => $tem_obs, 'obs' => $old['obs']];
             }
-            mysqli_commit($conn);
+            $pdo->commit();
         } catch (Throwable $e) {
-            mysqli_rollback($conn);
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
             $res = ['estado' => 'erro', 'erros' => ['Não foi possível concluir a reserva. Tente novamente.'], 'old' => $old];
         }
     }
@@ -111,20 +112,19 @@ $estado = $res['estado'] ?? '';
 $old = ($res && $estado !== 'agendada') ? $res['old'] : ['id_cinema' => 0, 'id_sala' => 0, 'data' => '', 'hora' => '', 'id_filme' => 0, 'obs' => ''];
 
 /* ---------------- Dados dos selects ---------------- */
-$cinemas = lx_todos($conn, "SELECT id_cinema, endereco_cinema FROM cinema ORDER BY endereco_cinema");
-$salas   = lx_todos($conn, "SELECT id_sala, numero_sala, capacidade, id_cinema FROM sala ORDER BY id_cinema, numero_sala");
+$cinemas = $pdo->query("SELECT id_cinema, endereco_cinema FROM cinema ORDER BY endereco_cinema")->fetchAll();
+$salas   = $pdo->query("SELECT id_sala, numero_sala, capacidade, id_cinema FROM sala ORDER BY id_cinema, numero_sala")->fetchAll();
 $salas_por_cinema = [];
 foreach ($salas as $s) { $salas_por_cinema[$s['id_cinema']][] = $s; }
-$filmes = lx_todos($conn, "SELECT id_filme, nome_filme, gen_filme, duracao_filme FROM filme WHERE exibicao_filme = 'Cinema' AND tipo_conteudo = 'Filme' ORDER BY nome_filme");
+$filmes = $pdo->query("SELECT id_filme, nome_filme, gen_filme, duracao_filme FROM filme WHERE exibicao_filme = 'Cinema' AND tipo_conteudo = 'Filme' ORDER BY nome_filme")->fetchAll();
 
-$minhas = lx_todos(
-    $conn,
+$st = $pdo->prepare(
     "SELECT r.dia_reserva, r.hora_reserva, r.status_reserva, sa.numero_sala, c.endereco_cinema, f.nome_filme
        FROM reserva r JOIN sala sa ON sa.id_sala = r.id_sala JOIN cinema c ON c.id_cinema = sa.id_cinema JOIN filme f ON f.id_filme = r.id_filme
-      WHERE r.id_usuario = ? ORDER BY r.dia_reserva DESC, r.hora_reserva DESC LIMIT 5",
-    'i',
-    [$uid]
+      WHERE r.id_usuario = ? ORDER BY r.dia_reserva DESC, r.hora_reserva DESC LIMIT 5"
 );
+$st->execute([$uid]);
+$minhas = $st->fetchAll();
 ?>
 
 <!DOCTYPE html>

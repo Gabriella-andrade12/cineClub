@@ -1,24 +1,20 @@
 <?php
 
-require_once "/banco/crud.php";
+require_once "../init.php";
 
 $id_filme = isset($_GET['id_filme']) ? (int)$_GET['id_filme'] : 0;
-
-if (isset($filme[$id_filme])) {
-    $tituloPagina = $filme[$id_filme] . " - Meu Site de Filmes";
-} else {
-    $tituloPagina = "Catálogo - CINE de Filmes";
-}
 
 if ($id_filme <= 0) {
     die("Filme não especificado.");
 }
 
-$filme = read($pdo, 'filme', $id_filme);
+$filme = read($pdo, 'filme', 'id_filme = ?', [$id_filme]);
 
 if (!$filme) {
     die("Filme não encontrado no catálogo.");
 }
+
+$tituloPagina = $filme['nome_filme'] . " - Meu Site de Filmes";
 
 $generos = !empty($filme['gen_filme']) ? array_map('trim', explode(',', $filme['gen_filme'])) : [];
 

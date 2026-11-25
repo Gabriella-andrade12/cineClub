@@ -1,5 +1,5 @@
 <?php
-require_once "../init.php";   // deve fornecer a conexão mysqli ($conn) e iniciar a sessão
+require_once "../init.php";   // fornece a conexão PDO ($pdo), crud() e inicia a sessão
 
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (empty($_SESSION['id_usuario'])) { header('Location: login.php'); exit; }
@@ -8,22 +8,11 @@ $uid = (int)$_SESSION['id_usuario'];
 if (!function_exists('h')) {
     function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 }
-/* SELECT com Prepared Statement: devolve todas as linhas */
-function lx_todos($conn, $sql, $types = '', $params = []) {
-    $st = mysqli_prepare($conn, $sql);
-    if ($types !== '') { mysqli_stmt_bind_param($st, $types, ...$params); }
-    mysqli_stmt_execute($st);
-    $res = mysqli_stmt_get_result($st);
-    $rows = $res ? mysqli_fetch_all($res, MYSQLI_ASSOC) : [];
-    mysqli_stmt_close($st);
-    return $rows;
-}
 function lx_brl($v) { return 'R$ ' . number_format((float)$v, 2, ',', '.'); }
 
 /* ---------- Dados cadastrais ---------- */
-$u = lx_todos($conn, "SELECT nome, nascimento, cpf, email, telefone FROM usuario WHERE id_usuario = ?", 'i', [$uid]);
+$u = read($pdo, 'usuario', 'id_usuario = ?', [$uid]);
 if (!$u) { header('Location: logout.php'); exit; }
-$u = $u[0];
 
 // CPF mascarado: ***.***.789-**
 $cpf = preg_replace('/\D/', '', $u['cpf']);
@@ -38,16 +27,14 @@ else                          { $tel_fmt = $tel !== '' ? $tel : 'Não informado'
 $nascimento = $u['nascimento'] ? date('d/m/Y', strtotime($u['nascimento'])) : '-';
 
 /* ---------- Plano de streaming ativo ---------- */
-$plano = lx_todos(
-    $conn,
+$st = $pdo->prepare(
     "SELECT a.periodo, a.data_inicio, a.data_fim, p.nome_plano, p.descricao_plano
        FROM assinatura a JOIN plano p ON p.id_plano = a.id_plano
       WHERE a.id_usuario = ? AND a.status_assinatura = 'Ativo' AND a.data_fim >= CURDATE()
-      ORDER BY a.data_fim DESC LIMIT 1",
-    'i',
-    [$uid]
+      ORDER BY a.data_fim DESC LIMIT 1"
 );
-$plano = $plano ? $plano[0] : null;
+$st->execute([$uid]);
+$plano = $st->fetch() ?: null;
 
 // Benefícios: a descrição do plano pode listar itens separados por quebra de linha, ';' ou '|'
 $beneficios = [];
@@ -56,14 +43,13 @@ if ($plano && trim((string)$plano['descricao_plano']) !== '') {
 }
 
 /* ---------- Compras recentes (venda + pagamento) ---------- */
-$compras = lx_todos(
-    $conn,
+$st = $pdo->prepare(
     "SELECT v.id_venda, v.data_pedido, v.valor_pedido, p.forma_pagamento, p.status_pagamento
        FROM venda v LEFT JOIN pagamento p ON p.id_venda = v.id_venda
-      WHERE v.id_usuario = ? ORDER BY v.data_pedido DESC LIMIT 5",
-    'i',
-    [$uid]
+      WHERE v.id_usuario = ? ORDER BY v.data_pedido DESC LIMIT 5"
 );
+$st->execute([$uid]);
+$compras = $st->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

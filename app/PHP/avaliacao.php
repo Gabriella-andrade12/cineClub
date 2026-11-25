@@ -1,44 +1,24 @@
 <?php
-require_once  "../init.php";   // deve fornecer a conexão mysqli ($conn) e iniciar a sessão
+require_once "../init.php";   // fornece a conexão PDO ($pdo), crud() e inicia a sessão
 
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (empty($_SESSION['id_usuario'])) { header('Location: login.php'); exit; }
 $uid = (int)$_SESSION['id_usuario'];
 
-/* ---------------- Helpers (Prepared Statements) ---------------- */
+/* ---------------- Helpers ---------------- */
 if (!function_exists('h')) {
     function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
-}
-function lx_stmt($conn, $sql, $types = '', $params = []) {
-    $st = mysqli_prepare($conn, $sql);
-    if ($types !== '') { mysqli_stmt_bind_param($st, $types, ...$params); }
-    mysqli_stmt_execute($st);
-    return $st;
-}
-function lx_todos($conn, $sql, $types = '', $params = []) {
-    $st = lx_stmt($conn, $sql, $types, $params);
-    $r = mysqli_stmt_get_result($st);
-    $rows = $r ? mysqli_fetch_all($r, MYSQLI_ASSOC) : [];
-    mysqli_stmt_close($st);
-    return $rows;
-}
-function lx_exec($conn, $sql, $types = '', $params = []) {
-    $st = lx_stmt($conn, $sql, $types, $params);
-    $id = mysqli_stmt_insert_id($st);
-    mysqli_stmt_close($st);
-    return $id;
 }
 
 /* A data da avaliação só é usada se a tabela tiver a coluna data_avaliacao
  * (ALTER TABLE avaliacao ADD COLUMN data_avaliacao DATE NULL;) */
-$tem_data = (bool)lx_todos($conn, "SHOW COLUMNS FROM avaliacao LIKE 'data_avaliacao'");
+$tem_data = (bool)$pdo->query("SHOW COLUMNS FROM avaliacao LIKE 'data_avaliacao'")->fetchAll();
 const PONTOS_AVALIACAO = 100;
 
 /* ---------------- O que o usuário pode avaliar ----------------
  * Filmes: assistidos (histórico) ou com ingresso de sessão já realizada.
  * Produtos: itens de bomboniere que ele comprou. */
-$filmes = lx_todos(
-    $conn,
+$st = $pdo->prepare(
     "SELECT f.id_filme, f.nome_filme, MAX(d.data) AS data
        FROM filme f
        JOIN (SELECT id_filme, DATE(data_visualizacao) AS data FROM historico_visualizacao WHERE id_usuario = ?
@@ -46,18 +26,19 @@ $filmes = lx_todos(
              SELECT s.id_filme, s.dia_sessao FROM ingressos i
                JOIN venda v ON v.id_venda = i.id_venda JOIN sessao s ON s.id_sessao = i.id_sessao
               WHERE v.id_usuario = ? AND s.dia_sessao <= CURDATE()) d ON d.id_filme = f.id_filme
-      GROUP BY f.id_filme, f.nome_filme ORDER BY data DESC, f.nome_filme",
-    'ii',
-    [$uid, $uid]
+      GROUP BY f.id_filme, f.nome_filme ORDER BY data DESC, f.nome_filme"
 );
-$produtos = lx_todos(
-    $conn,
+$st->execute([$uid, $uid]);
+$filmes = $st->fetchAll();
+
+$st = $pdo->prepare(
     "SELECT b.id_produto, b.nome_produto, MAX(v.id_venda) AS pedido
        FROM bomboniere b JOIN item_venda iv ON iv.id_produto = b.id_produto JOIN venda v ON v.id_venda = iv.id_venda
-      WHERE v.id_usuario = ? GROUP BY b.id_produto, b.nome_produto ORDER BY pedido DESC",
-    'i',
-    [$uid]
+      WHERE v.id_usuario = ? GROUP BY b.id_produto, b.nome_produto ORDER BY pedido DESC"
 );
+$st->execute([$uid]);
+$produtos = $st->fetchAll();
+
 $ids_filmes   = array_map('intval', array_column($filmes, 'id_filme'));
 $ids_produtos = array_map('intval', array_column($produtos, 'id_produto'));
 
@@ -84,29 +65,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $col = $tipo === 'filme' ? 'id_filme' : 'id_produto';
         $val = $tipo === 'filme' ? $idf : $idp;
         try {
-            mysqli_begin_transaction($conn);
-            $ex = lx_todos($conn, "SELECT id_avaliacao FROM avaliacao WHERE id_usuario = ? AND $col = ?", 'ii', [$uid, $val]);
+            $pdo->beginTransaction();
+            $ex = read($pdo, 'avaliacao', "id_usuario = ? AND $col = ?", [$uid, $val]);
             if ($ex) {
                 // já avaliou este item: atualiza (sem pontos extras)
-                lx_exec($conn, "UPDATE avaliacao SET nota_avl = ?, cometario_avl = ?" . ($tem_data ? ", data_avaliacao = CURDATE()" : "") . " WHERE id_avaliacao = ?",
-                        'isi', [$nota, $com, (int)$ex[0]['id_avaliacao']]);
+                if ($tem_data) {
+                    $st = $pdo->prepare("UPDATE avaliacao SET nota_avl = ?, cometario_avl = ?, data_avaliacao = CURDATE() WHERE id_avaliacao = ?");
+                    $st->execute([$nota, $com, (int)$ex['id_avaliacao']]);
+                } else {
+                    update($pdo, 'avaliacao', ['nota_avl' => $nota, 'cometario_avl' => $com], 'id_avaliacao = ?', [(int)$ex['id_avaliacao']]);
+                }
                 $msg = 'Avaliação atualizada!';
             } else {
                 $idfilme = $tipo === 'filme' ? $idf : null;
                 $idprod  = $tipo === 'produto' ? $idp : null;
-                lx_exec($conn,
-                    "INSERT INTO avaliacao (nota_avl, cometario_avl, id_usuario, id_produto, id_filme" . ($tem_data ? ", data_avaliacao" : "") . ") VALUES (?, ?, ?, ?, ?" . ($tem_data ? ", CURDATE()" : "") . ")",
-                    'isiii', [$nota, $com, $uid, $idprod, $idfilme]);
+                if ($tem_data) {
+                    $st = $pdo->prepare("INSERT INTO avaliacao (nota_avl, cometario_avl, id_usuario, id_produto, id_filme, data_avaliacao) VALUES (?, ?, ?, ?, ?, CURDATE())");
+                    $st->execute([$nota, $com, $uid, $idprod, $idfilme]);
+                } else {
+                    create($pdo, 'avaliacao', [
+                        'nota_avl'      => $nota,
+                        'cometario_avl' => $com,
+                        'id_usuario'    => $uid,
+                        'id_produto'    => $idprod,
+                        'id_filme'      => $idfilme,
+                    ]);
+                }
                 // Clube LUX: +100 pontos pela primeira avaliação do item
-                $pu = lx_todos($conn, "SELECT qntd_pontos FROM pontos_usuario WHERE id_usuario = ? FOR UPDATE", 'i', [$uid]);
-                if ($pu) lx_exec($conn, "UPDATE pontos_usuario SET qntd_pontos = qntd_pontos + ? WHERE id_usuario = ?", 'ii', [PONTOS_AVALIACAO, $uid]);
-                else     lx_exec($conn, "INSERT INTO pontos_usuario (qntd_pontos, id_usuario) VALUES (?, ?)", 'ii', [PONTOS_AVALIACAO, $uid]);
+                $st = $pdo->prepare("SELECT qntd_pontos FROM pontos_usuario WHERE id_usuario = ? FOR UPDATE");
+                $st->execute([$uid]);
+                if ($st->fetch()) {
+                    $stUpd = $pdo->prepare("UPDATE pontos_usuario SET qntd_pontos = qntd_pontos + ? WHERE id_usuario = ?");
+                    $stUpd->execute([PONTOS_AVALIACAO, $uid]);
+                } else {
+                    create($pdo, 'pontos_usuario', ['qntd_pontos' => PONTOS_AVALIACAO, 'id_usuario' => $uid]);
+                }
                 $msg = 'Avaliação publicada! Você ganhou +' . PONTOS_AVALIACAO . ' pontos no Clube LUX.';
             }
-            mysqli_commit($conn);
+            $pdo->commit();
             $_SESSION['avaliacao_flash'] = ['tipo' => 'ok', 'msgs' => [$msg]];
         } catch (Throwable $e) {
-            mysqli_rollback($conn);
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
             $_SESSION['avaliacao_flash'] = ['tipo' => 'erro', 'msgs' => ['Não foi possível publicar agora. Tente novamente.'], 'old' => $old];
         }
     }
@@ -124,15 +125,14 @@ elseif (isset($_GET['produto'])) { $form['tipo'] = 'produto'; $form['id_produto'
 elseif (isset($_GET['filme']))   { $form['id_filme'] = (int)$_GET['filme']; }
 
 /* ---------------- Últimas avaliações do usuário ---------------- */
-$recentes = lx_todos(
-    $conn,
+$st = $pdo->prepare(
     "SELECT a.nota_avl, a.cometario_avl, a.id_filme, a.id_produto, COALESCE(f.nome_filme, b.nome_produto) AS item"
     . ($tem_data ? ", a.data_avaliacao" : "") . "
        FROM avaliacao a LEFT JOIN filme f ON f.id_filme = a.id_filme LEFT JOIN bomboniere b ON b.id_produto = a.id_produto
-      WHERE a.id_usuario = ? ORDER BY a.id_avaliacao DESC LIMIT 5",
-    'i',
-    [$uid]
+      WHERE a.id_usuario = ? ORDER BY a.id_avaliacao DESC LIMIT 5"
 );
+$st->execute([$uid]);
+$recentes = $st->fetchAll();
 ?>
 
 <!DOCTYPE html>

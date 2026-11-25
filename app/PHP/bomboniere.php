@@ -1,21 +1,12 @@
 <?php
-require_once "../init.php";   // deve fornecer a conexão mysqli ($conn) e iniciar a sessão
+require_once "../init.php";   // fornece a conexão PDO ($pdo), crud() e inicia a sessão
 
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (empty($_SESSION['id_usuario'])) { header('Location: login.php'); exit; }
 
-/* ---------------- Helpers (Prepared Statements) ---------------- */
+/* ---------------- Helpers ---------------- */
 if (!function_exists('h')) {
     function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
-}
-function lx_todos($conn, $sql, $types = '', $params = []) {
-    $st = mysqli_prepare($conn, $sql);
-    if ($types !== '') { mysqli_stmt_bind_param($st, $types, ...$params); }
-    mysqli_stmt_execute($st);
-    $r = mysqli_stmt_get_result($st);
-    $rows = $r ? mysqli_fetch_all($r, MYSQLI_ASSOC) : [];
-    mysqli_stmt_close($st);
-    return $rows;
 }
 function lx_preco($v) { return 'R$' . number_format((float)$v, 2, ',', '.'); }
 function lx_url($params) {
@@ -44,9 +35,8 @@ $todos     = !empty($_REQUEST['todos']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idp = (int)($_POST['id_produto'] ?? 0);
-    $p = lx_todos($conn, "SELECT id_produto, nome_produto, valor_produto FROM bomboniere WHERE id_produto = ?", 'i', [$idp]);
+    $p = read($pdo, 'bomboniere', 'id_produto = ?', [$idp]);
     if ($p) {
-        $p = $p[0];
         if (isset($_SESSION['carrinho']['produtos'][$idp])) { $_SESSION['carrinho']['produtos'][$idp]['qtd']++; }
         else { $_SESSION['carrinho']['produtos'][$idp] = ['nome' => $p['nome_produto'], 'valor' => (float)$p['valor_produto'], 'qtd' => 1]; }
         $_SESSION['msg_bomboniere'] = $p['nome_produto'] . ' adicionado ao carrinho.';
@@ -59,39 +49,41 @@ unset($_SESSION['msg_bomboniere']);
 
 /* ---------------- Categorias (dinâmicas, na ordem do cardápio) ---------------- */
 $ordem_cat = ['Individual', 'Família', 'Casal', 'Infantil', 'Especiais', 'Premium', 'Bebidas', 'Doces'];
-$no_banco  = array_column(lx_todos($conn, "SELECT DISTINCT categoria_produto FROM bomboniere WHERE categoria_produto IS NOT NULL AND categoria_produto <> ''"), 'categoria_produto');
+$no_banco  = $pdo->query("SELECT DISTINCT categoria_produto FROM bomboniere WHERE categoria_produto IS NOT NULL AND categoria_produto <> ''")->fetchAll(PDO::FETCH_COLUMN);
 $categorias = array_merge(array_values(array_intersect($ordem_cat, $no_banco)), array_values(array_diff($no_banco, $ordem_cat)));
 if (!in_array($categoria, $categorias, true)) { $categoria = ''; }
 
 /* ---------------- Produtos (filtro por categoria) ---------------- */
 if ($categoria !== '') {
-    $produtos = lx_todos($conn, "SELECT * FROM bomboniere WHERE categoria_produto = ? ORDER BY nome_produto", 's', [$categoria]);
+    $st = $pdo->prepare("SELECT * FROM bomboniere WHERE categoria_produto = ? ORDER BY nome_produto");
+    $st->execute([$categoria]);
+    $produtos = $st->fetchAll();
 } else {
-    $produtos = lx_todos($conn, "SELECT * FROM bomboniere ORDER BY categoria_produto, nome_produto");
+    $produtos = $pdo->query("SELECT * FROM bomboniere ORDER BY categoria_produto, nome_produto")->fetchAll();
 }
 $limite  = 6;                                  // "ver mais" sem JavaScript: ?todos=1
 $total_p = count($produtos);
 $exibidos = $todos ? $produtos : array_slice($produtos, 0, $limite);
 
 /* ---------------- Destaque: mais vendido (item_venda) ou o produto de ?detalhe= ---------------- */
-$mais_vendido = lx_todos($conn, "SELECT id_produto FROM item_venda GROUP BY id_produto ORDER BY SUM(quantidade) DESC LIMIT 1");
-$id_mais_vendido = $mais_vendido ? (int)$mais_vendido[0]['id_produto'] : 0;
+$mais_vendido = $pdo->query("SELECT id_produto FROM item_venda GROUP BY id_produto ORDER BY SUM(quantidade) DESC LIMIT 1")->fetch();
+$id_mais_vendido = $mais_vendido ? (int)$mais_vendido['id_produto'] : 0;
 
 $destaque = null;
 if ($detalhe > 0) {
-    $d = lx_todos($conn, "SELECT * FROM bomboniere WHERE id_produto = ?", 'i', [$detalhe]);
-    $destaque = $d ? $d[0] : null;
+    $destaque = read($pdo, 'bomboniere', 'id_produto = ?', [$detalhe]) ?: null;
 }
 if (!$destaque && $id_mais_vendido) {
-    $d = lx_todos($conn, "SELECT * FROM bomboniere WHERE id_produto = ?", 'i', [$id_mais_vendido]);
-    $destaque = $d ? $d[0] : null;
+    $destaque = read($pdo, 'bomboniere', 'id_produto = ?', [$id_mais_vendido]) ?: null;
 }
 if (!$destaque && $produtos) { $destaque = $produtos[0]; }
 
 $aval = null;
 if ($destaque) {
-    $a = lx_todos($conn, "SELECT AVG(nota_avl) AS m, COUNT(*) AS n FROM avaliacao WHERE id_produto = ?", 'i', [(int)$destaque['id_produto']]);
-    if ($a && (int)$a[0]['n'] > 0) { $aval = $a[0]; }
+    $st = $pdo->prepare("SELECT AVG(nota_avl) AS m, COUNT(*) AS n FROM avaliacao WHERE id_produto = ?");
+    $st->execute([(int)$destaque['id_produto']]);
+    $a = $st->fetch();
+    if ($a && (int)$a['n'] > 0) { $aval = $a; }
 }
 ?>
 

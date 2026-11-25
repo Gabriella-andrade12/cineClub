@@ -1,5 +1,5 @@
 <?php
-require_once "../init.php";   // deve fornecer a conexão mysqli ($conn)
+require_once "../init.php";   // fornece a conexão PDO ($pdo), crud() e inicia a sessão
 
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
@@ -20,11 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $erro = 'Informe e-mail e senha.';
     } else {
       
-      // Prepared Statement: busca o usuário pelo e-mail
-      // $st = mysqli_prepare($connection, "SELECT id_usuario, nome, senha FROM usuario WHERE email = ? LIMIT 1");
-          $usuario = read($pdo, 'usuario', 'email = ?', [$email]);
-   print_r($usuario);
-print $senha;
+      // Busca o usuário pelo e-mail
+      $usuario = read($pdo, 'usuario', 'email = ?', [$email]);
     // senha gravada com password_hash() no cadastro (coluna VARCHAR(255))
     // if ($usuario && password_verify($senha, $usuario['senha'])) {
     if ($usuario && $senha === $usuario['senha']) {

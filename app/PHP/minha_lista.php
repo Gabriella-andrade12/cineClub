@@ -1,52 +1,32 @@
 <?php
-require_once "../init.php";   // deve fornecer a conexão mysqli ($conn) e iniciar a sessão
+require_once "../init.php";   // fornece a conexão PDO ($pdo), crud() e inicia a sessão
 
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (empty($_SESSION['id_usuario'])) { header('Location: login.php'); exit; }
 $uid = (int)$_SESSION['id_usuario'];
 
-/* ---------------- Helpers (Prepared Statements) ---------------- */
+/* ---------------- Helpers ---------------- */
 if (!function_exists('h')) {
     function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
-}
-function lx_stmt($conn, $sql, $types = '', $params = []) {
-    $st = mysqli_prepare($conn, $sql);
-    if ($types !== '') { mysqli_stmt_bind_param($st, $types, ...$params); }
-    mysqli_stmt_execute($st);
-    return $st;
-}
-function lx_todos($conn, $sql, $types = '', $params = []) {
-    $st = lx_stmt($conn, $sql, $types, $params);
-    $r = mysqli_stmt_get_result($st);
-    $rows = $r ? mysqli_fetch_all($r, MYSQLI_ASSOC) : [];
-    mysqli_stmt_close($st);
-    return $rows;
-}
-function lx_exec($conn, $sql, $types = '', $params = []) {
-    $st = lx_stmt($conn, $sql, $types, $params);
-    $id = mysqli_stmt_insert_id($st);
-    mysqli_stmt_close($st);
-    return $id;
 }
 function lx_nota($v) { return number_format((float)$v, 1, ',', ''); }
 
 /* ---------------- "Minha Lista" = lista privada do usuário ----------------
  * Usa as tabelas lista + filme_lista. Criada automaticamente no primeiro acesso. */
-$lista = lx_todos($conn, "SELECT id_lista FROM lista WHERE id_usuario = ? AND nome_lista = 'Minha Lista' LIMIT 1", 'i', [$uid]);
+$lista = read($pdo, 'lista', "id_usuario = ? AND nome_lista = 'Minha Lista'", [$uid]);
 if ($lista) {
-    $id_lista = (int)$lista[0]['id_lista'];
+    $id_lista = (int)$lista['id_lista'];
 } else {
-    $id_lista = lx_exec(
-        $conn,
-        "INSERT INTO lista (nome_lista, descricao_lista, data_criacao, id_usuario, exib_lista) VALUES ('Minha Lista', 'Títulos salvos para assistir depois', CURDATE(), ?, 'Privada')",
-        'i',
-        [$uid]
+    $st = $pdo->prepare(
+        "INSERT INTO lista (nome_lista, descricao_lista, data_criacao, id_usuario, exib_lista) VALUES ('Minha Lista', 'Títulos salvos para assistir depois', CURDATE(), ?, 'Privada')"
     );
+    $st->execute([$uid]);
+    $id_lista = (int)$pdo->lastInsertId();
 }
 
 /* Data de adição é opcional: só é usada se filme_lista tiver a coluna data_adicao
  * (ALTER TABLE filme_lista ADD COLUMN data_adicao TIMESTAMP DEFAULT CURRENT_TIMESTAMP;) */
-$tem_data = (bool)lx_todos($conn, "SHOW COLUMNS FROM filme_lista LIKE 'data_adicao'");
+$tem_data = (bool)$pdo->query("SHOW COLUMNS FROM filme_lista LIKE 'data_adicao'")->fetchAll();
 
 /* ---------------- Filtros e ordenação (via URL) ---------------- */
 $filtros = ['todos' => 'Todos', 'filmes' => 'Filmes', 'series' => 'Séries', 'continuar' => 'Continuar'];
@@ -61,28 +41,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idf  = (int)($_POST['id_filme'] ?? 0);
 
     if ($acao === 'salvar') {
-        $existe = lx_todos($conn, "SELECT id_filme FROM filme WHERE id_filme = ?", 'i', [$idf]);
-        $ja     = lx_todos($conn, "SELECT 1 FROM filme_lista WHERE id_lista = ? AND id_filme = ?", 'ii', [$id_lista, $idf]);
-        if ($existe && !$ja) lx_exec($conn, "INSERT INTO filme_lista (id_filme, id_lista) VALUES (?, ?)", 'ii', [$idf, $id_lista]);
+        $existe = read($pdo, 'filme', 'id_filme = ?', [$idf]);
+        $ja     = read($pdo, 'filme_lista', 'id_lista = ? AND id_filme = ?', [$id_lista, $idf]);
+        if ($existe && !$ja) {
+            create($pdo, 'filme_lista', ['id_filme' => $idf, 'id_lista' => $id_lista]);
+        }
 
     } elseif ($acao === 'remover') {
-        lx_exec($conn, "DELETE FROM filme_lista WHERE id_lista = ? AND id_filme = ?", 'ii', [$id_lista, $idf]);
+        delete($pdo, 'filme_lista', 'id_lista = ? AND id_filme = ?', [$id_lista, $idf]);
 
     } elseif ($acao === 'assistido') {          // marcar como assistido = registrar no histórico
-        $ja = lx_todos($conn, "SELECT 1 FROM historico_visualizacao WHERE id_usuario = ? AND id_filme = ?", 'ii', [$uid, $idf]);
-        if (!$ja) lx_exec($conn, "INSERT INTO historico_visualizacao (data_visualizacao, id_usuario, id_filme) VALUES (NOW(), ?, ?)", 'ii', [$uid, $idf]);
+        $ja = read($pdo, 'historico_visualizacao', 'id_usuario = ? AND id_filme = ?', [$uid, $idf]);
+        if (!$ja) {
+            $st = $pdo->prepare("INSERT INTO historico_visualizacao (data_visualizacao, id_usuario, id_filme) VALUES (NOW(), ?, ?)");
+            $st->execute([$uid, $idf]);
+        }
 
     } elseif ($acao === 'desmarcar') {
-        lx_exec($conn, "DELETE FROM historico_visualizacao WHERE id_usuario = ? AND id_filme = ?", 'ii', [$uid, $idf]);
+        delete($pdo, 'historico_visualizacao', 'id_usuario = ? AND id_filme = ?', [$uid, $idf]);
 
     } elseif ($acao === 'esvaziar_todos') {
-        lx_exec($conn, "DELETE FROM filme_lista WHERE id_lista = ?", 'i', [$id_lista]);
+        delete($pdo, 'filme_lista', 'id_lista = ?', [$id_lista]);
 
     } elseif ($acao === 'esvaziar_assistidos') {
-        lx_exec(
-            $conn,
-            "DELETE FROM filme_lista WHERE id_lista = ? AND id_filme IN (SELECT id_filme FROM historico_visualizacao WHERE id_usuario = ?)",
-            'ii',
+        delete(
+            $pdo,
+            'filme_lista',
+            'id_lista = ? AND id_filme IN (SELECT id_filme FROM historico_visualizacao WHERE id_usuario = ?)',
             [$id_lista, $uid]
         );
     }
@@ -96,29 +81,32 @@ $sql = "SELECT f.id_filme, f.nome_filme, f.imagem_capa, f.class_filme, f.gen_fil
                EXISTS(SELECT 1 FROM historico_visualizacao h WHERE h.id_usuario = ? AND h.id_filme = f.id_filme) AS assistido"
      . ($tem_data ? ", fl.data_adicao" : "")
      . " FROM filme_lista fl JOIN filme f ON f.id_filme = fl.id_filme WHERE fl.id_lista = ?";
-$types = 'ii'; $params = [$uid, $id_lista];
+$params = [$uid, $id_lista];
 if ($filtro === 'filmes')    { $sql .= " AND f.tipo_conteudo = 'Filme'"; }
 if ($filtro === 'series')    { $sql .= " AND f.tipo_conteudo = 'Serie'"; }
 if ($filtro === 'continuar') {   // streaming ainda não assistido
     $sql .= " AND f.exibicao_filme = 'Streaming' AND NOT EXISTS(SELECT 1 FROM historico_visualizacao h2 WHERE h2.id_usuario = ? AND h2.id_filme = f.id_filme)";
-    $types .= 'i'; $params[] = $uid;
+    $params[] = $uid;
 }
 $sql .= ($ordem === 'nota') ? " ORDER BY media IS NULL, media DESC, f.nome_filme"
       : (($ordem === 'az')  ? " ORDER BY f.nome_filme"
       : ($tem_data ? " ORDER BY fl.data_adicao DESC, f.nome_filme" : " ORDER BY f.id_filme DESC"));
-$titulos = lx_todos($conn, $sql, $types, $params);
+$st = $pdo->prepare($sql);
+$st->execute($params);
+$titulos = $st->fetchAll();
 
-$total_lista = (int)lx_todos($conn, "SELECT COUNT(*) AS t FROM filme_lista WHERE id_lista = ?", 'i', [$id_lista])[0]['t'];
+$st = $pdo->prepare("SELECT COUNT(*) FROM filme_lista WHERE id_lista = ?");
+$st->execute([$id_lista]);
+$total_lista = (int)$st->fetchColumn();
 
 // Gêneros predominantes da lista
-$favoritos = lx_todos(
-    $conn,
+$st = $pdo->prepare(
     "SELECT f.gen_filme AS genero, COUNT(*) AS qtd FROM filme_lista fl JOIN filme f ON f.id_filme = fl.id_filme
       WHERE fl.id_lista = ? AND f.gen_filme IS NOT NULL AND f.gen_filme <> ''
-      GROUP BY f.gen_filme ORDER BY qtd DESC, f.gen_filme LIMIT 3",
-    'i',
-    [$id_lista]
+      GROUP BY f.gen_filme ORDER BY qtd DESC, f.gen_filme LIMIT 3"
 );
+$st->execute([$id_lista]);
+$favoritos = $st->fetchAll();
 
 /* ---------------- Sugestões: mesmos gêneros, ainda fora da lista ---------------- */
 $sug_base = "SELECT f.id_filme, f.nome_filme, f.imagem_capa, f.exibicao_filme, f.tipo_conteudo,
@@ -128,11 +116,14 @@ $sug_base = "SELECT f.id_filme, f.nome_filme, f.imagem_capa, f.exibicao_filme, f
 if ($favoritos) {
     $gens = array_column($favoritos, 'genero');
     $marc = implode(',', array_fill(0, count($gens), '?'));
-    $sugestoes = lx_todos($conn, $sug_base . " AND f.gen_filme IN ($marc) ORDER BY media IS NULL, media DESC, f.nome_filme LIMIT 4",
-                          'i' . str_repeat('s', count($gens)), array_merge([$id_lista], $gens));
+    $st = $pdo->prepare($sug_base . " AND f.gen_filme IN ($marc) ORDER BY media IS NULL, media DESC, f.nome_filme LIMIT 4");
+    $st->execute(array_merge([$id_lista], $gens));
+    $sugestoes = $st->fetchAll();
     $sug_texto = 'Com base em ' . implode(', ', $gens) . '.';
 } else {
-    $sugestoes = lx_todos($conn, $sug_base . " ORDER BY media IS NULL, media DESC, f.nome_filme LIMIT 4", 'i', [$id_lista]);
+    $st = $pdo->prepare($sug_base . " ORDER BY media IS NULL, media DESC, f.nome_filme LIMIT 4");
+    $st->execute([$id_lista]);
+    $sugestoes = $st->fetchAll();
     $sug_texto = 'Os títulos mais bem avaliados da LUX.';
 }
 

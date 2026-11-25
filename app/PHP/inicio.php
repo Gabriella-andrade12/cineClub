@@ -1,5 +1,5 @@
 <?php
-require_once "../init.php";   // deve fornecer a conexão mysqli ($conn) e iniciar a sessão
+require_once "../init.php";   // fornece a conexão PDO ($pdo), crud() e inicia a sessão
 
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (empty($_SESSION['id_usuario'])) { header('Location: login.php'); exit; }
@@ -7,17 +7,6 @@ if (empty($_SESSION['id_usuario'])) { header('Location: login.php'); exit; }
 // Helper de escape (caso o init.php ainda não tenha um)
 if (!function_exists('h')) {
   function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
-}
-
-/* Executa SELECT com Prepared Statement e devolve todas as linhas */
-function consulta($conn, $sql, $types = '', $params = []) {
-  $st = mysqli_prepare($conn, $sql);
-  if ($types !== '') { mysqli_stmt_bind_param($st, $types, ...$params); }
-  mysqli_stmt_execute($st);
-  $res = mysqli_stmt_get_result($st);
-  $rows = $res ? mysqli_fetch_all($res, MYSQLI_ASSOC) : [];
-  mysqli_stmt_close($st);
-  return $rows;
 }
 
 /* ---------- Filtros cumulativos: ?tipo=...&genero=... ---------- */
@@ -31,7 +20,7 @@ if (!isset($abas[$tipo])) { $tipo = 'cartaz'; }
 
 // Gêneros dinâmicos (SELECT DISTINCT), na ordem preferida da interface
 $ordem = ['Suspense','Aventura','Romance','Terror','Drama','Ação','Comédia','Ficção','Animação','Fantasia','Crime','Musical','Documentário'];
-$no_banco = array_column(consulta($conn, "SELECT DISTINCT gen_filme FROM filme WHERE gen_filme IS NOT NULL AND gen_filme <> ''"), 'gen_filme');
+$no_banco = $pdo->query("SELECT DISTINCT gen_filme FROM filme WHERE gen_filme IS NOT NULL AND gen_filme <> ''")->fetchAll(PDO::FETCH_COLUMN);
 $lista_generos = array_merge(
   array_values(array_intersect($ordem, $no_banco)),
   array_values(array_diff($no_banco, $ordem))
@@ -52,11 +41,13 @@ if ($tipo === 'cartaz')         { $sql .= "exibicao_filme = 'Cinema' AND tipo_co
 elseif ($tipo === 'streaming')  { $sql .= "exibicao_filme = 'Streaming' AND tipo_conteudo = 'Filme'"; }
 else                            { $sql .= "tipo_conteudo = 'Serie'"; }
 
-$types = ''; $params = [];
-if ($genero !== '') { $sql .= " AND gen_filme = ?"; $types = 's'; $params[] = $genero; }
+$params = [];
+if ($genero !== '') { $sql .= " AND gen_filme = ?"; $params[] = $genero; }
 $sql .= " ORDER BY nome_filme";
 
-$filmes  = consulta($conn, $sql, $types, $params);
+$st = $pdo->prepare($sql);
+$st->execute($params);
+$filmes  = $st->fetchAll();
 $linhas  = array_chunk($filmes, 4);               // 4 cartões por linha (.grade-de-filmes)
 $grupo1  = array_slice($lista_generos, 0, 6);     // "Todos" + 6 = 7 pílulas visíveis
 $grupo2  = array_slice($lista_generos, 6);        // restante (botão de seta alterna)

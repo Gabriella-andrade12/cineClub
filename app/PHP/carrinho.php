@@ -1,32 +1,13 @@
 <?php
-require_once "../init.php";   // deve fornecer a conexão mysqli ($conn) e iniciar a sessão
+require_once "../init.php";   // fornece a conexão PDO ($pdo), crud() e inicia a sessão
 
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (empty($_SESSION['id_usuario'])) { header('Location: login.php'); exit; }
 $uid = (int)$_SESSION['id_usuario'];
 
-/* ---------------- Helpers (Prepared Statements) ---------------- */
+/* ---------------- Helpers ---------------- */
 if (!function_exists('h')) {
     function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
-}
-function lx_stmt($conn, $sql, $types = '', $params = []) {
-    $st = mysqli_prepare($conn, $sql);
-    if ($types !== '') { mysqli_stmt_bind_param($st, $types, ...$params); }
-    mysqli_stmt_execute($st);
-    return $st;
-}
-function lx_todos($conn, $sql, $types = '', $params = []) {
-    $st = lx_stmt($conn, $sql, $types, $params);
-    $r = mysqli_stmt_get_result($st);
-    $rows = $r ? mysqli_fetch_all($r, MYSQLI_ASSOC) : [];
-    mysqli_stmt_close($st);
-    return $rows;
-}
-function lx_insert($conn, $sql, $types = '', $params = []) {
-    $st = lx_stmt($conn, $sql, $types, $params);
-    $id = mysqli_stmt_insert_id($st);
-    mysqli_stmt_close($st);
-    return $id;
 }
 function lx_brl($v) { return 'R$ ' . number_format((float)$v, 2, ',', '.'); }
 
@@ -45,10 +26,11 @@ function lx_subtotal() {
 }
 
 /* REGRA DE CUPOM: existe, está ativo, dentro da validade e valor mínimo atingido */
-function lx_cupom($conn, $codigo, $subtotal) {
-    $c = lx_todos($conn, "SELECT * FROM cupom WHERE UPPER(codigo) = UPPER(?) LIMIT 1", 's', [$codigo]);
+function lx_cupom(PDO $pdo, $codigo, $subtotal) {
+    $st = $pdo->prepare("SELECT * FROM cupom WHERE UPPER(codigo) = UPPER(?) LIMIT 1");
+    $st->execute([$codigo]);
+    $c = $st->fetch();
     if (!$c) return [null, 'Cupom inexistente.'];
-    $c = $c[0];
     if (!in_array(strtoupper((string)$c['cupom_ativo']), ['SIM', '1', 'S', 'ATIVO'], true)) return [null, 'Cupom inativo.'];
     if (!empty($c['data_validade']) && $c['data_validade'] < date('Y-m-d')) return [null, 'Cupom vencido.'];
     if ($subtotal < (float)$c['valor_minimo_pedido']) return [null, 'Pedido mínimo do cupom: ' . lx_brl($c['valor_minimo_pedido']) . '.'];
@@ -90,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $cod = trim($_POST['cupom'] ?? '');
         if ($cod !== '' && strcasecmp($cod, (string)$_SESSION['carrinho']['cupom']) !== 0) {
-            list($cp, $erro_cp) = lx_cupom($conn, $cod, lx_subtotal());
+            list($cp, $erro_cp) = lx_cupom($pdo, $cod, lx_subtotal());
             if ($cp) { $_SESSION['carrinho']['cupom'] = $cp['codigo']; lx_msg('Cupom aplicado!'); }
             else     { lx_msg($erro_cp, 'erro'); }
         }
@@ -113,17 +95,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         lx_msg('Preencha o endereço (UF com 2 letras e CEP com 8 dígitos).', 'erro');
                         $ok = false;
                     } else {
-                        $_SESSION['carrinho']['id_endereco'] = lx_insert(
-                            $conn,
-                            "INSERT INTO endereco_entrega (id_usuario, logradouro, numero, complemento, bairro, cidade, estado, cep) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                            'isssssss',
-                            [$uid, $e['logradouro'], $e['numero'], $e['complemento'], $e['bairro'], $e['cidade'], strtoupper($e['estado']), $e['cep']]
-                        );
+                        $_SESSION['carrinho']['id_endereco'] = (int)create($pdo, 'endereco_entrega', [
+                            'id_usuario'  => $uid,
+                            'logradouro'  => $e['logradouro'],
+                            'numero'      => $e['numero'],
+                            'complemento' => $e['complemento'],
+                            'bairro'      => $e['bairro'],
+                            'cidade'      => $e['cidade'],
+                            'estado'      => strtoupper($e['estado']),
+                            'cep'         => $e['cep'],
+                        ]);
                     }
                 } else {
                     // o endereço precisa pertencer ao usuário logado
-                    $end = lx_todos($conn, "SELECT id_endereco FROM endereco_entrega WHERE id_endereco = ? AND id_usuario = ?", 'ii', [(int)$esc, $uid]);
-                    if ($end) { $_SESSION['carrinho']['id_endereco'] = (int)$end[0]['id_endereco']; }
+                    $end = read($pdo, 'endereco_entrega', 'id_endereco = ? AND id_usuario = ?', [(int)$esc, $uid]);
+                    if ($end) { $_SESSION['carrinho']['id_endereco'] = (int)$end['id_endereco']; }
                     else { lx_msg('Selecione ou cadastre um endereço de entrega.', 'erro'); $ok = false; }
                 }
             } else {
@@ -154,7 +140,7 @@ foreach ($ingressos as $i) {
 $subtotal = lx_subtotal();
 $desconto = 0.0; $cupom_ativo = null;
 if (!empty($_SESSION['carrinho']['cupom'])) {
-    list($cp, $e) = lx_cupom($conn, $_SESSION['carrinho']['cupom'], $subtotal);
+    list($cp, $e) = lx_cupom($pdo, $_SESSION['carrinho']['cupom'], $subtotal);
     if ($cp) {
         $cupom_ativo = $cp['codigo'];
         $t = strtolower((string)$cp['tipo_desconto']);
@@ -167,7 +153,12 @@ if (!empty($_SESSION['carrinho']['cupom'])) {
 $total = round($subtotal - $desconto, 2);
 $fator = $subtotal > 0 ? $total / $subtotal : 1;   // desconto proporcional por item
 
-$enderecos = $produtos ? lx_todos($conn, "SELECT * FROM endereco_entrega WHERE id_usuario = ? ORDER BY id_endereco DESC", 'i', [$uid]) : [];
+$enderecos = [];
+if ($produtos) {
+    $st = $pdo->prepare("SELECT * FROM endereco_entrega WHERE id_usuario = ? ORDER BY id_endereco DESC");
+    $st->execute([$uid]);
+    $enderecos = $st->fetchAll();
+}
 $end_sel = (int)($_SESSION['carrinho']['id_endereco'] ?? 0);
 
 $mensagens = $_SESSION['msg_carrinho'] ?? [];

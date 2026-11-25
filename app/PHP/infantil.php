@@ -1,21 +1,12 @@
 <?php
-require_once "../init.php";   // deve fornecer a conexão mysqli ($conn) e iniciar a sessão
+require_once "../init.php";   // fornece a conexão PDO ($pdo), crud() e inicia a sessão
 
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (empty($_SESSION['id_usuario'])) { header('Location: login.php'); exit; }
 
-/* ---------------- Helpers (Prepared Statements) ---------------- */
+/* ---------------- Helpers ---------------- */
 if (!function_exists('h')) {
     function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
-}
-function lx_todos($conn, $sql, $types = '', $params = []) {
-    $st = mysqli_prepare($conn, $sql);
-    if ($types !== '') { mysqli_stmt_bind_param($st, $types, ...$params); }
-    mysqli_stmt_execute($st);
-    $r = mysqli_stmt_get_result($st);
-    $rows = $r ? mysqli_fetch_all($r, MYSQLI_ASSOC) : [];
-    mysqli_stmt_close($st);
-    return $rows;
 }
 function lx_capa($f) { return !empty($f['imagem_capa']) ? $f['imagem_capa'] : './img/Logo - LUX.png'; }
 
@@ -52,9 +43,8 @@ $_SESSION['carrinho'] += ['ingressos' => [], 'produtos' => [], 'cupom' => null, 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idp = (int)($_POST['id_produto'] ?? 0);
-    $p = lx_todos($conn, "SELECT id_produto, nome_produto, valor_produto FROM bomboniere WHERE id_produto = ?", 'i', [$idp]);
+    $p = read($pdo, 'bomboniere', 'id_produto = ?', [$idp]);
     if ($p) {
-        $p = $p[0];
         if (isset($_SESSION['carrinho']['produtos'][$idp])) { $_SESSION['carrinho']['produtos'][$idp]['qtd']++; }
         else { $_SESSION['carrinho']['produtos'][$idp] = ['nome' => $p['nome_produto'], 'valor' => (float)$p['valor_produto'], 'qtd' => 1]; }
         $_SESSION['msg_infantil'] = $p['nome_produto'] . ' adicionado ao carrinho.';
@@ -84,7 +74,7 @@ if ($tipo === 'cartaz') {
     $where = "tipo_conteudo = 'Serie'";
     $ordem = "nome_filme";
 }
-$todos = lx_todos($conn, "SELECT id_filme, nome_filme, imagem_capa, class_filme FROM filme WHERE $where ORDER BY $ordem");
+$todos = $pdo->query("SELECT id_filme, nome_filme, imagem_capa, class_filme FROM filme WHERE $where ORDER BY $ordem")->fetchAll();
 
 $filmes = [];
 foreach ($todos as $f) {
@@ -96,8 +86,8 @@ foreach ($todos as $f) {
 }
 
 /* ---------------- Destaque (carrossel por links): estreias infantis em cartaz ---------------- */
-$cand = lx_todos($conn, "SELECT id_filme, nome_filme, sinopse, imagem_capa, data_filme, duracao_filme, class_filme FROM filme
-                          WHERE exibicao_filme = 'Cinema' AND tipo_conteudo = 'Filme' ORDER BY data_filme DESC");
+$cand = $pdo->query("SELECT id_filme, nome_filme, sinopse, imagem_capa, data_filme, duracao_filme, class_filme FROM filme
+                     WHERE exibicao_filme = 'Cinema' AND tipo_conteudo = 'Filme' ORDER BY data_filme DESC")->fetchAll();
 $destaques = [];
 foreach ($cand as $f) {
     $i = lx_idade($f['class_filme']);
@@ -111,22 +101,29 @@ $base = ['tipo' => $tipo === 'cartaz' ? '' : $tipo, 'idade' => $idade, 'busca' =
 function lx_url_dest($base, $n) { return lx_url($base + ['destaque' => $n ?: '']) . '#topo'; }
 
 /* ---------------- Clássicos: títulos mais bem avaliados (completa com os mais antigos) ---------------- */
-$classicos = lx_todos($conn, "SELECT f.id_filme, f.nome_filme, f.imagem_capa, f.data_filme, f.duracao_filme, AVG(a.nota_avl) AS media
-                                FROM filme f JOIN avaliacao a ON a.id_filme = f.id_filme
-                               GROUP BY f.id_filme, f.nome_filme, f.imagem_capa, f.data_filme, f.duracao_filme
-                               ORDER BY media DESC, f.nome_filme LIMIT 3");
+$classicos = $pdo->query(
+    "SELECT f.id_filme, f.nome_filme, f.imagem_capa, f.data_filme, f.duracao_filme, AVG(a.nota_avl) AS media
+       FROM filme f JOIN avaliacao a ON a.id_filme = f.id_filme
+      GROUP BY f.id_filme, f.nome_filme, f.imagem_capa, f.data_filme, f.duracao_filme
+      ORDER BY media DESC, f.nome_filme LIMIT 3"
+)->fetchAll();
 if (count($classicos) < 3) {
     $ja = array_map('intval', array_column($classicos, 'id_filme')) ?: [0];
     $marc = implode(',', array_fill(0, count($ja), '?'));
-    $extra = lx_todos($conn, "SELECT id_filme, nome_filme, imagem_capa, data_filme, duracao_filme, NULL AS media FROM filme
-                               WHERE id_filme NOT IN ($marc) ORDER BY data_filme ASC LIMIT " . (3 - count($classicos)),
-                      str_repeat('i', count($ja)), $ja);
-    $classicos = array_merge($classicos, $extra);
+    $limite = 3 - count($classicos);
+    $st = $pdo->prepare(
+        "SELECT id_filme, nome_filme, imagem_capa, data_filme, duracao_filme, NULL AS media
+           FROM filme WHERE id_filme NOT IN ($marc) ORDER BY data_filme ASC LIMIT $limite"
+    );
+    $st->execute($ja);
+    $classicos = array_merge($classicos, $st->fetchAll());
 }
 
 /* ---------------- Bomboniere: combos infantis primeiro ---------------- */
-$combos = lx_todos($conn, "SELECT id_produto, nome_produto, valor_produto, descricao_produto, categoria_produto FROM bomboniere
-                            ORDER BY (categoria_produto = 'Infantil') DESC, nome_produto LIMIT 2");
+$combos = $pdo->query(
+    "SELECT id_produto, nome_produto, valor_produto, descricao_produto, categoria_produto FROM bomboniere
+      ORDER BY (categoria_produto = 'Infantil') DESC, nome_produto LIMIT 2"
+)->fetchAll();
 /* Imagem do combo: ./img/Combos/1/<nome>.(png|jpg|jpeg|webp), com e sem o prefixo "Combo " */
 function lx_imagem($nome) {
     foreach ([$nome, preg_replace('/^Combo\s+/iu', '', $nome)] as $v) {

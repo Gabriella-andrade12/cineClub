@@ -1,5 +1,5 @@
 <?php
-require_once "../init.php";   // deve fornecer a conexão mysqli ($conn)
+require_once "../init.php";   // fornece a conexão PDO ($pdo), crud() e inicia a sessão
 
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (!empty($_SESSION['id_usuario'])) { header('Location: inicio.php'); exit; }
@@ -7,29 +7,10 @@ if (!empty($_SESSION['id_usuario'])) { header('Location: inicio.php'); exit; }
 if (!function_exists('h')) {
     function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 }
-function lx_stmt($conn, $sql, $types = '', $params = []) {
-    $st = mysqli_prepare($conn, $sql);
-    if ($types !== '') { mysqli_stmt_bind_param($st, $types, ...$params); }
-    mysqli_stmt_execute($st);
-    return $st;
-}
-function lx_todos($conn, $sql, $types = '', $params = []) {
-    $st = lx_stmt($conn, $sql, $types, $params);
-    $r = mysqli_stmt_get_result($st);
-    $rows = $r ? mysqli_fetch_all($r, MYSQLI_ASSOC) : [];
-    mysqli_stmt_close($st);
-    return $rows;
-}
-function lx_insert($conn, $sql, $types = '', $params = []) {
-    $st = lx_stmt($conn, $sql, $types, $params);
-    $id = mysqli_stmt_insert_id($st);
-    mysqli_stmt_close($st);
-    return $id;
-}
 function lx_brl($v) { return 'R$ ' . number_format((float)$v, 2, ',', '.'); }
 
 // Planos ativos (Lux Play, Lux Plus, Lux Prime...)
-$planos = lx_todos($conn, "SELECT id_plano, nome_plano, descricao_plano, valor_mensal, valor_anual FROM plano WHERE UPPER(plano_ativo) = 'SIM' ORDER BY valor_mensal");
+$planos = $pdo->query("SELECT id_plano, nome_plano, descricao_plano, valor_mensal, valor_anual FROM plano WHERE UPPER(plano_ativo) = 'SIM' ORDER BY valor_mensal")->fetchAll();
 
 $erros = [];
 $v = ['nome' => '', 'nascimento' => '', 'endereco' => '', 'cpf' => '', 'email' => '', 'telefone' => '', 'id_plano' => '', 'periodo' => ''];
@@ -75,48 +56,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['escolha'])) {
 
     // Unicidade de CPF e e-mail
     if (!$erros) {
-        if (lx_todos($conn, "SELECT id_usuario FROM usuario WHERE cpf = ?", 's', [$cpf]))           $erros[] = 'CPF já cadastrado.';
-        if (lx_todos($conn, "SELECT id_usuario FROM usuario WHERE email = ?", 's', [$v['email']])) $erros[] = 'E-mail já cadastrado.';
+        if (read($pdo, 'usuario', 'cpf = ?', [$cpf]))          $erros[] = 'CPF já cadastrado.';
+        if (read($pdo, 'usuario', 'email = ?', [$v['email']])) $erros[] = 'E-mail já cadastrado.';
     }
 
     if (!$erros) {
         try {
-            mysqli_begin_transaction($conn);   // conta + endereço + assinatura: tudo ou nada
+            $pdo->beginTransaction();   // conta + endereço + assinatura: tudo ou nada
 
             $hash = password_hash($senha, PASSWORD_DEFAULT);   // coluna senha: VARCHAR(255)
             $telbd = $tel !== '' ? $tel : null;
-            $id = lx_insert(
-                $conn,
-                "INSERT INTO usuario (nome, nascimento, cpf, email, telefone, senha) VALUES (?, ?, ?, ?, ?, ?)",
-                'ssssss',
-                [$v['nome'], $nasc_sql, $cpf, $v['email'], $telbd, $hash]
-            );
-            lx_insert($conn, "INSERT INTO pontos_usuario (qntd_pontos, id_usuario) VALUES (0, ?)", 'i', [$id]);
+            $id = (int)create($pdo, 'usuario', [
+                'nome'       => $v['nome'],
+                'nascimento' => $nasc_sql,
+                'cpf'        => $cpf,
+                'email'      => $v['email'],
+                'telefone'   => $telbd,
+                'senha'      => $hash,
+            ]);
+            create($pdo, 'pontos_usuario', ['qntd_pontos' => 0, 'id_usuario' => $id]);
 
             // Endereço informado em texto livre: guardado em endereco_entrega.logradouro
             // (o cliente pode cadastrar um endereço completo depois, no carrinho)
-            lx_insert(
-                $conn,
-                "INSERT INTO endereco_entrega (id_usuario, logradouro, numero, complemento, bairro, cidade, estado, cep) VALUES (?, ?, 'S/N', '', '', '', '', '')",
-                'is',
-                [$id, $v['endereco']]
-            );
+            create($pdo, 'endereco_entrega', [
+                'id_usuario'  => $id,
+                'logradouro'  => $v['endereco'],
+                'numero'      => 'S/N',
+                'complemento' => '',
+                'bairro'      => '',
+                'cidade'      => '',
+                'estado'      => '',
+                'cep'         => '',
+            ]);
 
             // Assinatura: status Ativo, início hoje, fim = +1 mês (Mensal) ou +1 ano (Anual)
             $intervalo = $periodo === 'Anual' ? 'INTERVAL 1 YEAR' : 'INTERVAL 1 MONTH';
-            lx_insert(
-                $conn,
+            $st = $pdo->prepare(
                 "INSERT INTO assinatura (periodo, data_inicio, data_fim, status_assinatura, id_usuario, id_plano)
-                 VALUES (?, CURDATE(), DATE_ADD(CURDATE(), $intervalo), 'Ativo', ?, ?)",
-                'sii',
-                [$periodo, $id, (int)$plano['id_plano']]
+                 VALUES (?, CURDATE(), DATE_ADD(CURDATE(), $intervalo), 'Ativo', ?, ?)"
             );
+            $st->execute([$periodo, $id, (int)$plano['id_plano']]);
 
-            mysqli_commit($conn);
+            $pdo->commit();
             header('Location: login.php?cadastro=ok');
             exit;
         } catch (Throwable $e) {
-            mysqli_rollback($conn);
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
             $erros[] = 'Não foi possível concluir o cadastro. Tente novamente.';
         }
     }

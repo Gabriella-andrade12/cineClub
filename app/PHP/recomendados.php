@@ -1,5 +1,5 @@
 <?php
-require_once "../init.php";   // deve fornecer a conexão mysqli ($conn) e iniciar a sessão
+require_once "../init.php";   // fornece a conexão PDO ($pdo), crud() e inicia a sessão
 
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (empty($_SESSION['id_usuario'])) { header('Location: login.php'); exit; }
@@ -9,16 +9,6 @@ $nome = $_SESSION['nome'] ?? '';
 if (!function_exists('h')) {
     function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 }
-/* SELECT com Prepared Statement: devolve todas as linhas */
-function lx_todos($conn, $sql, $types = '', $params = []) {
-    $st = mysqli_prepare($conn, $sql);
-    if ($types !== '') { mysqli_stmt_bind_param($st, $types, ...$params); }
-    mysqli_stmt_execute($st);
-    $res = mysqli_stmt_get_result($st);
-    $rows = $res ? mysqli_fetch_all($res, MYSQLI_ASSOC) : [];
-    mysqli_stmt_close($st);
-    return $rows;
-}
 
 /* =====================================================================
  * ALGORITMO DE RECOMENDAÇÃO
@@ -26,16 +16,18 @@ function lx_todos($conn, $sql, $types = '', $params = []) {
  * 2) Sugere filmes desses gêneros que o usuário AINDA NÃO assistiu,
  *    ordenados pela afinidade do gênero e pela nota média.
  * ===================================================================== */
-$generos = lx_todos(
-    $conn,
+$st = $pdo->prepare(
     "SELECT f.gen_filme AS genero, COUNT(*) AS qtd
        FROM historico_visualizacao h JOIN filme f ON f.id_filme = h.id_filme
       WHERE h.id_usuario = ? AND f.gen_filme IS NOT NULL AND f.gen_filme <> ''
-      GROUP BY f.gen_filme ORDER BY qtd DESC, f.gen_filme LIMIT 4",
-    'i',
-    [$uid]
+      GROUP BY f.gen_filme ORDER BY qtd DESC, f.gen_filme LIMIT 4"
 );
-$total_views = (int)(lx_todos($conn, "SELECT COUNT(*) AS t FROM historico_visualizacao WHERE id_usuario = ?", 'i', [$uid])[0]['t'] ?? 0);
+$st->execute([$uid]);
+$generos = $st->fetchAll();
+
+$st = $pdo->prepare("SELECT COUNT(*) FROM historico_visualizacao WHERE id_usuario = ?");
+$st->execute([$uid]);
+$total_views = (int)$st->fetchColumn();
 
 // Percentuais sobre o total assistido; "Outros" fecha os 100%
 $paleta = ['#f26b3a', '#f7d86a', '#4aa3df', '#9b6bd6', '#5b6b8a'];
@@ -76,7 +68,9 @@ $sel = "SELECT f.id_filme, f.nome_filme, f.imagem_capa, f.gen_filme,
          WHERE f.id_filme NOT IN (SELECT id_filme FROM historico_visualizacao WHERE id_usuario = ?)";
 if ($ranking) {
     $marc = implode(',', array_fill(0, count($ranking), '?'));
-    $filmes = lx_todos($conn, $sel . " AND f.gen_filme IN ($marc)", 'i' . str_repeat('s', count($ranking)), array_merge([$uid], $ranking));
+    $st = $pdo->prepare($sel . " AND f.gen_filme IN ($marc)");
+    $st->execute(array_merge([$uid], $ranking));
+    $filmes = $st->fetchAll();
     usort($filmes, function ($a, $b) use ($ranking) {
         $ra = array_search($a['gen_filme'], $ranking, true);
         $rb = array_search($b['gen_filme'], $ranking, true);
@@ -84,9 +78,14 @@ if ($ranking) {
     });
 } else {
     // Sem histórico: mostra os mais bem avaliados da plataforma
-    $filmes = lx_todos($conn, $sel . " ORDER BY media DESC, f.nome_filme", 'i', [$uid]);
+    $st = $pdo->prepare($sel . " ORDER BY media DESC, f.nome_filme");
+    $st->execute([$uid]);
+    $filmes = $st->fetchAll();
 }
 $filmes = array_slice($filmes, 0, 12);
+$stComents = $pdo->prepare(
+    "SELECT cometario_avl FROM avaliacao WHERE id_filme = ? AND cometario_avl IS NOT NULL AND cometario_avl <> '' ORDER BY id_avaliacao DESC LIMIT 2"
+);
 
 // Estrelas (escala 1 a 5): cheia / meia / vazia
 function lx_estrelas($media) {
@@ -172,12 +171,8 @@ function lx_estrelas($media) {
             <div class="carrossel-filmes">
                 <?php foreach ($filmes as $f):
                     $capa = !empty($f['imagem_capa']) ? $f['imagem_capa'] : './img/Logo - LUX.png';
-                    $coments = lx_todos(
-                        $conn,
-                        "SELECT cometario_avl FROM avaliacao WHERE id_filme = ? AND cometario_avl IS NOT NULL AND cometario_avl <> '' ORDER BY id_avaliacao DESC LIMIT 2",
-                        'i',
-                        [(int)$f['id_filme']]
-                    );
+                    $stComents->execute([(int)$f['id_filme']]);
+                    $coments = $stComents->fetchAll();
                 ?>
                 <article class="cartao-filme">
                     <div class="cartaz-recomendacoes">

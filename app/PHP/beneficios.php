@@ -77,7 +77,7 @@ unset($_SESSION['msg']);
 <body>
 
     <header class="cabecalho">
-        <a href="./inicio.html" class="logo">
+        <a href="./inicio.php" class="logo">
             <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
         </a>
 
@@ -275,7 +275,7 @@ unset($_SESSION['msg']);
             <div class="rodape-informacoes">
                 <a href="#">Filmes em Cartaz</a>
                 <a href="#">Próximas Estreias</a>
-                <a href="./combos.html">Bomboniere & Combos</a>
+                <a href="./combos.php">Bomboniere & Combos</a>
             </div>
             <div class="rodape-informacoes">
                 <a href="#">Cinemas Parceiros</a>

@@ -1114,3 +1114,79 @@ body::-webkit-scrollbar {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+.grade-de-filmes {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.cartao-filme {
+  min-width: 0;
+}
+
+.cartaz-filme {
+  aspect-ratio: 2 / 3;
+  background-color: var(--bg-ink-black);
+}
+
+.cartaz-filme img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cartaz-placeholder {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  color: var(--text-gray);
+  font-size: 13px;
+}
+
+.cartao-filme > .botao-de-detalhes {
+  display: block;
+  text-align: center;
+}
+
+.selecione-filmes,
+.lista-generos {
+  flex-wrap: wrap;
+}
+
+.selecione-filmes a,
+.lista-generos a {
+  text-decoration: none;
+}
+
+.lista-generos a {
+  display: block;
+  width: auto;
+  flex: 1 0 auto;
+}
+
+.generos {
+  position: relative;
+}
+
+#troca-de-generos {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+}
+
+#troca-de-generos:focus-visible ~ .navegacao-generos {
+  outline: 2px solid var(--accent-mustard);
+  outline-offset: 4px;
+}
+
+.sem-resultados {
+  text-align: center;
+  padding: 40px 0;
+}
+
+@media (max-width: 900px) {
+  .grade-de-filmes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}

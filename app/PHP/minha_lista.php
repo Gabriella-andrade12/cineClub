@@ -227,7 +227,7 @@ function lx_classif($c) { $n = preg_replace('/\D/', '', (string)$c); return $n !
       <?php foreach ($titulos as $f):
         $assistido = (bool)$f['assistido'];
         $cartaz    = ($f['exibicao_filme'] === 'Cinema');
-        $url       = 'detalhes_filme.php?id=' . (int)$f['id_filme'];
+        $url       = 'filmes.php?id=' . (int)$f['id_filme'];
       ?>
       <article class="cartao<?= $assistido ? ' cartao-assistido' : '' ?>">
         <a href="<?= h($url) ?>" class="cartao-capa">
@@ -290,7 +290,7 @@ function lx_classif($c) { $n = preg_replace('/\D/', '', (string)$c); return $n !
 
       <div class="grade-titulos grade-pequena">
         <?php foreach ($sugestoes as $f):
-          $url = 'detalhes_filme.php?id=' . (int)$f['id_filme'];
+          $url = 'filmes.php?id=' . (int)$f['id_filme'];
         ?>
         <article class="cartao cartao-pequeno">
           <a href="<?= h($url) ?>" class="cartao-capa">

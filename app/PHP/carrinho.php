@@ -144,7 +144,7 @@ if (!empty($_SESSION['carrinho']['cupom'])) {
     if ($cp) {
         $cupom_ativo = $cp['codigo'];
         $t = strtolower((string)$cp['tipo_desconto']);
-        $desconto = (strpos($t, 'perc') !== false || strpos($t, '%') !== false) ? $subtotal * ((float)$cp['valor_desconto'] / 100) : (float)$cp['valor_desconto'];
+        $desconto = (strpos($t, 'porc') !== false || strpos($t, 'perc') !== false || strpos($t, '%') !== false) ? $subtotal * ((float)$cp['valor_desconto'] / 100) : (float)$cp['valor_desconto'];
         $desconto = round(min($desconto, $subtotal), 2);
     } else {
         $_SESSION['carrinho']['cupom'] = null;

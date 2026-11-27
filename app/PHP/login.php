@@ -22,9 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       
       // Busca o usuário pelo e-mail
       $usuario = read($pdo, 'usuario', 'email = ?', [$email]);
-    // senha gravada com password_hash() no cadastro (coluna VARCHAR(255))
-    // if ($usuario && password_verify($senha, $usuario['senha'])) {
-    if ($usuario && $senha === $usuario['senha']) {
+    // Aceita tanto senha com password_hash() (cadastro) quanto texto puro (seeds)
+    if ($usuario && (password_verify($senha, $usuario['senha']) || $senha === $usuario['senha'])) {
       session_regenerate_id(true);
       $_SESSION['id_usuario'] = (int)$usuario['id_usuario'];
       $_SESSION['nome']       = $usuario['nome'];
@@ -64,7 +63,7 @@ $aviso_estilo = 'padding:10px 14px;border-radius:10px;margin-bottom:14px;font-si
   </svg>
 
   <header class="cabecalho">
-    <a href="../inicio.php" class="logo">
+    <a href="./inicio.php" class="logo">
       <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
     </a>
   </header>

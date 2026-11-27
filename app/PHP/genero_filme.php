@@ -1,124 +1,51 @@
 <?php
-require_once "../init.php";   // fornece a conexão PDO ($pdo) e inicia a sessão
-require_once "./generos_lib.php";
+// carrinho.php - Versão mínima só para exibir os ingressos adicionados (substitua pela sua)
+session_start();
 
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
-if (empty($_SESSION['id_usuario'])) { header('Location: login.php'); exit; }
+$ingressos = isset($_SESSION['carrinho']['ingressos']) ? $_SESSION['carrinho']['ingressos'] : [];
 
-/* Filtros cumulativos: ?tipo=...&genero=... */
-$tipo          = lx_tipo($_GET['tipo'] ?? 'cartaz');
-$lista_generos = lx_generos($pdo);
-$genero        = lx_genero($_GET['genero'] ?? '', $lista_generos);
+if (isset($_GET['limpar'])) {
+    unset($_SESSION['carrinho']['ingressos']);
+    header('Location: carrinho.php');
+    exit;
+}
 
-/* Sem gênero válido: volta para a página inicial (mantendo a aba) */
-if ($genero === '') { header('Location: ' . lx_url_genero($tipo, '')); exit; }
-
-$filmes = lx_buscar_filmes($pdo, $tipo, $genero);
+$total = 0;
 ?>
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?= h($genero) ?> - LUX</title>
-  <link rel="stylesheet" href="./CSS/inicio.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="shortcut icon" href="./img/Logo - LUX.png" type="image/x-icon">
+    <meta charset="UTF-8">
+    <title>LUX - Carrinho</title>
+    <style>
+        body { font-family: Arial, sans-serif; background:#111; color:#eee; padding:24px; }
+        a { color:#f5c518; }
+        table { border-collapse:collapse; margin:16px 0; }
+        th, td { border:1px solid #444; padding:8px 12px; text-align:left; }
+    </style>
 </head>
-
 <body>
-
-  <header class="cabecalho">
-    <a href="./inicio.php" class="logo">
-      <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
-    </a>
-
-    <nav class="navegacao-menu">
-      <a href="./inicio.php" class="navegacao-ativa">Lançamentos</a>
-      <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
-      <a href="./bomboniere.php" class="navegacao-opcoes">Combos</a>
-      <a href="./infantil.php" class="navegacao-opcoes">Infantil</a>
-    </nav>
-
-    <div class="busca">
-      <input type="text" placeholder="Buscar filmes, gêneros, cinemas...">
-      <i class="fa-solid fa-magnifying-glass busca-icon"></i>
-    </div>
-
-    <div class="acoes-do-usuario">
-      <a href="carrinho.php" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
-      <a href="./minha_lista.php" class="link"><i class="fa-solid fa-bookmark"></i></a>
-      <a href="./perfil.php" class="link"><i class="fa-solid fa-user"></i></a>
-    </div>
-  </header>
-
-  <section class="localizacao">
-    <div class="selecao">
-      <span>Sua Localização:</span>
-      <select>
-        <option>São Paulo, SP</option>
-        <option>Rio de Janeiro, RJ</option>
-      </select>
-    </div>
-    <div class="selecao">
-      <span>Cinema Preferencial:</span>
-      <select>
-        <option>Selecione o cinema preferencial...</option>
-      </select>
-    </div>
-  </section>
-
-  <main class="faixa-principal">
-
-    <section class="generos">
-      <div class="genero">
-        <i class="fa-solid fa-sliders"></i>
-        <i class="fa-solid fa-list-ul"></i>
-      </div>
-
-<?php lx_barra_generos($lista_generos, $tipo, $genero); ?>
-    </section>
-
-    <section class="movies-container">
-<?php lx_abas_e_grade($filmes, $tipo, $genero); ?>
-    </section>
-
-  </main>
-
-  <footer class="rodape">
-    <div class="rodape-logo">
-      <img src="./img/Logo - LUX.png" alt="LUX Rodapé Logo">
-    </div>
-
-    <div class="grade-do-rodape">
-      <div class="rodape-informacoes">
-        <a href="./inicio.php">Filmes em Cartaz</a>
-        <a href="#">Próximas Estreias</a>
-        <a href="./bomboniere.php">Bomboniere & Combos</a>
-      </div>
-      <div class="rodape-informacoes">
-        <a href="#">Cinemas Parceiros</a>
-        <a href="#">Central de Ajuda</a>
-        <a href="#">Termos de Uso</a>
-      </div>
-      <div class="rodape-informacoes">
-        <a href="#">Política de Privacidade</a>
-        <a href="#">Meia Entrada</a>
-        <a href="#">Atendimento ao Cliente</a>
-      </div>
-      <div class="rodape-informacoes informacoes-contato">
-        <p>Atendimento ao Cliente</p>
-        <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
-        <div class="redes-informacoes">
-          <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-          <a href="#"><i class="fa-brands fa-instagram"></i></a>
-          <a href="#"><i class="fa-brands fa-facebook"></i></a>
-        </div>
-      </div>
-    </div>
-  </footer>
-
+    <h1>Carrinho</h1>
+    <?php if (count($ingressos) === 0): ?>
+        <p>Seu carrinho de ingressos está vazio.</p>
+    <?php else: ?>
+        <table>
+            <tr><th>Filme</th><th>Data</th><th>Hora</th><th>Sala</th><th>Assento</th><th>Tipo</th><th>Valor</th></tr>
+            <?php foreach ($ingressos as $i): $total += $i['valor']; ?>
+                <tr>
+                    <td><?= htmlspecialchars($i['filme']) ?></td>
+                    <td><?= date('d/m/Y', strtotime($i['dia'])) ?></td>
+                    <td><?= substr($i['hora'], 0, 5) ?></td>
+                    <td><?= (int) $i['sala'] ?></td>
+                    <td><?= htmlspecialchars($i['assento']) ?></td>
+                    <td><?= ucfirst($i['tipo']) ?></td>
+                    <td>R$ <?= number_format($i['valor'], 2, ',', '.') ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+        <p><strong>Total: R$ <?= number_format($total, 2, ',', '.') ?></strong></p>
+        <p><a href="carrinho.php?limpar=1">Limpar carrinho</a></p>
+    <?php endif; ?>
+    <p><a href="sessoes.php">&larr; Continuar comprando</a></p>
 </body>
-
 </html>

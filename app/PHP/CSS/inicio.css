@@ -396,31 +396,41 @@ body::-webkit-scrollbar {
 }
 
 /* Filtro de gêneros */
-
 .generos {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
   width: 100%;
   margin-bottom: 24px;
 }
 
 .generos .genero {
   display: flex;
-  flex-wrap: wrap;
+  flex: 0 0 auto;
   align-items: center;
   gap: 8px;
+  min-height: 36px;
   color: var(--accent-mustard);
 }
 
-.generos .genero > span {
-  margin-right: 4px;
-  font-size: 13px;
-  font-weight: 700;
+.generos .lista-generos {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 22px;
+  min-width: 0;
 }
 
-.generos .genero-opcao {
+.generos .lista-generos > a {
   display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
+  max-width: 100%;
+  text-decoration: none;
+}
+
+.generos .genero-opcoes,
+.generos .genero-ativo {
   width: auto;
   min-height: 36px;
   padding: 6px 14px;
@@ -431,18 +441,64 @@ body::-webkit-scrollbar {
   font-size: 13px;
   font-weight: 600;
   line-height: 1.2;
-  text-decoration: none;
-  white-space: nowrap;
+  cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
 }
 
-.generos .genero-opcao:hover,
-.generos .genero-opcao.genero-ativo {
+.generos .genero-opcoes:hover,
+.generos .genero-ativo {
   background-color: var(--accent-mustard);
   color: var(--bg-ink-black);
 }
 
-.generos .genero-opcao:focus-visible {
+/* Mostra apenas o grupo indicado pelo checkbox */
+.generos .grupo-2,
+#troca-de-generos:checked ~ .grupo-1 {
+  display: none;
+}
+
+#troca-de-generos:checked ~ .grupo-2 {
+  display: flex;
+}
+
+/* Oculta o checkbox visualmente, sem removê-lo do teclado */
+#troca-de-generos {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.generos .navegacao-generos {
+  display: grid;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid var(--accent-mustard);
+  border-radius: 50%;
+  background-color: var(--bg-ink-black);
+  color: var(--accent-mustard);
+  cursor: pointer;
+}
+
+.generos .navegacao-generos:hover {
+  background-color: var(--accent-mustard);
+  color: var(--bg-ink-black);
+}
+
+.generos .navegacao-generos i {
+  transition: transform 0.2s;
+}
+
+#troca-de-generos:checked ~ .navegacao-generos i {
+  transform: rotate(180deg);
+}
+
+#troca-de-generos:focus-visible ~ .navegacao-generos,
+.generos .lista-generos > a:focus-visible,
+.generos .lista-generos button:focus-visible {
   outline: 2px solid var(--accent-mustard);
   outline-offset: 3px;
 }

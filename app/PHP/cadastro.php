@@ -374,7 +374,7 @@ foreach ($planos as $p) {
                             <label for="email">E-mail</label>
                             <div class="campo-entrada">
                                 <i class="fa-regular fa-envelope campo-icone"></i>
-                                <input type="email" id="email" name="email" value="<?= h($v['email']) ?>" placeholder="Digite seu melhor e-mail"
+                                <input type="email" id="email" name="email" value="<?= h($v['email']) ?>" placeholder="Digite seu e-mail"
                                     required>
                             </div>
                         </div>

@@ -2,7 +2,7 @@
 
 require_once "../init.php";
 
-$id_filme = isset($_GET['id_filme']) ? (int)$_GET['id_filme'] : 0;
+$id_filme = isset($_GET['id']) ? (int)$_GET['id'] : (isset($_GET['id_filme']) ? (int)$_GET['id_filme'] : 0);
 
 if ($id_filme >= 0) {
     die("Filme não especificado.");
@@ -47,7 +47,7 @@ if (strtotime($filme['data_filme'])) {
         <nav class="navegacao-menu">
             <a href="./inicio.php" class="navegacao-ativa">Lançamentos</a>
             <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
-            <a href="./combos.php" class="navegacao-opcoes">Combos</a>
+            <a href="./bomboniere.php" class="navegacao-opcoes">Combos</a>
             <a href="./infantil.php" class="navegacao-opcoes">Infantil</a>
         </nav>
 
@@ -66,8 +66,8 @@ if (strtotime($filme['data_filme'])) {
     <main class="filme">
         <div class="detalhes-do-filme">
             <div class="poster-do-filme">
-                <img src="<?= htmlspecialchars($filme['img_filme'] ?? './img/poster.png') ?>"
-                    alt="Pôster do filme <?= htmlspecialchars($filme['nome_filme']) ?>" alt="" class="poster-do-filme-img">
+                <img src="<?= htmlspecialchars(!empty($filme['imagem_capa']) ? $filme['imagem_capa'] : './img/Logo - LUX.png') ?>"
+                    alt="Pôster do filme <?= htmlspecialchars($filme['nome_filme']) ?>" class="poster-do-filme-img">
             </div>
 
             <div class="informacaoes">
@@ -89,7 +89,7 @@ if (strtotime($filme['data_filme'])) {
                 </div>
 
                 <div class="sobre-o-filme">
-                    <p><strong>Código do Filme:</strong> #<?= htmlspecialchars($filme['id_filme']) ?></p>
+                    <p><strong>Código do Filme:</strong> #<?= htmlspecialchars((string)$filme['id_filme']) ?></p>
                     <p><strong>Data de Estreia:</strong> <?= htmlspecialchars($data_formatada) ?></p>
                     <p><strong>Duração:</strong> <?= htmlspecialchars($filme['duracao_filme']) ?></p>
                     <p><strong>Classificação Indicativa:</strong> <?= htmlspecialchars($filme['class_filme']) ?></p>
@@ -102,7 +102,7 @@ if (strtotime($filme['data_filme'])) {
                     <?php else: ?>
                         <a href="#assistir" class="botao">Assistir Agora</a>
                     <?php endif; ?>
-                    <a href="index.php" class="botao-foco">Explorar Mais Títulos</a>
+                    <a href="inicio.php" class="botao-foco">Explorar Mais Títulos</a>
                 </div>
             </div>
 
@@ -140,7 +140,6 @@ if (strtotime($filme['data_filme'])) {
             <button class="botao-app"><i class="fa-brands fa-google-play"></i> Google Play</button>
         </div>
     </section>
-    </main>
 
     <footer class="rodape">
         <div class="rodape-logo">
@@ -151,7 +150,7 @@ if (strtotime($filme['data_filme'])) {
             <div class="rodape-informacoes">
                 <a href="#">Filmes em Cartaz</a>
                 <a href="#">Próximas Estreias</a>
-                <a href="./combos.php">Bomboniere & Combos</a>
+                <a href="./bomboniere.php">Bomboniere & Combos</a>
             </div>
             <div class="rodape-informacoes">
                 <a href="#">Cinemas Parceiros</a>
@@ -167,9 +166,9 @@ if (strtotime($filme['data_filme'])) {
                 <p>Atendimento ao Cliente</p>
                 <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
                 <div class="redes-informacoes">
-                    <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="tiktok.php"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="instagram.php"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="facebook.php"><i class="fa-brands fa-facebook"></i></a>
                 </div>
             </div>
         </div>

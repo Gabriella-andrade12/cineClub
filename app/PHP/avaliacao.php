@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($tipo === 'produto' && !in_array($idp, $ids_produtos, true)) $erros[] = 'Escolha um produto que você comprou.';
     if ($nota < 1 || $nota > 10) $erros[] = 'Escolha uma nota de 1 a 10.';
     if ($com === '')             $erros[] = 'Escreva um comentário.';
-    if (mb_strlen($com, 'UTF-8') > 600) $erros[] = 'O comentário deve ter no máximo 600 caracteres.';
+    if ((function_exists('mb_strlen') ? mb_strlen($com, 'UTF-8') : strlen($com)) > 600) $erros[] = 'O comentário deve ter no máximo 600 caracteres.';
 
     if ($erros) {
         $_SESSION['avaliacao_flash'] = ['tipo' => 'erro', 'msgs' => $erros, 'old' => $old];
@@ -355,9 +355,9 @@ $recentes = $st->fetchAll();
         <p>Atendimento ao Cliente</p>
         <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
         <div class="redes-informacoes">
-          <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-          <a href="#"><i class="fa-brands fa-instagram"></i></a>
-          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="tiktok.php"><i class="fa-brands fa-tiktok"></i></a>
+          <a href="instagram.php"><i class="fa-brands fa-instagram"></i></a>
+          <a href="facebook.php"><i class="fa-brands fa-facebook"></i></a>
         </div>
       </div>
     </div>

@@ -144,7 +144,7 @@ if (!empty($_SESSION['carrinho']['cupom'])) {
     if ($cp) {
         $cupom_ativo = $cp['codigo'];
         $t = strtolower((string)$cp['tipo_desconto']);
-        $desconto = (strpos($t, 'perc') !== false || strpos($t, '%') !== false) ? $subtotal * ((float)$cp['valor_desconto'] / 100) : (float)$cp['valor_desconto'];
+        $desconto = (strpos($t, 'porc') !== false || strpos($t, 'perc') !== false || strpos($t, '%') !== false) ? $subtotal * ((float)$cp['valor_desconto'] / 100) : (float)$cp['valor_desconto'];
         $desconto = round(min($desconto, $subtotal), 2);
     } else {
         $_SESSION['carrinho']['cupom'] = null;
@@ -388,9 +388,9 @@ $estilo_ctl = 'padding:8px 10px;border-radius:10px;border:1px solid #2a3d5e;back
                 <p>Atendimento ao Cliente</p>
                 <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
                 <div class="redes-informacoes">
-                    <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="tiktok.php"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="instagram.php"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="facebook.php"><i class="fa-brands fa-facebook"></i></a>
                 </div>
             </div>
         </div>

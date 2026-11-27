@@ -81,7 +81,7 @@ foreach ($todos as $f) {
     $i = lx_idade($f['class_filme']);
     if ($i === null || $i > 14) continue;                                      // só conteúdo infantil/juvenil
     if ($idade !== '' && ($i < $faixas[$idade][1] || $i > $faixas[$idade][2])) continue;
-    if ($busca !== '' && mb_stripos($f['nome_filme'], $busca, 0, 'UTF-8') === false) continue;
+    if ($busca !== '' && (function_exists('mb_stripos') ? mb_stripos($f['nome_filme'], $busca, 0, 'UTF-8') : stripos($f['nome_filme'], $busca)) === false) continue;
     $filmes[] = $f;
 }
 
@@ -154,16 +154,18 @@ function lx_imagem($nome) {
     </a>
 
     <nav class="navegacao-menu">
-      <a href="./inicio.php" class="navegacao-ativa">Lançamentos</a>
+      <a href="./inicio.php" class="navegacao-opcoes">Lançamentos</a>
       <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
-      <a href="./combos.php" class="navegacao-opcoes">Combos</a>
-      <a href="./infantil.php" class="navegacao-opcoes">Infantil</a>
+      <a href="./bomboniere.php" class="navegacao-opcoes">Combos</a>
+      <a href="./infantil.php" class="navegacao-ativa">Infantil</a>
     </nav>
 
-    <div class="busca">
-      <input type="text" placeholder="Buscar filmes, gêneros, cinemas...">
+    <form class="busca" method="get" action="infantil.php">
+      <?php if ($tipo !== 'cartaz'): ?><input type="hidden" name="tipo" value="<?= h($tipo) ?>"><?php endif; ?>
+      <?php if ($idade !== ''): ?><input type="hidden" name="idade" value="<?= h($idade) ?>"><?php endif; ?>
+      <input type="text" name="busca" value="<?= h($busca) ?>" placeholder="Buscar filmes, gêneros, cinemas...">
       <i class="fa-solid fa-magnifying-glass busca-icon"></i>
-    </div>
+    </form>
 
     <div class="acoes-do-usuario">
       <a href="carrinho.php" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
@@ -206,7 +208,7 @@ function lx_imagem($nome) {
 
         <div class="hero-buttons">
           <a href="ingressos.php?id_filme=<?= (int)$hero['id_filme'] ?>"><button type="button" class="btn-orange"><i class="fa-solid fa-ticket"></i> Comprar Ingressos</button></a>
-          <a href="detalhes_filme.php?id=<?= (int)$hero['id_filme'] ?>"><button type="button" class="btn-dark">Ver Detalhes</button></a>
+          <a href="filmes.php?id=<?= (int)$hero['id_filme'] ?>"><button type="button" class="btn-dark">Ver Detalhes</button></a>
         </div>
       </div>
 
@@ -259,7 +261,7 @@ function lx_imagem($nome) {
         <div class="movie-card">
           <img src="<?= h(lx_capa($f)) ?>" alt="<?= h($f['nome_filme']) ?>">
           <h3><?= h($f['nome_filme']) ?></h3>
-          <a href="detalhes_filme.php?id=<?= (int)$f['id_filme'] ?>" class="details-link">Ver Detalhes</a>
+          <a href="filmes.php?id=<?= (int)$f['id_filme'] ?>" class="details-link">Ver Detalhes</a>
         </div>
         <?php endforeach; ?>
       </div>
@@ -284,7 +286,7 @@ function lx_imagem($nome) {
               <span class="rating"><i class="fa-solid fa-star"></i> <?= h(number_format((float)$f['media'], 1, ',', '')) ?>/10</span>
             <?php endif; ?>
           </div>
-          <a href="detalhes_filme.php?id=<?= (int)$f['id_filme'] ?>" class="details-link">Ver Detalhes</a>
+          <a href="filmes.php?id=<?= (int)$f['id_filme'] ?>" class="details-link">Ver Detalhes</a>
         </div>
         <?php endforeach; ?>
       </div>
@@ -355,7 +357,7 @@ function lx_imagem($nome) {
       <div class="rodape-informacoes">
         <a href="#">Filmes em Cartaz</a>
         <a href="#">Próximas Estreias</a>
-        <a href="./combos.php">Bomboniere & Combos</a>
+        <a href="./bomboniere.php">Bomboniere & Combos</a>
       </div>
       <div class="rodape-informacoes">
         <a href="#">Cinemas Parceiros</a>
@@ -371,9 +373,9 @@ function lx_imagem($nome) {
         <p>Atendimento ao Cliente</p>
         <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
         <div class="redes-informacoes">
-          <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-          <a href="#"><i class="fa-brands fa-instagram"></i></a>
-          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="tiktok.php"><i class="fa-brands fa-tiktok"></i></a>
+          <a href="instagram.php"><i class="fa-brands fa-instagram"></i></a>
+          <a href="facebook.php"><i class="fa-brands fa-facebook"></i></a>
         </div>
       </div>
     </div>

@@ -59,7 +59,7 @@ if (!empty($_SESSION['carrinho']['cupom'])) {
   if ($cp) {
     $cupom_ativo = $cp['codigo'];
     $tipo_cp = strtolower((string)$cp['tipo_desconto']);
-    $desconto = (strpos($tipo_cp, 'perc') !== false || strpos($tipo_cp, '%') !== false)
+    $desconto = (strpos($tipo_cp, 'porc') !== false || strpos($tipo_cp, 'perc') !== false || strpos($tipo_cp, '%') !== false)
       ? $subtotal * ((float)$cp['valor_desconto'] / 100)
       : (float)$cp['valor_desconto'];
     $desconto = round(min($desconto, $subtotal), 2);
@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $id_produto  = $produtos ? (int)array_key_first($produtos) : null;
 
       // 2. venda
-      $stVenda = $pdo->prepare("INSERT INTO venda (id_usuario, data_pedido, valor_pedido, id_endereco, id_produto) VALUES (?, NOW(), ?, ?, ?)");
+      $stVenda = $pdo->prepare("INSERT INTO venda (id_usuario, data_pedido, valor_pedido, id_endereco_entrega, id_produto) VALUES (?, NOW(), ?, ?, ?)");
       $stVenda->execute([$uid, $total, $id_endereco, $id_produto]);
       $id_venda = (int)$pdo->lastInsertId();
 
@@ -160,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       // 6. commit, limpa o carrinho e segue para a confirmação
       $pdo->commit();
       unset($_SESSION['carrinho']);
-      header('Location: confirmacao.php?id=' . $id_venda);
+      header('Location: perfil.php');
       exit;
     } catch (Throwable $e) {
       if ($pdo->inTransaction()) {
@@ -175,7 +175,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $pix_codigo = '00020126580014br.gov.bcb.pix0136lux-cinelux-' . strtoupper(substr(md5(session_id() . $total), 0, 12));
 
 // Iniciais para a miniatura de cada item
-function lx_iniciais($t) { return mb_strtoupper(mb_substr(trim($t), 0, 3, 'UTF-8'), 'UTF-8'); }
+function lx_upper($t) { $s = (string)$t; return function_exists('mb_strtoupper') ? mb_strtoupper($s, 'UTF-8') : strtoupper($s); }
+function lx_iniciais($t) {
+  $s = trim((string)$t);
+  $p = function_exists('mb_substr') ? mb_substr($s, 0, 3, 'UTF-8') : (preg_match('/^.{0,3}/u', $s, $m) ? $m[0] : substr($s, 0, 3));
+  return lx_upper($p);
+}
 ?>
 
 <!DOCTYPE html>
@@ -206,7 +211,7 @@ function lx_iniciais($t) { return mb_strtoupper(mb_substr(trim($t), 0, 3, 'UTF-8
 
     <div class="acoes-do-usuario">
       <a href="carrinho.php" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
-      <a href="./listas.php" class="link"><i class="fa-solid fa-bookmark"></i></a>
+      <a href="./minha_lista.php" class="link"><i class="fa-solid fa-bookmark"></i></a>
       <a href="./perfil.php" class="link"><i class="fa-solid fa-user"></i></a>
     </div>
   </header>
@@ -348,7 +353,7 @@ function lx_iniciais($t) { return mb_strtoupper(mb_substr(trim($t), 0, 3, 'UTF-8
               <div class="item-thumb"><?= h(lx_iniciais($i['filme'])) ?></div>
               <div class="item-details">
                 <span class="combo-tag">INGRESSO <?= h(strtoupper($i['tipo'])) ?></span>
-                <p class="item-title"><?= h(mb_strtoupper($i['filme'], 'UTF-8')) ?></p>
+                <p class="item-title"><?= h(lx_upper($i['filme'])) ?></p>
                 <p class="item-desc"><?= h(date('d/m/Y', strtotime($i['dia']))) ?> às <?= h(substr($i['hora'], 0, 5)) ?> · Sala <?= h($i['sala']) ?> · Assento <?= h($i['assento']) ?></p>
               </div>
               <span class="item-price"><?= brl($i['valor']) ?></span>
@@ -360,7 +365,7 @@ function lx_iniciais($t) { return mb_strtoupper(mb_substr(trim($t), 0, 3, 'UTF-8
               <div class="item-thumb"><?= h(lx_iniciais($p['nome'])) ?></div>
               <div class="item-details">
                 <span class="combo-tag">BOMBONIERE</span>
-                <p class="item-title"><?= h(mb_strtoupper($p['nome'], 'UTF-8')) ?></p>
+                <p class="item-title"><?= h(lx_upper($p['nome'])) ?></p>
                 <p class="item-desc"><?= (int)$p['qtd'] ?>x <?= brl($p['valor']) ?></p>
               </div>
               <span class="item-price"><?= brl($p['valor'] * $p['qtd']) ?></span>
@@ -435,9 +440,9 @@ function lx_iniciais($t) { return mb_strtoupper(mb_substr(trim($t), 0, 3, 'UTF-8
         <p>Atendimento ao Cliente</p>
         <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
         <div class="redes-informacoes">
-          <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-          <a href="#"><i class="fa-brands fa-instagram"></i></a>
-          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="tiktok.php"><i class="fa-brands fa-tiktok"></i></a>
+          <a href="instagram.php"><i class="fa-brands fa-instagram"></i></a>
+          <a href="facebook.php"><i class="fa-brands fa-facebook"></i></a>
         </div>
       </div>
     </div>

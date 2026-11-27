@@ -227,7 +227,7 @@ function lx_classif($c) { $n = preg_replace('/\D/', '', (string)$c); return $n !
       <?php foreach ($titulos as $f):
         $assistido = (bool)$f['assistido'];
         $cartaz    = ($f['exibicao_filme'] === 'Cinema');
-        $url       = 'detalhes_filme.php?id=' . (int)$f['id_filme'];
+        $url       = 'filmes.php?id=' . (int)$f['id_filme'];
       ?>
       <article class="cartao<?= $assistido ? ' cartao-assistido' : '' ?>">
         <a href="<?= h($url) ?>" class="cartao-capa">
@@ -290,7 +290,7 @@ function lx_classif($c) { $n = preg_replace('/\D/', '', (string)$c); return $n !
 
       <div class="grade-titulos grade-pequena">
         <?php foreach ($sugestoes as $f):
-          $url = 'detalhes_filme.php?id=' . (int)$f['id_filme'];
+          $url = 'filmes.php?id=' . (int)$f['id_filme'];
         ?>
         <article class="cartao cartao-pequeno">
           <a href="<?= h($url) ?>" class="cartao-capa">
@@ -359,9 +359,9 @@ function lx_classif($c) { $n = preg_replace('/\D/', '', (string)$c); return $n !
         <p>Atendimento ao Cliente</p>
         <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
         <div class="redes-informacoes">
-          <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-          <a href="#"><i class="fa-brands fa-instagram"></i></a>
-          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="tiktok.php"><i class="fa-brands fa-tiktok"></i></a>
+          <a href="instagram.php"><i class="fa-brands fa-instagram"></i></a>
+          <a href="facebook.php"><i class="fa-brands fa-facebook"></i></a>
         </div>
       </div>
     </div>

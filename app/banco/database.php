@@ -14,7 +14,7 @@ function database(): PDO
     $port = getenv('DB_PORT') ?: '3306';
 
 
-    $database = getenv('DB_DATABASE') ?: 'lux_dados';
+    $database = getenv('DB_DATABASE') ?: 'lux_bcd';
 
     $username = getenv('DB_USERNAME') ?: 'root';
     $password = getenv('DB_PASSWORD') ?: 'senai123';

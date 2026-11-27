@@ -133,7 +133,7 @@ function lx_estrelas($media) {
 
         <div class="acoes-do-usuario">
             <a href="carrinho.php" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
-            <a href="./listas.php" class="link"><i class="fa-solid fa-bookmark"></i></a>
+            <a href="./minha_lista.php" class="link"><i class="fa-solid fa-bookmark"></i></a>
             <a href="./perfil.php" class="link"><i class="fa-solid fa-user"></i></a>
         </div>
     </header>
@@ -186,7 +186,7 @@ function lx_estrelas($media) {
                         <div class="estrelas"><?= lx_estrelas($f['media'] ?? 0) ?></div>
                         <div class="comentarios-curtos">
                             <?php foreach ($coments as $c): ?>
-                                <p class="comentario"><i class="fa-solid"></i> "<?= h(mb_strimwidth($c['cometario_avl'], 0, 60, '…', 'UTF-8')) ?>"</p>
+                                <p class="comentario"><i class="fa-solid"></i> "<?= h(function_exists('mb_strimwidth') ? mb_strimwidth($c['cometario_avl'], 0, 60, '…', 'UTF-8') : preg_replace('/^(.{59}).+$/us', '$1…', (string)$c['cometario_avl'])) ?>"</p>
                             <?php endforeach; ?>
                         </div>
                     </div>

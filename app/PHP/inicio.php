@@ -28,14 +28,15 @@ $lista_generos = array_merge(
 
 $genero = trim($_GET['genero'] ?? '');
 if (!in_array($genero, $lista_generos, true)) { $genero = ''; }
+$busca = trim($_GET['busca'] ?? '');
 
 /* Monta URL preservando o outro filtro (valores nulos/vazios saem da URL) */
-function link_filtro($tipo, $genero) {
-  $p = array_filter(['tipo' => $tipo, 'genero' => $genero], function ($v) { return $v !== null && $v !== ''; });
+function link_filtro($tipo, $genero, $busca = '') {
+  $p = array_filter(['tipo' => $tipo, 'genero' => $genero, 'busca' => $busca], function ($v) { return $v !== null && $v !== ''; });
   return 'inicio.php' . ($p ? '?' . http_build_query($p) : '');
 }
 
-/* Consulta dos títulos conforme a aba + gênero */
+/* Consulta dos títulos conforme a aba + gênero + busca */
 $sql = "SELECT id_filme, nome_filme, imagem_capa FROM filme WHERE ";
 if ($tipo === 'cartaz')         { $sql .= "exibicao_filme = 'Cinema' AND tipo_conteudo = 'Filme'"; }
 elseif ($tipo === 'streaming')  { $sql .= "exibicao_filme = 'Streaming' AND tipo_conteudo = 'Filme'"; }
@@ -43,6 +44,7 @@ else                            { $sql .= "tipo_conteudo = 'Serie'"; }
 
 $params = [];
 if ($genero !== '') { $sql .= " AND gen_filme = ?"; $params[] = $genero; }
+if ($busca !== '')  { $sql .= " AND (nome_filme LIKE ? OR gen_filme LIKE ?)"; $params[] = "%$busca%"; $params[] = "%$busca%"; }
 $sql .= " ORDER BY nome_filme";
 
 $st = $pdo->prepare($sql);
@@ -75,14 +77,16 @@ $grupo2  = array_slice($lista_generos, 6);        // restante (botão de seta al
     <nav class="navegacao-menu">
       <a href="./inicio.php" class="navegacao-ativa">Lançamentos</a>
       <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
-      <a href="./combos.php" class="navegacao-opcoes">Combos</a>
+      <a href="./bomboniere.php" class="navegacao-opcoes">Combos</a>
       <a href="./infantil.php" class="navegacao-opcoes">Infantil</a>
     </nav>
 
-    <div class="busca">
-      <input type="text" placeholder="Buscar filmes, gêneros, cinemas...">
+    <form class="busca" method="get" action="inicio.php">
+      <input type="hidden" name="tipo" value="<?= h($tipo) ?>">
+      <?php if ($genero !== ''): ?><input type="hidden" name="genero" value="<?= h($genero) ?>"><?php endif; ?>
+      <input type="text" name="busca" value="<?= h($busca) ?>" placeholder="Buscar filmes, gêneros, cinemas...">
       <i class="fa-solid fa-magnifying-glass busca-icon"></i>
-    </div>
+    </form>
 
     <div class="acoes-do-usuario">
       <a href="carrinho.php" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
@@ -256,6 +260,7 @@ $grupo2  = array_slice($lista_generos, 6);        // restante (botão de seta al
       </button>
     </section>
 
+<<<<<<< HEAD
     <section class="generos" aria-label="Filtrar por gênero">
   <div class="genero">
     <i class="fa-solid fa-sliders" aria-hidden="true"></i>
@@ -274,15 +279,51 @@ $grupo2  = array_slice($lista_generos, 6);        // restante (botão de seta al
     <?php endforeach; ?>
   </div>
 </section>
+=======
+    <section class="generos">
+      <div class="genero">
+        <i class="fa-solid fa-sliders"></i>
+        <i class="fa-solid fa-list-ul"></i>
+      </div>
+>>>>>>> 59ef5a79f2099539f3903ee5d4a1866fd5f2cd03
 
-      <input type="checkbox" id="troca-de-generos" hidden />
+      <input type="checkbox" id="troca-de-generos" hidden<?= in_array($genero, $grupo2, true) ? ' checked' : '' ?> />
+
+      <div class="lista-generos grupo-1">
+        <a href="<?= h(link_filtro($tipo, '', $busca)) ?>">
+          <button type="button" class="<?= $genero === '' ? 'genero-ativo' : 'genero-opcoes' ?>">Todos</button>
+        </a>
+        <?php foreach ($grupo1 as $g): ?>
+          <a href="<?= h(link_filtro($tipo, $g === $genero ? '' : $g, $busca)) ?>">
+            <button type="button" class="<?= $g === $genero ? 'genero-ativo' : 'genero-opcoes' ?>"><?= h(ucfirst($g)) ?></button>
+          </a>
+        <?php endforeach; ?>
+      </div>
+
+      <?php if ($grupo2): ?>
+      <div class="lista-generos grupo-2">
+        <a href="<?= h(link_filtro($tipo, '', $busca)) ?>">
+          <button type="button" class="<?= $genero === '' ? 'genero-ativo' : 'genero-opcoes' ?>">Todos</button>
+        </a>
+        <?php foreach ($grupo2 as $g): ?>
+          <a href="<?= h(link_filtro($tipo, $g === $genero ? '' : $g, $busca)) ?>">
+            <button type="button" class="<?= $g === $genero ? 'genero-ativo' : 'genero-opcoes' ?>"><?= h(ucfirst($g)) ?></button>
+          </a>
+        <?php endforeach; ?>
+      </div>
+
+      <label for="troca-de-generos" class="navegacao-generos">
+        <i class="fa-solid fa-chevron-right"></i>
+      </label>
+      <?php endif; ?>
+    </section>
 
       <section class="movies-container">
       <div class="selecione-filmes">
         <?php foreach ($abas as $chave => $rotulo): ?>
           <!-- Trocar de aba preserva o gênero ativo na URL -->
-          <a href="<?= h(link_filtro($chave, $genero)) ?>">
-            <button class="<?= $chave === $tipo ? 'filmes-ativo' : 'filmes-opcoes' ?>"><?= h($rotulo) ?></button>
+          <a href="<?= h(link_filtro($chave, $genero, $busca)) ?>">
+            <button type="button" class="<?= $chave === $tipo ? 'filmes-ativo' : 'filmes-opcoes' ?>"><?= h($rotulo) ?></button>
           </a>
         <?php endforeach; ?>
       </div>
@@ -368,7 +409,7 @@ $grupo2  = array_slice($lista_generos, 6);        // restante (botão de seta al
           <h3>Combos Especiais & Exclusivos</h3>
           <p>Garanta seus petiscos e itens exclusivos antes de entrar na sala</p>
         </div>
-        <a href="./combos.php">
+        <a href="./bomboniere.php">
           <button class="botao botao-mustard"><i class="fa-solid fa-utensils"></i> Ver Cardápio Completo</button>
         </a>
       </div>
@@ -427,7 +468,7 @@ $grupo2  = array_slice($lista_generos, 6);        // restante (botão de seta al
       <div class="rodape-informacoes">
         <a href="#">Filmes em Cartaz</a>
         <a href="#">Próximas Estreias</a>
-        <a href="./combos.php">Bomboniere & Combos</a>
+        <a href="./bomboniere.php">Bomboniere & Combos</a>
       </div>
       <div class="rodape-informacoes">
         <a href="#">Cinemas Parceiros</a>

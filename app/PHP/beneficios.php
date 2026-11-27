@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_beneficio'])) {
         $_SESSION['msg'] = ['erro', 'Não foi possível resgatar. Tente novamente.'];
     }
 
-    header('Location: index.php');
+    header('Location: beneficios.php');
     exit;
 }
 
@@ -84,7 +84,7 @@ unset($_SESSION['msg']);
         <nav class="navegacao-menu">
             <a href="./inicio.php" class="navegacao-opcoes">Lançamentos</a>
             <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
-            <a href="./combos.php" class="navegacao-opcoes">Combos</a>
+            <a href="./bomboniere.php" class="navegacao-opcoes">Combos</a>
             <a href="./infantil.php" class="navegacao-opcoes">Infantil</a>
         </nav>
 
@@ -275,7 +275,7 @@ unset($_SESSION['msg']);
             <div class="rodape-informacoes">
                 <a href="#">Filmes em Cartaz</a>
                 <a href="#">Próximas Estreias</a>
-                <a href="./combos.php">Bomboniere & Combos</a>
+                <a href="./bomboniere.php">Bomboniere & Combos</a>
             </div>
             <div class="rodape-informacoes">
                 <a href="#">Cinemas Parceiros</a>

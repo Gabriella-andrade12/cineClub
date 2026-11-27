@@ -81,7 +81,7 @@ foreach ($todos as $f) {
     $i = lx_idade($f['class_filme']);
     if ($i === null || $i > 14) continue;                                      // só conteúdo infantil/juvenil
     if ($idade !== '' && ($i < $faixas[$idade][1] || $i > $faixas[$idade][2])) continue;
-    if ($busca !== '' && mb_stripos($f['nome_filme'], $busca, 0, 'UTF-8') === false) continue;
+    if ($busca !== '' && (function_exists('mb_stripos') ? mb_stripos($f['nome_filme'], $busca, 0, 'UTF-8') : stripos($f['nome_filme'], $busca)) === false) continue;
     $filmes[] = $f;
 }
 
@@ -156,14 +156,16 @@ function lx_imagem($nome) {
     <nav class="navegacao-menu">
       <a href="./inicio.php" class="navegacao-opcoes">Lançamentos</a>
       <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
-      <a href="./combos.php" class="navegacao-opcoes">Combos</a>
+      <a href="./bomboniere.php" class="navegacao-opcoes">Combos</a>
       <a href="./infantil.php" class="navegacao-ativa">Infantil</a>
     </nav>
 
-    <div class="busca">
-      <input type="text" placeholder="Buscar filmes, gêneros, cinemas...">
+    <form class="busca" method="get" action="infantil.php">
+      <?php if ($tipo !== 'cartaz'): ?><input type="hidden" name="tipo" value="<?= h($tipo) ?>"><?php endif; ?>
+      <?php if ($idade !== ''): ?><input type="hidden" name="idade" value="<?= h($idade) ?>"><?php endif; ?>
+      <input type="text" name="busca" value="<?= h($busca) ?>" placeholder="Buscar filmes, gêneros, cinemas...">
       <i class="fa-solid fa-magnifying-glass busca-icon"></i>
-    </div>
+    </form>
 
     <div class="acoes-do-usuario">
       <a href="carrinho.php" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
@@ -355,7 +357,7 @@ function lx_imagem($nome) {
       <div class="rodape-informacoes">
         <a href="#">Filmes em Cartaz</a>
         <a href="#">Próximas Estreias</a>
-        <a href="./combos.php">Bomboniere & Combos</a>
+        <a href="./bomboniere.php">Bomboniere & Combos</a>
       </div>
       <div class="rodape-informacoes">
         <a href="#">Cinemas Parceiros</a>

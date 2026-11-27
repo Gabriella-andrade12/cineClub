@@ -288,7 +288,7 @@ $grupo2  = array_slice($lista_generos, 6);        // restante (botão de seta al
                 <img src="<?= h($capa) ?>" alt="<?= h($f['nome_filme']) ?>">
                 <div class="filme-titulo"><?= h($f['nome_filme']) ?></div>
               </div>
-              <a href="detalhes_filme.php?id=<?= (int)$f['id_filme'] ?>">
+              <a href="filmes.php?id=<?= (int)$f['id_filme'] ?>">
                 <button class="botao-de-detalhes">Ver Detalhes</button>
               </a>
             </div>

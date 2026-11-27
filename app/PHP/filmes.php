@@ -4,7 +4,7 @@ require_once "../init.php";
 
 $id_filme = isset($_GET['id_filme']) ? (int)$_GET['id_filme'] : 0;
 
-if ($id_filme <= 0) {
+if ($id_filme >= 0) {
     die("Filme não especificado.");
 }
 

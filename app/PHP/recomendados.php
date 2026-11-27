@@ -176,12 +176,12 @@ function lx_estrelas($media) {
                 ?>
                 <article class="cartao-filme">
                     <div class="cartaz-recomendacoes">
-                        <a href="detalhes_filme.php?id=<?= (int)$f['id_filme'] ?>">
+                        <a href="filmes.php?id=<?= (int)$f['id_filme'] ?>">
                             <img src="<?= h($capa) ?>" alt="<?= h($f['nome_filme']) ?>" class="cartaz-filme">
                         </a>
                     </div>
                     <div class="info-filme">
-                        <h4 class="titulo-filme"><a href="detalhes_filme.php?id=<?= (int)$f['id_filme'] ?>" style="color:inherit;text-decoration:none;"><?= $f['nome_filme'] ?></a></h4>
+                        <h4 class="titulo-filme"><a href="filmes.php?id=<?= (int)$f['id_filme'] ?>" style="color:inherit;text-decoration:none;"><?= $f['nome_filme'] ?></a></h4>
                         <div class="nota-geral">AVALIAÇÃO GERAL: <?= $f['media'] !== null ? number_format((float)$f['media'], 1, '.', '') . '/5.0' : 'sem avaliações' ?></div>
                         <div class="estrelas"><?= lx_estrelas($f['media'] ?? 0) ?></div>
                         <div class="comentarios-curtos">

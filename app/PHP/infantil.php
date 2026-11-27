@@ -206,7 +206,7 @@ function lx_imagem($nome) {
 
         <div class="hero-buttons">
           <a href="ingressos.php?id_filme=<?= (int)$hero['id_filme'] ?>"><button type="button" class="btn-orange"><i class="fa-solid fa-ticket"></i> Comprar Ingressos</button></a>
-          <a href="detalhes_filme.php?id=<?= (int)$hero['id_filme'] ?>"><button type="button" class="btn-dark">Ver Detalhes</button></a>
+          <a href="filmes.php?id=<?= (int)$hero['id_filme'] ?>"><button type="button" class="btn-dark">Ver Detalhes</button></a>
         </div>
       </div>
 
@@ -259,7 +259,7 @@ function lx_imagem($nome) {
         <div class="movie-card">
           <img src="<?= h(lx_capa($f)) ?>" alt="<?= h($f['nome_filme']) ?>">
           <h3><?= h($f['nome_filme']) ?></h3>
-          <a href="detalhes_filme.php?id=<?= (int)$f['id_filme'] ?>" class="details-link">Ver Detalhes</a>
+          <a href="filmes.php?id=<?= (int)$f['id_filme'] ?>" class="details-link">Ver Detalhes</a>
         </div>
         <?php endforeach; ?>
       </div>
@@ -284,7 +284,7 @@ function lx_imagem($nome) {
               <span class="rating"><i class="fa-solid fa-star"></i> <?= h(number_format((float)$f['media'], 1, ',', '')) ?>/10</span>
             <?php endif; ?>
           </div>
-          <a href="detalhes_filme.php?id=<?= (int)$f['id_filme'] ?>" class="details-link">Ver Detalhes</a>
+          <a href="filmes.php?id=<?= (int)$f['id_filme'] ?>" class="details-link">Ver Detalhes</a>
         </div>
         <?php endforeach; ?>
       </div>

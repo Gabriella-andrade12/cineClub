@@ -74,7 +74,7 @@ $compras = $st->fetchAll();
             <a href="./inicio.php" class="navegacao-opcoes">Lançamentos</a>
             <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
             <a href="./bomboniere.php" class="navegacao-opcoes">Combos</a>
-            <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
+            <a href="./infantil.php" class="navegacao-opcoes">Infantil</a>
         </nav>
 
         <div class="busca">
@@ -83,8 +83,8 @@ $compras = $st->fetchAll();
         </div>
 
         <div class="acoes-do-usuario">
-            <a href="carrinho.php" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
-            <a href="./listas.php" class="link"><i class="fa-solid fa-bookmark"></i></a>
+            <a href="./carrinho.php" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
+            <a href="./minha_lista.php" class="link"><i class="fa-solid fa-bookmark"></i></a>
         </div>
     </header>
 

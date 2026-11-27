@@ -123,7 +123,7 @@ function lx_estrelas($media) {
             <a href="./inicio.php" class="navegacao-opcoes">Lançamentos</a>
             <a href="#" class="navegacao-ativa">Recomendados</a>
             <a href="./bomboniere.php" class="navegacao-opcoes">Combos</a>
-            <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
+            <a href="./infantil.php" class="navegacao-opcoes">Infantil</a>
         </nav>
 
         <div class="busca">
@@ -140,7 +140,7 @@ function lx_estrelas($media) {
 
     <main class="faixa-principal">
         <div class="cabecalho-boas-vindas">
-            <h2>OLÁ<?= $nome !== '' ? ', ' . h(mb_strtoupper(explode(' ', trim($nome))[0], 'UTF-8')) : '' ?>, SUAS RECOMENDAÇÕES PESSOAIS ESTÃO AQUI.</h2>
+            <h2>OLÁ<?= $nome !== '' ? ', ' . trim($nome) : '' ?>, SUAS RECOMENDAÇÕES PESSOAIS ESTÃO AQUI.</h2>
         </div>
         <section class="cartao painel-recomendacoes">
             <div class="grade-recomendacoes">
@@ -148,20 +148,20 @@ function lx_estrelas($media) {
                     <div class="grafico-circulo" style="background: <?= h($grafico) ?>;">
                         <div class="grafico-centro">
                             <span class="porcentagem-destaque"><?= $principal ? (int)$itens[0]['pct'] . '%' : '--' ?></span>
-                            <span class="legenda-centro"><?= $principal ? 'DE ' . h(mb_strtoupper($principal, 'UTF-8')) : 'SEM HISTÓRICO' ?></span>
+                            <span class="legenda-centro"><?= $principal ? 'DE ' . $principal : 'SEM HISTÓRICO' ?></span>
                         </div>
                     </div>
                 </div>
                 <div class="estatisticas-genero">
                     <?php foreach ($itens as $k => $it): ?>
                         <div class="item-genero">
-                            <span class="indicador-cor" style="background: <?= h($paleta[$k % count($paleta)]) ?>;"></span>
+                            <span class="indicador-cor" style="background: <?= ($paleta[$k % count($paleta)]) ?>;"></span>
                             <span class="nome-genero"><?= h($it['nome']) ?></span>
                             <span class="valor-genero"><?= (int)$it['pct'] ?>%</span>
                         </div>
                     <?php endforeach; ?>
 
-                    <p class="resumo-recomendacoes"><?= h($resumo) ?></p>
+                    <p class="resumo-recomendacoes"><?= ($resumo) ?></p>
                 </div>
             </div>
         </section>
@@ -181,7 +181,7 @@ function lx_estrelas($media) {
                         </a>
                     </div>
                     <div class="info-filme">
-                        <h4 class="titulo-filme"><a href="detalhes_filme.php?id=<?= (int)$f['id_filme'] ?>" style="color:inherit;text-decoration:none;"><?= h(mb_strtoupper($f['nome_filme'], 'UTF-8')) ?></a></h4>
+                        <h4 class="titulo-filme"><a href="detalhes_filme.php?id=<?= (int)$f['id_filme'] ?>" style="color:inherit;text-decoration:none;"><?= $f['nome_filme'] ?></a></h4>
                         <div class="nota-geral">AVALIAÇÃO GERAL: <?= $f['media'] !== null ? number_format((float)$f['media'], 1, '.', '') . '/5.0' : 'sem avaliações' ?></div>
                         <div class="estrelas"><?= lx_estrelas($f['media'] ?? 0) ?></div>
                         <div class="comentarios-curtos">

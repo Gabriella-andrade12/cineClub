@@ -1,0 +1,467 @@
+:root {
+    --bg-deep-space: #0F2A45;
+    --bg-ink-black: #0B1320;
+    --accent-mustard: #FCD757;
+    --accent-cayenne: #E85D04;
+    --text-white: #FFFFFF;
+    --text-gray: #A0AEC0;
+    --card-bg: #132238;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--bg-deep-space);
+    color: var(--text-white);
+    line-height: 1.4;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    display: none;
+}
+
+.cabecalho {
+    background-color: var(--bg-ink-black);
+    padding: 16px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.logo-img {
+    max-height: 45px;
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+.logo:hover .logo-img {
+    transform: scale(1.05);
+}
+
+.navegacao-menu {
+    display: flex;
+    gap: 8px;
+}
+
+.navegacao-ativa,
+.navegacao-opcoes {
+    text-decoration: none;
+    color: var(--text-gray);
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.navegacao-ativa,
+.navegacao-opcoes:hover {
+    background-color: var(--accent-mustard);
+    color: var(--bg-ink-black);
+}
+
+.busca {
+    position: relative;
+    flex: 1;
+    max-width: 380px;
+}
+
+.busca input {
+    width: 100%;
+    background-color: var(--accent-cayenne);
+    border: none;
+    border-radius: 20px;
+    padding: 9px 16px 9px 38px;
+    color: #fff;
+    font-size: 13px;
+}
+
+.busca input::placeholder {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.busca-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    color: #fff;
+}
+
+.acoes-do-usuario {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.link {
+    color: var(--accent-mustard);
+    font-size: 24px;
+    text-decoration: none;
+    transition: transform 0.2s;
+}
+
+.link:hover {
+    transform: scale(1.15);
+}
+
+.faixa-principal {
+    flex: 1;
+    max-width: 1000px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px 20px 60px;
+    position: relative;
+    z-index: 2;
+}
+
+.conteudo-perfil {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.perfil-cabecalho {
+    background: var(--bg-card);
+    border: 1px solid var(--accent-mustard);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.perfil-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(245, 190, 56, 0.15);
+    border: 2px solid var(--accent-mustard);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    color: var(--mustard);
+}
+
+.perfil-info-basica {
+    display: flex;
+    flex-direction: column;
+}
+
+.perfil-nome {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.perfil-email {
+    font-size: 0.95rem;
+    color: var(--texto-mutado);
+}
+
+.perfil-informacoes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.cartao {
+    background: var(--bg-card);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--bg-card-border);
+    border-radius: 24px;
+    padding: 30px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.cartao::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 25px;
+    right: 25px;
+    height: 3px;
+    background: var(--mustard);
+    border-radius: 3px;
+}
+
+.cartao-titulo {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.cartao-subtitulo {
+    font-size: 0.85rem;
+    color: var(--texto-mutado);
+    margin-bottom: 25px;
+}
+
+.formulario {
+    display: flex;
+    flex-direction: column;
+}
+
+.campo {
+    margin-bottom: 16px;
+}
+
+.campo label {
+    display: block;
+    font-size: 0.82rem;
+    margin-bottom: 6px;
+    color: var(--texto-mutado);
+}
+
+.campo-entrada {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.campo-icone {
+    position: absolute;
+    left: 14px;
+    color: var(--mustard);
+    font-size: 0.9rem;
+}
+
+.campo-entrada input {
+    width: 100%;
+    padding: 12px 14px 12px 40px;
+    background: var(--campo-bg);
+    border: 1px solid var(--campo-borda);
+    border-radius: 16px;
+    color: var(--texto-principal);
+    font-size: 0.9rem;
+    outline: none;
+    cursor: default;
+}
+
+.caixa-plano-selecionado {
+    background: rgba(12, 12, 12, 0.3);
+    border: 1px solid var(--accent-mustard);
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+}
+
+.rotulo-resumo {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--texto-mutado);
+    letter-spacing: 1px;
+}
+
+.titulo-resumo {
+    font-size: 1.4rem;
+    color: var(--mustard);
+    margin: 4px 0 8px;
+}
+
+.detalhe-plano {
+    font-size: 0.85rem;
+    color: var(--texto-mutado);
+}
+
+.bloco-beneficios-resumo {
+    margin-bottom: 25px;
+    flex: 1;
+}
+
+.subtitulo-beneficios {
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+    color: var(--texto-principal);
+}
+
+.lista-beneficios-perfil {
+    list-style: none;
+    font-size: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.icone-sim {
+    color: #2ed573;
+    margin-right: 6px;
+}
+
+.perfil-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.botao {
+    width: 100%;
+    padding: 12px;
+    border-radius: 25px;
+    border: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: inline-block;
+}
+
+.botao-mudar {
+    border: 1px solid var(--accent-mustard);
+    color: var(--mustard);
+}
+
+.botao-mudar:hover {
+    background: var(--mustard);
+    color: var(--accent-mustard);
+}
+
+.botao-sair {
+    background: var(--mustard);
+    border: 1px solid var(--accent-mustard);
+    color: var(--mustard);
+}
+
+.botao-sair:hover {
+    background: var(--mustard);
+    color: var(--accent-mustard);
+}
+
+.faixa-de-informacoes {
+    background-color: var(--bg-ink-black);
+    border-radius: 16px;
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.faixa-titulo {
+    color: var(--accent-mustard);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.informacoes h2 {
+    font-size: 20px;
+    margin: 4px 0;
+}
+
+.informacoes p {
+    font-size: 11px;
+    color: var(--text-gray);
+    max-width: 500px;
+}
+
+.apps-disponiveis {
+    display: flex;
+    gap: 10px;
+}
+
+.botao-app {
+    background-color: var(--accent-mustard);
+    color: var(--bg-ink-black);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.rodape {
+    background-color: var(--bg-ink-black);
+    padding: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rodape-logo {
+    margin-bottom: 20px;
+}
+
+.rodape-logo img {
+    max-height: 40px;
+}
+
+.grade-do-rodape {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.rodape-informacoes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rodape-informacoes a {
+    color: var(--text-gray);
+    text-decoration: none;
+    font-size: 11px;
+}
+
+.rodape-informacoes a:hover {
+    color: #fff;
+}
+
+.informacoes-contato p {
+    font-size: 11px;
+    color: var(--text-gray);
+}
+
+.email-contato {
+    color: var(--accent-mustard) !important;
+    font-weight: 600;
+}
+
+.redes-informacoes {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.redes-informacoes a {
+    font-size: 14px;
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .perfil-informacoes {
+        grid-template-columns: 1fr;
+    }
+
+    .perfil-cabecalho {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .apps-disponiveis {
+        flex-direction: column;
+        align-items: center;
+    }
+}

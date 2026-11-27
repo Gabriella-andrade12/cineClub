@@ -190,7 +190,7 @@ $estilo_ctl = 'padding:8px 10px;border-radius:10px;border:1px solid #2a3d5e;back
             <a href="./inicio.php" class="navegacao-opcoes">Lançamentos</a>
             <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
             <a href="./bomboniere.php" class="navegacao-opcoes">Combos</a>
-            <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
+            <a href="./infantil.php" class="navegacao-opcoes">Infantil</a>
         </nav>
 
         <div class="busca">
@@ -199,7 +199,7 @@ $estilo_ctl = 'padding:8px 10px;border-radius:10px;border:1px solid #2a3d5e;back
         </div>
 
         <div class="acoes-do-usuario">
-            <a href="./listas.php" class="link"><i class="fa-solid fa-bookmark"></i></a>
+            <a href="./minha_lista.php" class="link"><i class="fa-solid fa-bookmark"></i></a>
             <a href="./perfil.php" class="link"><i class="fa-solid fa-user"></i></a>
         </div>
     </header>

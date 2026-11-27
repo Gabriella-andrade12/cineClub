@@ -68,15 +68,15 @@ $grupo2  = array_slice($lista_generos, 6);        // restante (botão de seta al
 <body>
 
   <header class="cabecalho">
-    <a href="./inicio.html" class="logo">
+    <a href="./inicio.php" class="logo">
       <img src="./img/Logo - LUX.png" alt="Logo LUX Cinema" class="logo-img">
     </a>
 
     <nav class="navegacao-menu">
-      <a href="./inicio.html" class="navegacao-ativa">Lançamentos</a>
-      <a href="./recomendados.html" class="navegacao-opcoes">Recomendados</a>
-      <a href="./combos.html" class="navegacao-opcoes">Combos</a>
-      <a href="./infantil.html" class="navegacao-opcoes">Infantil</a>
+      <a href="./inicio.php" class="navegacao-ativa">Lançamentos</a>
+      <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
+      <a href="./combos.php" class="navegacao-opcoes">Combos</a>
+      <a href="./infantil.php" class="navegacao-opcoes">Infantil</a>
     </nav>
 
     <div class="busca">
@@ -85,9 +85,9 @@ $grupo2  = array_slice($lista_generos, 6);        // restante (botão de seta al
     </div>
 
     <div class="acoes-do-usuario">
-      <a href="carrinho.html" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
-      <a href="./minha_lista.html" class="link"><i class="fa-solid fa-bookmark"></i></a>
-      <a href="./perfil.html" class="link"><i class="fa-solid fa-user"></i></a>
+      <a href="carrinho.php" class="link"><i class="fa-solid fa-cart-shopping"></i></a>
+      <a href="./minha_lista.php" class="link"><i class="fa-solid fa-bookmark"></i></a>
+      <a href="./perfil.php" class="link"><i class="fa-solid fa-user"></i></a>
     </div>
   </header>
 
@@ -261,6 +261,7 @@ $grupo2  = array_slice($lista_generos, 6);        // restante (botão de seta al
         <i class="fa-solid fa-sliders"></i>
         <i class="fa-solid fa-list-ul"></i>
       </div>
+</section>
 
       <input type="checkbox" id="troca-de-generos" hidden />
 
@@ -287,7 +288,7 @@ $grupo2  = array_slice($lista_generos, 6);        // restante (botão de seta al
                 <img src="<?= h($capa) ?>" alt="<?= h($f['nome_filme']) ?>">
                 <div class="filme-titulo"><?= h($f['nome_filme']) ?></div>
               </div>
-              <a href="detalhes_filme.php?id=<?= (int)$f['id_filme'] ?>">
+              <a href="filmes.php?id=<?= (int)$f['id_filme'] ?>">
                 <button class="botao-de-detalhes">Ver Detalhes</button>
               </a>
             </div>
@@ -355,7 +356,7 @@ $grupo2  = array_slice($lista_generos, 6);        // restante (botão de seta al
           <h3>Combos Especiais & Exclusivos</h3>
           <p>Garanta seus petiscos e itens exclusivos antes de entrar na sala</p>
         </div>
-        <a href="./combos.html">
+        <a href="./combos.php">
           <button class="botao botao-mustard"><i class="fa-solid fa-utensils"></i> Ver Cardápio Completo</button>
         </a>
       </div>
@@ -414,7 +415,7 @@ $grupo2  = array_slice($lista_generos, 6);        // restante (botão de seta al
       <div class="rodape-informacoes">
         <a href="#">Filmes em Cartaz</a>
         <a href="#">Próximas Estreias</a>
-        <a href="./combos.html">Bomboniere & Combos</a>
+        <a href="./combos.php">Bomboniere & Combos</a>
       </div>
       <div class="rodape-informacoes">
         <a href="#">Cinemas Parceiros</a>

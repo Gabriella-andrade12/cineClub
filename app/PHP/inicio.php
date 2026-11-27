@@ -101,12 +101,27 @@ $grupo2  = array_slice($lista_generos, 6);        // restante (botão de seta al
       <select>
         <option>São Paulo, SP</option>
         <option>Rio de Janeiro, RJ</option>
+        <option>Curitiba, PR</option>
+        <option>Belo Horizonte, PR</option>
+        <option>Porto Alegre, RS</option>
+        <option>Recife, PE</option>
+        <option>Salvador, BA</option>
       </select>
     </div>
     <div class="selecao">
       <span>Cinema Preferencial:</span>
       <select>
         <option>Selecione o cinema preferencial...</option>
+        <option>São Caetano do Sul - SP</option>
+        <option>Barra da Tijuca - RJ</option>
+        <option>São Bernardo do Campo - SP</option>
+        <option>Bela Vista - SP</option>
+        <option>Curitiba - PR</option>
+        <option>Belo Horizonte - MG</option>
+        <option>Santos - SP</option>
+        <option>Porto Alegre - RS</option>
+        <option>Recife - PE</option>
+        <option>Salvador - BA</option>
       </select>
     </div>
   </section>

@@ -256,11 +256,23 @@ $grupo2  = array_slice($lista_generos, 6);        // restante (botão de seta al
       </button>
     </section>
 
-    <section class="generos">
-      <div class="genero">
-        <i class="fa-solid fa-sliders"></i>
-        <i class="fa-solid fa-list-ul"></i>
-      </div>
+    <section class="generos" aria-label="Filtrar por gênero">
+  <div class="genero">
+    <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+    <span>Gêneros:</span>
+
+    <?php foreach (array_merge([''], $lista_generos) as $opcao): ?>
+      <?php $ativo = ($opcao === $genero); ?>
+
+      <a
+        href="<?= h(link_filtro($tipo, $opcao)) ?>"
+        class="genero-opcao<?= $ativo ? ' genero-ativo' : '' ?>"
+        <?= $ativo ? 'aria-current="true"' : '' ?>
+      >
+        <?= h($opcao === '' ? 'Todos' : $opcao) ?>
+      </a>
+    <?php endforeach; ?>
+  </div>
 </section>
 
       <input type="checkbox" id="troca-de-generos" hidden />

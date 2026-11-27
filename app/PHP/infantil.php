@@ -154,10 +154,10 @@ function lx_imagem($nome) {
     </a>
 
     <nav class="navegacao-menu">
-      <a href="./inicio.php" class="navegacao-ativa">Lançamentos</a>
+      <a href="./inicio.php" class="navegacao-opcoes">Lançamentos</a>
       <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
       <a href="./bomboniere.php" class="navegacao-opcoes">Combos</a>
-      <a href="./infantil.php" class="navegacao-opcoes">Infantil</a>
+      <a href="./infantil.php" class="navegacao-ativa">Infantil</a>
     </nav>
 
     <form class="busca" method="get" action="infantil.php">
@@ -373,9 +373,9 @@ function lx_imagem($nome) {
         <p>Atendimento ao Cliente</p>
         <a href="mailto:contato@lux.com.br" class="email-contato">contato@lux.com.br</a>
         <div class="redes-informacoes">
-          <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-          <a href="#"><i class="fa-brands fa-instagram"></i></a>
-          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="tiktok.php"><i class="fa-brands fa-tiktok"></i></a>
+          <a href="instagram.php"><i class="fa-brands fa-instagram"></i></a>
+          <a href="facebook.php"><i class="fa-brands fa-facebook"></i></a>
         </div>
       </div>
     </div>

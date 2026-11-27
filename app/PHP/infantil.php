@@ -154,10 +154,10 @@ function lx_imagem($nome) {
     </a>
 
     <nav class="navegacao-menu">
-      <a href="./inicio.php" class="navegacao-ativa">Lançamentos</a>
+      <a href="./inicio.php" class="navegacao-opcoes">Lançamentos</a>
       <a href="./recomendados.php" class="navegacao-opcoes">Recomendados</a>
       <a href="./combos.php" class="navegacao-opcoes">Combos</a>
-      <a href="./infantil.php" class="navegacao-opcoes">Infantil</a>
+      <a href="./infantil.php" class="navegacao-ativa">Infantil</a>
     </nav>
 
     <div class="busca">
